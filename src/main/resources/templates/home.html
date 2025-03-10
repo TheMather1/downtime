@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Server Portal - Pathfinder WeatherBot</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/portal.css}"/>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="/js/form_handler.js"></script>
+</head>
+<body>
+<div class="wrapper">
+    <div class="window">
+        <div class="container">
+            <div th:replace="~{campaign_sidebar :: sidebar}"></div>
+            <div class="contentWrapper">
+                <div class="content">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:replace="~{tags/forms :: forms}"/>
+</body>
+</html>

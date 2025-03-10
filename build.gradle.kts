@@ -1,19 +1,19 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 group = "pathfinder"
 version = "1.0"
 
 plugins {
     war
-    kotlin("jvm") version "1.6.0"
-    kotlin("plugin.spring") version "1.6.0"
-    id("org.springframework.boot") version "2.6.2"
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    kotlin("jvm") version "2.0.21"
+    kotlin("plugin.jpa") version "2.0.21"
+    kotlin("plugin.spring") version "2.0.21"
+    id("org.springframework.boot") version "3.4.2"
+    id("io.spring.dependency-management") version "1.1.7"
 }
 
 repositories {
     mavenCentral()
-    jcenter()
+    maven { url = uri("https://m2.chew.pro/releases") }
+    maven { url = uri("https://jitpack.io") }
     maven {
         url = uri("https://maven.pkg.github.com/TheMather1/dice-syntax")
         credentials {
@@ -26,22 +26,21 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
+    implementation("com.h2database", "h2", "2.3.232")
+//    implementation("com.github.Hexworks", "mixite", "2020.1.0")
+//    implementation("org.hexworks.cobalt", "cobalt.datatypes-jvm", "2020.0.12-RELEASE")
     implementation("javax.servlet", "jstl", "1.2")
-    implementation("net.dv8tion", "JDA", "5.0.0-alpha.21")
-    implementation("no.mather.ttrpg", "dice-syntax", "0.1.2")
-    implementation("org.mapdb", "mapdb", "3.0.8")
+    implementation("net.dv8tion", "JDA", "5.2.1")
+    implementation("no.mather.ttrpg", "dice-syntax", "0.2.0")
     implementation("org.springframework.boot", "spring-boot-starter-actuator")
+    implementation("org.springframework.boot", "spring-boot-starter-data-jpa")
     implementation("org.springframework.boot", "spring-boot-starter-oauth2-client")
     implementation("org.springframework.boot", "spring-boot-starter-web")
-    providedRuntime("org.springframework.boot", "spring-boot-starter-tomcat")
-    implementation("org.apache.taglibs", "taglibs-standard-impl", "1.2.5")
-    implementation("org.apache.tomcat.embed", "tomcat-embed-jasper")
+    implementation("org.springframework.boot", "spring-boot-starter-thymeleaf")
+    implementation("pw.chew", "jda-chewtils", "2.0")
 }
 
 tasks {
-    war {
-        webAppDirName = "src/main"
-    }
     test {
         useJUnitPlatform()
     }

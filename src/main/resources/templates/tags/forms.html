@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="forms">
+    <!--/*@thymesVar id="campaign" type="pathfinder.domain.Campaign"*/-->
+    <!--/*@thymesVar id="map" type="pathfinder.domain.kingdom.terrain.KingdomMap"*/-->
+    <div id="newCampaignModal" class="formModal">
+        <div class="formModal-content">
+            <span class="campaignFormClose" onclick="$('#newCampaignModal').hide()">&times;</span>
+            <form name="NewCampaignForm" action="/api/campaign" method="post">
+                <label for="campaignName">Campaign name:</label>
+                <input type="text" name="name" id="campaignName"/>
+                <br><br>
+                <input class="formSubmit inputButton" type="submit" value="Create Campaign" onclick=/>
+            </form>
+        </div>
+    </div>
+    <div id="newMapModal" class="formModal" th:if="${campaign != null}">
+        <div class="formModal-content">
+            <span class="mapFormClose" onclick="$('#newMapModal').hide()">&times;</span>
+            <form name="NewMapForm" th:action="@{'/api/campaign/{campaignId}/map'(campaignId = ${campaign.id})}" method="post">
+                <label for="mapName">Map name:</label>
+                <input type="text" name="name" id="mapName"/>
+                <br><br>
+                <input class="formSubmit inputButton" type="submit" value="Create Map" onclick=/>
+            </form>
+        </div>
+    </div>
+    <div id="newSettlementModal" class="formModal" th:if="${map != null}">
+        <div class="formModal-content">
+            <span class="settlementFormClose" onclick="$('#newSettlementModal').hide()">&times;</span>
+            <form name="NewSettlementForm" th:action="@{'/api/map/{mapId}/settlement'(mapId = ${map.id})}" method="post">
+                <input type="hidden" class="hexQ" name="hexQ" value=""/>
+                <input type="hidden" class="hexR" name="hexR" value=""/>
+                <label for="settlementName">Settlement name:</label>
+                <input type="text" name="name" id="settlementName"/>
+                <br><br>
+                <input class="formSubmit inputButton" type="submit" value="Create Settlement" onclick=/>
+            </form>
+        </div>
+    </div>
+</th:block>

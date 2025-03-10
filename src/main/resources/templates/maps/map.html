@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Server Portal - Pathfinder WeatherBot</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/portal.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/map.css}"/>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://bumbu.me/svg-pan-zoom/dist/svg-pan-zoom.js"></script>
+    <script src="/js/form_handler.js"></script>
+    <script src="/js/hexmap.js"></script>
+</head>
+<body>
+<div class="wrapper">
+    <div class="window">
+        <div class="container">
+            <div th:replace="~{campaign_sidebar :: sidebar}"></div>
+            <header class="navbarHeader" th:if="${campaign} != null" th:replace="~{campaign_navbar :: navbar(page='maps')}"></header>
+            <div th:if="${campaign} != null" class="contentWrapper">
+                <header class="mapsHeader">
+                    <nav class="mapsNavbar">
+                        <ul>
+                            <li th:each="m : ${#lists.sort(campaign.maps)}" th:classappend="${map?.id == m.id} ? 'activeContent'">
+                                <a th:href="@{'/map/{mapId}'(mapId=${m.id})}" th:text="${m.name}"/>
+                            </li>
+                            <li>
+                                <a id="newMapTab" class="formOpen" onclick="$('#newMapModal').show()">
+                                    +
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </header>
+                <div class="mapContent" th:if="${map} != null">
+                    <div id="mapSidebar" style="display: none">
+                        <div class="hexForm">
+                            <form id="hexForm" th:action="@{'/api/map/{mapId}'(mapId = ${map.id})}" method="post">
+                                <label for="hexQ">Coordinate Q</label>
+                                <input name="hexQ" id="hexQ" class="hexQ" type="number" readonly>
+                                <br>
+                                <label for="hexR">Coordinate R</label>
+                                <input name="hexR" id="hexR" class="hexR" type="number" readonly>
+                                <br>
+                                <label for="hexTerrain">Terrain</label>
+                                <select name="terrain" id="hexTerrain" onchange="
+                                    $('#hexForm').attr('terrain', value);
+                                    $('#river').prop('disabled', value === 'WATER');//.prop(checked, value === 'WATER');
+                                    let road = $('#road').prop('disabled', value === 'WATER');
+                                    if(value === 'WATER') {
+                                        road.val('');
+                                    }
+                                ">
+                                    <option th:each="type : ${T(pathfinder.domain.kingdom.terrain.TerrainType).entries}" th:value="${type}" th:text="${type}"/>
+                                </select>
+                                <br>
+                                <label for="river">River</label>
+                                <input id="river" name="river" type="checkbox" disabled/>
+                                <br>
+                                <label for="road">Road</label>
+                                <select name="road" id="road">
+                                    <option value="">None</option>
+                                    <option value="ROAD">Road</option>
+                                    <OPTION value="HIGHWAY">Highway</option>
+                                </select>
+                                <br>
+                                <input class="inputButton" type="submit" value="Edit hex"/>
+                            </form>
+                        </div>
+                        <hr>
+                        <div id="settlementField">
+                            <button id="newSettlementButton" class="inputButton formOpen" type="button" onclick="$('#newSettlementModal').show()" style="display: none">
+                                New Settlement
+                            </button>
+                            <a id="settlementLink" hidden></a>
+                        </div>
+                    </div>
+                    <div id="mapView" class="mapView"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:if="${map != null}">
+    <script th:inline="javascript">
+        let offsetX = /*[[${map.offsetX}]]*/ 0;
+        let offsetY = /*[[${map.offsetY}]]*/ 0;
+        let mapData = /*[[${map.mapData}]]*/ null;
+        let campaignId = /*[[${campaign.id}]]*/ 0;
+
+        $('#mapView').addMap(campaignId, offsetX, offsetY, mapData);
+    </script>
+</th:block>
+<th:block th:replace="~{tags/forms :: forms}"/>
+</body>
+</html>

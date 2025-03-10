@@ -1,0 +1,458 @@
+ul {
+    margin: 0;
+    padding: 0;
+}
+
+hr {
+    width: 100%;
+}
+
+body {
+    background-color: #36393f;
+    color: #b9bbbe;
+    font-family: Whitney, Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.5;
+    overflow: hidden;
+}
+
+.index {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 50px;
+    margin-top: 100px;
+}
+
+.index h1 {
+    font-size: xxx-large;
+    text-align: center;
+}
+
+.portalLink {
+    display: flex;
+    color: #b9bbbe;
+    font-size: xx-large;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    letter-spacing: .3px;
+    background: rebeccapurple;
+    padding: 20px;
+    width: fit-content;
+    border-radius: 10px;
+    text-decoration-line: none;
+}
+
+.indexText a {
+    color: dodgerblue;
+}
+
+.indexButtons {
+    flex-direction: row;
+    display: flex;
+    gap: 25px;
+}
+
+h1 {
+    font-weight: bold;
+}
+
+.wrapper {
+    align-items: center;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.window {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    contain: layout;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    height: 100vh;
+    overflow: hidden;
+    -webkit-box-direction: normal;
+    -webkit-box-orient: vertical;
+}
+
+.container {
+    display: flex;
+    flex: 1 1 100%;
+    margin: 0;
+    overflow: hidden;
+    -webkit-box-flex: 1;
+    -webkit-box-direction: normal;
+}
+
+.contentWrapper {
+    display: flex;
+    flex: 1 1 1440px;
+    flex-direction: column;
+    padding-top: 44px;
+    -webkit-box-flex: 1;
+    -webkit-box-orient: vertical;
+}
+
+.navbarHeader {
+    background-color: #2f3136;
+    box-sizing: border-box;
+}
+
+.mapsHeader {
+    background-color: #32353A;
+    box-sizing: border-box;
+}
+
+.contentNavbar {
+    width: 100%;
+    display: flex;
+    position: fixed;
+    background-color: #2f3136;
+}
+
+.mapsNavbar {
+    width: 100%;
+    display: flex;
+    position: fixed;
+    background-color: #32353A;
+}
+
+.contentNavbar li, .mapsNavbar li {
+    display: inline-flex;
+}
+
+/*noinspection CssUnusedSymbol*/
+.contentNavbar li.activeContent, .mapsNavbar li.activeContent {
+    background: #36393f;
+    border-radius: 15px 15px 0 0;
+}
+
+.contentNavbar a, .mapsNavbar a {
+    padding: 10px;
+    display: inline-block;
+    color: #b9bbbe;
+    text-decoration: none;
+}
+
+.contentNavbar a:hover, .mapsNavbar a:hover {
+    color: #ffffff;
+}
+
+.content {
+    background-color: #36393f;
+    overflow-y: auto;
+    padding: 25px;
+}
+
+.content table {
+    width: 50%;
+    text-align: center;
+}
+
+.content th {
+    font-weight: 600;
+    background-color: #202225;
+}
+
+.content tr:nth-child(even) {
+    background-color: #18191c;
+}
+
+.content tr:nth-child(odd) {
+    background: #121315;
+}
+
+.content td {
+    border-width: 0;
+    outline-width: 0;
+    padding: 0;
+    font-weight: 300;
+    font-size: 14px;
+    border-collapse: collapse;
+    -webkit-border-horizontal-spacing: 0;
+    -webkit-border-vertical-spacing: 0;
+}
+
+td input {
+    background-color: transparent;
+    text-align: center;
+    color: #ffffff;
+}
+
+.settings fieldset legend {
+    font-size: 200%;
+    font-weight: bold;
+}
+
+.inputButton {
+    padding: 7px 16px;
+    border-radius: 3px;
+    background-color: #5865F2;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 18px;
+    text-align: center;
+    transition-duration: .17s;
+    transition-property: all;
+    transition-timing-function: ease-out;
+}
+
+.statusButton {
+    display: flex;
+    align-items: center;
+}
+
+.startButton {
+    position: relative;
+    cursor: pointer;
+    padding: 7px 16px;
+    border-radius: 3px;
+    background-color: #4caf50;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 18px;
+    text-align: center;
+    transition-duration: .17s;
+    transition-property: all;
+    transition-timing-function: ease-out;
+}
+
+.stopButton {
+    position: relative;
+    cursor: pointer;
+    padding: 7px 16px;
+    border-radius: 3px;
+    background-color: #f44336;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 18px;
+    text-align: center;
+    transition-duration: .17s;
+    transition-property: all;
+    transition-timing-function: ease-out;
+}
+
+.inputButton:hover {
+    background-color: rgb(60, 69, 165);
+}
+
+.tableSubmit {
+    position: relative;
+    left: 25%;
+    cursor: pointer;
+}
+
+.guildInfo {
+    display: flex;
+    text-align: center;
+}
+
+.guildInfo > div {
+    background-color: #2f3136;
+    border-radius: 10px;
+    margin: 15px;
+    padding: 10px;
+}
+
+/* The sidebar menu */
+.sidebar {
+    box-sizing: border-box;
+    flex: 0 0 350px;
+    flex-direction: column;
+    min-width: 250px;
+    position: relative;
+    z-index: 2;
+    background-color: #2f3136;
+    display: flex;
+    -webkit-box-direction: normal;
+    -webkit-box-flex: 0;
+    -webkit-box-orient: vertical;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    vertical-align: baseline;
+}
+
+.sidebarInner {
+    display: flex;
+    position: relative;
+    flex: 1 1 auto;
+    flex-direction: column;
+    max-width: 335px;
+    min-height: min-content;
+    z-index: 3;
+}
+
+.sidebarContainer {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    height: fit-content;
+    padding: 32px 17px 32px 32px;
+}
+
+.sidebar p {
+    color: #dcddde;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.sidebar li {
+    list-style: none outside none;
+}
+
+/* The sidebar links */
+.sidebar a {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 2px;
+    color: #b9bbbe;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    letter-spacing: .3px;
+    text-decoration-color: #b9bbbe;
+    text-decoration-line: none;
+    text-decoration-style: solid;
+    text-decoration-thickness: auto;
+    text-align: left;
+    padding: 5px 10px;
+    position: relative;
+    list-style: none outside none;
+    -webkit-box-align: center;
+    -webkit-box-direction: normal;
+    -webkit-box-pack: start;
+}
+
+.sidebar a:hover {
+    color: #ffffff;
+}
+
+/*noinspection CssUnusedSymbol*/
+.sidebar a.activeLink {
+    background-color: #5865F2;
+    border-color: #ffffff;
+    border-radius: 3px;
+    border-image-width: 1;
+    cursor: pointer;
+}
+
+.sidebar a.botInvite {
+    background-color: #2e8b57;
+    border-color: #ffffff;
+    border-radius: 3px;
+    border-image-width: 1;
+}
+
+.sidebarList {
+    margin-left: -10px;
+}
+
+.scrollerWrapper {
+    display: flex;
+    position: relative;
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 1px;
+    z-index: 3;
+    -webkit-box-flex: 1;
+}
+
+.scroller {
+    display: flex;
+    flex: 1 1 0;
+    justify-content: flex-end;
+    min-height: 1px;
+    overflow-x: auto;
+    overflow-y: auto;
+    -webkit-box-flex: 1;
+    -webkit-box-pack: end;
+}
+
+.scroller::-webkit-scrollbar, .content::-webkit-scrollbar, .mapView::-webkit-scrollbar{
+    width: 15px;
+    height: 15px;
+}
+
+.scroller::-webkit-scrollbar-thumb, .scroller::-webkit-scrollbar-track, .content::-webkit-scrollbar-thumb, .content::-webkit-scrollbar-track, .mapView::-webkit-scrollbar-thumb, .mapView::-webkit-scrollbar-track {
+    background-clip: padding-box;
+    border-width: 3px;
+    border-style: solid;
+    border-radius: 30px;
+    border-color: transparent;
+}
+
+.scroller::-webkit-scrollbar-thumb, .content::-webkit-scrollbar-thumb, .mapView::-webkit-scrollbar-thumb {
+    background-color: #b9bbbe;
+}
+
+.scroller::-webkit-scrollbar-track, .content::-webkit-scrollbar-track, .mapView::-webkit-scrollbar-track {
+    border-width: initial;
+    background-color: #1c1d20;
+}
+
+.userContainer {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+a.logoutLink {
+    margin-left: auto;
+    text-decoration: underline;
+}
+
+.avatar {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+}
+
+.formModal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    padding-top: 100px;
+    left: 0;   top: 0;   width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+}
+
+/* Modal Content */
+.formModal-content {
+    background-color: #36393f;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: fit-content;
+    text-align: center;
+}
+
+/* The Close Button */
+.formClose {
+    color: #aa4444;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.formClose:hover, .formClose:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}

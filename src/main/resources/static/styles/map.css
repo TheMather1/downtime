@@ -1,0 +1,97 @@
+
+
+.mapContent {
+    padding-top: 44px;
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+.mapView {
+    height: inherit;
+    width: inherit;
+    /*align-content: center;*/
+    /*text-align: center;*/
+    background-color: dimgray;
+    /*overflow: auto;*/
+    -webkit-box-flex: 1;
+    -webkit-box-pack: end;
+}
+
+#mapSidebar {
+    display: flex;
+    flex: 0 1 auto;
+    width: min-content;
+    height: 100%;
+    flex-direction: column;
+    padding: 20px;
+    background-color: #36393f;
+    position: fixed;
+    right: 0;
+}
+
+.invisibleHex {
+    fill: black;
+}
+
+.mapHex {
+    /*filter: var(--north,none), var(--northWest,none), var(--northEast,none), var(--south,none), var(--southWest,none), var(--southEast,none);*/
+}
+
+.mapHex.active, .newHex.active {
+    stroke: red;
+    stroke-width: 1px;
+}
+
+.newHex {
+    fill: lightgrey;
+}
+
+.mapHex[terrain="WATER"] {
+    /*fill: steelblue;*/
+    fill: url(#water);
+}
+
+.mapHex[terrain="MARSH"] {
+    /*fill: cadetblue;*/
+    fill: url(#marsh);
+}
+
+.mapHex[terrain="COASTLINE"] {
+    /*fill: lightgoldenrodyellow;*/
+    fill: url(#coastline);
+}
+
+.mapHex[terrain="DESERT"] {
+    /*fill: palegoldenrod;*/
+    fill: url(#desert);
+}
+
+.mapHex[terrain="FOREST"] {
+    /*fill: forestgreen;*/
+    fill: url(#forest);
+}
+
+.mapHex[terrain="JUNGLE"] {
+    /*fill: darkolivegreen;*/
+    fill: url(#jungle);
+}
+
+.mapHex[terrain="PLAIN"] {
+    /*fill: springgreen;*/
+    fill: url(#plain);
+}
+
+.mapHex[terrain="HILL"] {
+    /*fill: greenyellow;*/
+    fill: url(#hill);
+}
+
+.mapHex[terrain="MOUNTAIN"] {
+    /*fill: darkgray;*/
+    fill: url(#mountain);
+}
+
+.mapHex[terrain="CAVERN"] {
+    fill: saddlebrown;
+}

@@ -1,0 +1,42 @@
+management:
+  endpoint:
+    metrics:
+      access: unrestricted
+    health:
+      access: unrestricted
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - metrics
+
+logging.level:
+  org.springframework.security: info
+
+server:
+  port: ${PORT:8080}
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: true
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+  security.oauth2.client:
+    provider.discord:
+      authorizationUri: https://discord.com/api/oauth2/authorize
+      tokenUri: https://discord.com/api/oauth2/token
+      userInfoUri: https://discord.com/api/users/@me
+      userNameAttribute: username
+    registration.discord:
+      authorization-grant-type: authorization_code
+      client-id: 1340301001823092758
+      client-name: WeatherBot
+      redirectUri: ${baseUrl}/login/oauth2/code/discord
+      provider: discord
+      scope:
+        - identify

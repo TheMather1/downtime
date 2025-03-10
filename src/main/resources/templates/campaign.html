@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Server Portal - Pathfinder WeatherBot</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/portal.css}"/>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="/js/form_handler.js"></script>
+</head>
+<body>
+<div class="wrapper">
+    <div class="window">
+        <div class="container">
+            <div th:replace="~{campaign_sidebar :: sidebar}"></div>
+            <header class="campaignDetails" th:replace="~{campaign_navbar :: navbar(page='main')}"></header>
+            <div class="contentWrapper">
+                <div class="content">
+                    <section class="settings">
+                        <h1>Maps</h1>
+                        <th:block th:each="map : ${#lists.sort(campaign.maps)}">
+                            <b th:text="${map.name}"/><th:block th:text="' - Size: ' + ${map.hexes.size()}"/>
+                            <br/>
+                        </th:block>
+                        <th:block th:if="${campaign.maps.isEmpty()}">
+                            No maps registered.
+                        </th:block>
+                        <h1>Kingdoms</h1>
+                        <th:block th:each="kingdom : ${#lists.sort(campaign.kingdoms)}">
+                            <b th:text="${kingdom.name}"/><th:block th:text="' - Size: ' + ${kingdom.size} + ', Settlements: ' + ${kingdom.settlements.size()}"/>
+                            <br/>
+                        </th:block>
+                        <th:block th:if="${campaign.kingdoms.isEmpty()}">
+                            No kingdoms registered.
+                        </th:block>
+                        <h1>Servers</h1>
+                        <th:block th:each="server : ${campaign.servers}">
+                            <b th:text="${server.name}"/>
+                            <br/>
+                        </th:block>
+                        <th:block th:if="${campaign.servers.isEmpty()}">
+                            No servers registered.
+                        </th:block>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:replace="~{tags/forms :: forms}"/>
+</body>
+</html>
