@@ -38,7 +38,7 @@ class SecurityConfig(
         }.csrf {
             it.disable()
         }.authorizeHttpRequests {
-            it.requestMatchers("/home/**", "/campaign/**", "/map/**").authenticated()
+            it.requestMatchers("/home/**", "/campaign/**", "/map/**", "/settlement/**").authenticated()
                 .anyRequest().permitAll()
         }.oauth2Login {
             it.tokenEndpoint {

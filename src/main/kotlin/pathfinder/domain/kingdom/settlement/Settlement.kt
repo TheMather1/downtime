@@ -5,7 +5,7 @@ import pathfinder.domain.kingdom.terrain.Hex
 import pathfinder.domain.support.coordinate.Coordinate
 import pathfinder.domain.support.coordinate.CoordinateConverter
 import pathfinder.domain.support.direction.Cardinal
-import pathfinder.web.frontend.dto.SettlementData
+import pathfinder.web.frontend.dto.settlement.SettlementData
 
 @Entity
 class Settlement(

@@ -4,41 +4,81 @@
     <title>Server Portal - Pathfinder WeatherBot</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" th:href="@{/styles/portal.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/settlement.css}"/>
 </head>
 <body>
 <div class="wrapper">
     <div class="window">
         <div class="container">
             <div th:replace="~{campaign_sidebar :: sidebar}"></div>
-            <header class="campaignDetails" th:replace="~{campaign_navbar :: navbar(page='main')}"></header>
+            <header class="campaignDetails" th:replace="~{campaign_navbar :: navbar(page='settlements')}"></header>
             <div class="contentWrapper">
                 <div class="content">
-                    <section class="settings">
-                        <h1>Maps</h1>
-                        <th:block th:each="map : ${#lists.sort(campaign.maps)}">
-                            <b th:text="${map.name}"/><th:block th:text="' - Size: ' + ${map.hexes.size()}"/>
-                            <br/>
-                        </th:block>
-                        <th:block th:if="${campaign.maps.isEmpty()}">
-                            No maps registered.
-                        </th:block>
-                        <h1>Kingdoms</h1>
-                        <th:block th:each="kingdom : ${#lists.sort(campaign.kingdoms)}">
-                            <b th:text="${kingdom.name}"/><th:block th:text="' - Size: ' + ${kingdom.size} + ', Settlements: ' + ${kingdom.settlements.size()}"/>
-                            <br/>
-                        </th:block>
-                        <th:block th:if="${campaign.kingdoms.isEmpty()}">
-                            No kingdoms registered.
-                        </th:block>
-                        <h1>Servers</h1>
-                        <th:block th:each="server : ${campaign.servers}">
-                            <b th:text="${server.name}"/>
-                            <br/>
-                        </th:block>
-                        <th:block th:if="${campaign.servers.isEmpty()}">
-                            No servers registered.
-                        </th:block>
-                    </section>
+                    <div class="settlement-details">
+                        <h2 th:text="${settlement.name}">Settlement Name</h2>
+
+                        <div class="settlement-info">
+                            <div class="basic-info">
+                                <p><strong>Type:</strong> <span th:text="${settlement.type}">THORP</span></p>
+                                <p><strong>Alignment:</strong> <span th:text="${settlement.alignment}">TRUE_NEUTRAL</span></p>
+                                <p><strong>Government:</strong> <span th:text="${settlement.government}">AUTOCRACY</span></p>
+                                <p><strong>Size:</strong> <span th:text="${settlement.size}">1</span> districts</p>
+                                <p><strong>Spellcasting:</strong> <span th:text="${settlement.spellcasting}">1</span></p>
+                            </div>
+
+                            <div class="settlement-stats">
+                                <h3>Settlement Statistics</h3>
+                                <div class="stats-grid">
+                                    <div class="stat-item">
+                                        <label>Corruption:</label>
+                                        <span th:text="${settlement.corruption}">0</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <label>Crime:</label>
+                                        <span th:text="${settlement.crime}">0</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <label>Law:</label>
+                                        <span th:text="${settlement.law}">0</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <label>Lore:</label>
+                                        <span th:text="${settlement.lore}">0</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <label>Productivity:</label>
+                                        <span th:text="${settlement.productivity}">0</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <label>Society:</label>
+                                        <span th:text="${settlement.society}">0</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="kingdom-stats">
+                                <h3>Kingdom Impact</h3>
+                                <div class="stats-grid">
+                                    <div class="stat-item">
+                                        <label>Consumption:</label>
+                                        <span th:text="${settlement.consumption}">0</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <label>Economy:</label>
+                                        <span th:text="${settlement.economy}">0</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <label>Loyalty:</label>
+                                        <span th:text="${settlement.loyalty}">0</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <label>Stability:</label>
+                                        <span th:text="${settlement.stability}">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

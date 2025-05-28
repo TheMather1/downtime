@@ -5,6 +5,7 @@ import pathfinder.domain.kingdom.terrain.TerrainType.*
 import pathfinder.domain.kingdom.terrain.features.TerrainFeature
 
 enum class Improvement(
+    val displayName: String,
     internal val economyBonus: Int = 0,
     internal val loyaltyBonus: Int = 0,
     internal val stabilityBonus: Int = 0,
@@ -12,6 +13,7 @@ enum class Improvement(
     internal val consumptionBonus: Int = 0
 ) {
     AQUEDUCT(
+        "Aqueduct",
         loyaltyBonus = 1,
         stabilityBonus = 1
     ) {
@@ -19,11 +21,11 @@ enum class Improvement(
 
         override fun eligible(hex: Hex) = when (hex.terrain) {
             WATER -> false
-            HILL, MOUNTAIN -> true
+            HILL, MOUNTAIN -> hex.hasWater || hex.neighbors.any { AQUEDUCT in it.improvements }
             else -> hex.neighbors.any { AQUEDUCT in it.improvements }
         }
     },
-    CANAL {
+    CANAL("Canal") {
         private val eligibleTerrains = setOf(DESERT, HILL, PLAIN)
         override fun cost(hex: Hex) = (hex.terrain.roadCost ?: throw RuntimeException()) * 2
 
@@ -31,7 +33,7 @@ enum class Improvement(
             TerrainFeature.RIVER !in hex.terrainFeatures && terrain in eligibleTerrains
         }
     },
-    FARM(consumptionBonus = -2) {
+    FARM("Farm", consumptionBonus = -2) {
         override fun cost(hex: Hex) = hex.terrain.farmCost ?: throw RuntimeException()
         override fun consumptionBonus(hex: Hex) = if(TerrainFeature.RESOURCE in hex.terrainFeatures) consumptionBonus - 1 else consumptionBonus
 
@@ -42,20 +44,20 @@ enum class Improvement(
         }
 
     },
-    FISHERY(consumptionBonus = -1) {
+    FISHERY("Fishery", consumptionBonus = -1) {
         private val eligbleTerrains = setOf(WATER, COASTLINE, MARSH)
         override fun consumptionBonus(hex: Hex) = if(TerrainFeature.RESOURCE in hex.terrainFeatures) consumptionBonus - 1 else consumptionBonus
         override fun cost(hex: Hex) = 4
 
-        override fun eligible(hex: Hex) = hex.terrain in eligbleTerrains
+        override fun eligible(hex: Hex) = hex.rawTerrain in eligbleTerrains
                 || hex.hasWater
     },
-    FORT(stabilityBonus = 2) {
+    FORT("Fort", stabilityBonus = 2) {
         override fun cost(hex: Hex) = 24
 
         override fun eligible(hex: Hex) = hex.rawTerrain != WATER
     },
-    HIGHWAY {
+    HIGHWAY("Highway") {
         override fun cost(hex: Hex) = hex.terrain.roadCost?.times(2) ?: throw RuntimeException()
 
         override fun eligible(hex: Hex) = hex.owner?.let {
@@ -64,6 +66,7 @@ enum class Improvement(
 
     },
     MINE(
+        "Mine",
         economyBonus = 1,
         earningsBonus = 1
     ) {
@@ -75,6 +78,7 @@ enum class Improvement(
         override fun eligible(hex: Hex) = hex.terrain in eligibleTerrains
     },
     QUARRY(
+        "Quarry",
         stabilityBonus = 1,
         earningsBonus = 1
     ) {
@@ -85,12 +89,13 @@ enum class Improvement(
 
         override fun eligible(hex: Hex) = hex.terrain in eligibleTerrains
     },
-    ROAD {
+    ROAD("Road") {
         override fun cost(hex: Hex) = hex.terrain.roadCost ?: throw RuntimeException()
 
         override fun eligible(hex: Hex) = hex.terrain != WATER
     },
     SAWMILL(
+        "Sawmill",
         stabilityBonus = 1,
         earningsBonus = 1
     ) {
@@ -101,11 +106,16 @@ enum class Improvement(
 
         override fun eligible(hex: Hex) = hex.terrain in eligibleTerrains
     },
-    WATCHTOWER(stabilityBonus = 1) {
+    WATCHTOWER("Watchtower", stabilityBonus = 1) {
         override fun cost(hex: Hex) = 12
 
         override fun eligible(hex: Hex) = hex.rawTerrain != WATER
     };
+
+    val road
+        get() = this == ROAD || this == HIGHWAY
+    val main
+        get() = this == FARM || this == MINE || this == QUARRY || this == SAWMILL
 
     open fun economyBonus(hex: Hex) = economyBonus
     open fun loyaltyBonus(hex: Hex) = loyaltyBonus

@@ -56,6 +56,7 @@ class District(
     private val buildingMap = (0..5).flatMap { x ->
         (0..5).map { y -> Coordinate(x, y) }
     }.associateWith { Lot(it, this) }
+    fun getBuildingMap() = buildingMap.toMap()
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
     private val infrastructure = mutableSetOf<Infrastructure>()

@@ -44,7 +44,7 @@
                                 <label for="hexTerrain">Terrain</label>
                                 <select name="terrain" id="hexTerrain" onchange="
                                     $('#hexForm').attr('terrain', value);
-                                    $('#river').prop('disabled', value === 'WATER');//.prop(checked, value === 'WATER');
+                                    $('#terrainFeatures').prop('disabled', value === 'WATER').prop('hidden', value === 'WATER');
                                     let road = $('#road').prop('disabled', value === 'WATER');
                                     if(value === 'WATER') {
                                         road.val('');
@@ -53,15 +53,44 @@
                                     <option th:each="type : ${T(pathfinder.domain.kingdom.terrain.TerrainType).entries}" th:value="${type}" th:text="${type}"/>
                                 </select>
                                 <br>
-                                <label for="river">River</label>
-                                <input id="river" name="river" type="checkbox" disabled/>
+                                <fieldset id="terrainFeatures">
+                                    <legend>Features</legend>
+                                    <ul>
+                                        <li th:each="feature : ${T(pathfinder.domain.kingdom.terrain.features.TerrainFeature).entries}">
+                                            <label th:for="${feature}" th:text="${feature.displayName}"></label>
+                                            <input th:id="${feature}" name="feature" th:value="${feature}" type="checkbox" disabled/>
+                                        </li>
+                                    </ul>
+                                </fieldset>
+                                <fieldset id="terrainImprovements">
+                                    <legend>Improvements</legend>
+                                    <label for="mainImprovement">Main</label>
+                                    <select id="mainImprovement" name="improvement">
+                                        <option value="">None</option>
+                                        <option id="FARM" value="FARM">Farm</option>
+                                        <option id="MINE" value="MINE">Mine</option>
+                                        <option id="QUARRY" value="QUARRY">Quarry</option>
+                                        <option id="SAWMILL" value="SAWMILL">Sawmill</option>
+                                    </select>
+                                    <ul>
+                                        <li th:each="improvement : ${T(pathfinder.domain.kingdom.terrain.improvements.Improvement).entries}"
+                                            th:if="${!improvement.road && !improvement.main}">
+                                            <label th:for="${improvement}" th:text="${improvement.displayName}"></label>
+                                            <input th:id="${improvement}" name="improvement" th:value="${improvement}" type="checkbox" disabled/>
+                                        </li>
+                                    </ul>
+                                    <label for="road">Road</label>
+                                    <select id="road" name="improvement">
+                                        <option value="">None</option>
+                                        <option value="ROAD">Road</option>
+                                        <option value="HIGHWAY">Highway</option>
+                                    </select>
+                                </fieldset>
+                                <label for="visibleText">Visible Text</label>
+                                <textarea id="visibleText" name="visibleText" cols="20" rows="5"></textarea>
                                 <br>
-                                <label for="road">Road</label>
-                                <select name="road" id="road">
-                                    <option value="">None</option>
-                                    <option value="ROAD">Road</option>
-                                    <OPTION value="HIGHWAY">Highway</option>
-                                </select>
+                                <label for="hiddenText">Hidden Text</label>
+                                <textarea id="hiddenText" name="hiddenText" cols="20" rows="5"></textarea>
                                 <br>
                                 <input class="inputButton" type="submit" value="Edit hex"/>
                             </form>
@@ -71,7 +100,7 @@
                             <button id="newSettlementButton" class="inputButton formOpen" type="button" onclick="$('#newSettlementModal').show()" style="display: none">
                                 New Settlement
                             </button>
-                            <a id="settlementLink" hidden></a>
+                            <a id="settlementLink" style="display: none"></a>
                         </div>
                     </div>
                     <div id="mapView" class="mapView"></div>
@@ -86,8 +115,9 @@
         let offsetY = /*[[${map.offsetY}]]*/ 0;
         let mapData = /*[[${map.mapData}]]*/ null;
         let campaignId = /*[[${campaign.id}]]*/ 0;
+        let rivers = /*[[${map.rivers}]]*/ null;
 
-        $('#mapView').addMap(campaignId, offsetX, offsetY, mapData);
+        $('#mapView').addMap(campaignId, true, offsetX, offsetY, mapData, rivers);
     </script>
 </th:block>
 <th:block th:replace="~{tags/forms :: forms}"/>

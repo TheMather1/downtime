@@ -14,8 +14,7 @@ import pathfinder.domain.kingdom.terrain.KingdomMap
 @RequestMapping("/map/{map}")
 class MapController(jda: JDA, campaignRepository: CampaignRepository): FrontendController(jda, campaignRepository) {
 
-    private val logger = LoggerFactory.getLogger(this.javaClass)
-
+    private val logger = LoggerFactory.getLogger(javaClass)
 
     @ModelAttribute
     fun addMap(

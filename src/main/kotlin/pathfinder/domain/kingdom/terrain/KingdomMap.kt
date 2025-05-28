@@ -5,7 +5,9 @@ import pathfinder.domain.Campaign
 import pathfinder.domain.support.coordinate.Coordinate
 import pathfinder.domain.support.coordinate.HexCoordinate
 import pathfinder.domain.support.coordinate.HexCoordinateConverter
+import pathfinder.web.FLAT_TOP
 import pathfinder.web.frontend.dto.HexData
+import pathfinder.web.frontend.support.RiverTracer
 
 @Entity
 class KingdomMap(
@@ -36,29 +38,23 @@ class KingdomMap(
         transform(hexes.getOrPut(coordinate) { Hex(TerrainType.WATER, this, coordinate) })
     }
 
-    val width
-        get() = (hexes.maxOfOrNull { it.key.q + 1} ?: 0) - (hexes.minOfOrNull { it.key.q - 1 } ?: 0) + 1
-
-    val oddQ
-        get() = width.rem(2) == 1
-
-    val height
-        get() = (hexes.maxOfOrNull { it.key.oddQY + 1 } ?: 0) - (hexes.minOfOrNull { it.key.oddQY - 1} ?: 0) + 1
-
     val mapData
-        get() = hexes.flatMap { (k, v) ->
+        get() = hexes.filter { it.key.z == 0 }.flatMap { (k, v) ->
             listOfNotNull(
-                k.toCoordinate() to v.hexData,
-                if (v.north == null) k.north.toCoordinate() to HexData(k.north.q, k.north.r) else null,
-                if (v.northWest == null) k.northWest.toCoordinate() to HexData(k.northWest.q, k.northWest.r) else null,
-                if (v.northEast == null) k.northEast.toCoordinate() to HexData(k.northEast.q, k.northEast.r) else null,
-                if (v.south == null) k.south.toCoordinate() to HexData(k.south.q, k.south.r) else null,
-                if (v.southWest == null) k.southWest.toCoordinate() to HexData(k.southWest.q, k.southWest.r) else null,
-                if (v.southEast == null) k.southEast.toCoordinate() to HexData(k.southEast.q, k.southEast.r) else null
+                k.toCoordinate(FLAT_TOP) to v.hexData,
+                if (v.north == null) k.north.toCoordinate(FLAT_TOP) to HexData(k.north.q, k.north.r) else null,
+                if (v.northWest == null) k.northWest.toCoordinate(FLAT_TOP) to HexData(k.northWest.q, k.northWest.r) else null,
+                if (v.northEast == null) k.northEast.toCoordinate(FLAT_TOP) to HexData(k.northEast.q, k.northEast.r) else null,
+                if (v.south == null) k.south.toCoordinate(FLAT_TOP) to HexData(k.south.q, k.south.r) else null,
+                if (v.southWest == null) k.southWest.toCoordinate(FLAT_TOP) to HexData(k.southWest.q, k.southWest.r) else null,
+                if (v.southEast == null) k.southEast.toCoordinate(FLAT_TOP) to HexData(k.southEast.q, k.southEast.r) else null
             )
         }.toMap().toMutableMap().also {
             if (it.isEmpty()) it[Coordinate(0,0)] = HexData(0,0)
         }.toMap()
+
+    val rivers
+        get() = RiverTracer(this).findRivers()
 
     val offsetX
         get() = mapData.maxOfOrNull { 1.5 - it.key.x } ?: 0

@@ -7,10 +7,19 @@ data class HexCoordinate(val q: Int, val r: Int, val z: Int) {
     val s = -q-r
     val oddQY = r + (q - (q and 1)) / 2
     val evenQY = r + (q + (q and 2)) / 2
+    val oddRX = q + (r - (r and 1)) / 2
+    val evenRX = q + (r + (r and 2)) / 2
 
-    fun effectiveY(offsetX: Int) = if (offsetX and 1 == 0) oddQY else evenQY
+    fun toCoordinate(flat: Boolean) = if(flat) Coordinate(q, oddQY) else Coordinate(oddRX, r)
 
-    fun toCoordinate() = Coordinate(q /*- offsetX*/, /*effectiveY(offsetX) - offsetY*/ oddQY)
+    fun getNeighborInDirection(direction: Int): HexCoordinate = when (direction) {
+        0 -> north
+        1 -> northEast
+        2 -> southEast
+        3 -> south
+        4 -> southWest
+        else -> northWest
+    }
 
 
     val north: HexCoordinate
@@ -29,4 +38,22 @@ data class HexCoordinate(val q: Int, val r: Int, val z: Int) {
         get() = HexCoordinate(q, r, z+1)
     val below: HexCoordinate
         get() = HexCoordinate(q, r, z-1)
+
+    val neighbors2D: List<HexCoordinate>
+        get() = listOf(
+            north,
+            northEast,
+            southEast,
+            south,
+            southWest,
+            northWest
+        )
+
+    companion object {
+        fun fromXYZ(x: Int, y: Int, z: Int) = HexCoordinate(
+            q = x,
+            r = y - (x - (x and 1)) / 2,
+            z = z
+        )
+    }
 }

@@ -64,8 +64,9 @@ data class Hex(
             else -> terrain.movementMultiplier
         }
 
-    val terrain: TerrainType = if (coastal) depthSearch()
-    else rawTerrain
+    val terrain: TerrainType
+        get() = if (coastal) depthSearch()
+            else rawTerrain
 
     private fun depthSearch(): TerrainType {
         var candidates = neighbors.filterNot { it.rawTerrain == TerrainType.WATER }.onEach {
@@ -127,12 +128,18 @@ data class Hex(
     val stabilityBonus
         get() = improvements.sumOf { improvement -> improvement.stabilityBonus(this) }
 
+    val eligibleImprovements
+        get() = Improvement.entries.filter { it.eligible(this) }.toSet()
+
     val hexData
         get() = HexData(
             coordinate.q,
             coordinate.r,
+            id,
             rawTerrain,
+            eligibleImprovements,
             improvements,
+            if(rawTerrain == TerrainType.WATER) setOf(RESOURCE) else TerrainFeature.entries.toSet(),
             terrainFeatures,
             if(hasRoad) setOfNotNull(
                 if (north?.hasRoad == true) 1 else null,
@@ -150,6 +157,8 @@ data class Hex(
                 if (southWest?.hasRiver == true || north?.rawTerrain == TerrainType.WATER) 16 else null,
                 if (northWest?.hasRiver == true || north?.rawTerrain == TerrainType.WATER) 32 else null
             ).sum() else 0,
+            freetextVisible,
+            freetextHidden,
             settlement?.settlementData
         )
 }
