@@ -1,12 +1,13 @@
 const
     circumradius = 50,
     halfCircumradius = circumradius / 2,
-    inradius = Math.round(0.8660254 * circumradius)
-    riverWidth = 0.25;
+    inradius = Math.round(0.8660254 * circumradius),
+    riverWidth = 0.25,
+    roadWidth = 0.15;
 
 let campaign, horizontal;
 
-$.fn.addMap = function(campaignId, flatTop, offsetX, offsetY, mapData, rivers) {
+$.fn.addMap = function(campaignId, flatTop, offsetX, offsetY, mapData, rivers, roads) {
     campaign = campaignId;
     horizontal = flatTop;
     $(this).appendSvgAttr('svg', {
@@ -17,7 +18,8 @@ $.fn.addMap = function(campaignId, flatTop, offsetX, offsetY, mapData, rivers) {
     })
         .addDefs()
         .drawHexes(mapData)
-        .drawRivers(rivers);
+        .drawRivers(rivers, mapData)
+        .drawRoads(roads);
 
     svgPanZoom('#svgMap', {
         dblClickZoomEnabled: false,
@@ -90,27 +92,13 @@ $.fn.setHexData = function(hexData) {
         return $(this).attr('class', 'newHex');
     } else {
         return $(this).attr('class', 'mapHex')
-            .attr('terrain', hexData.terrainType)
-            .setRoads(hexData);
+            .attr('terrain', hexData.terrainType);
     }
-}
-
-$.fn.setRoads = function (hexData) {
-    if (hexData.roadDirections !== 0) {
-        $(this).attr('filter', `url(#road${hexData.roadDirections})`)
-    }
-    if (hexData.improvements.includes('HIGHWAY')) {
-        $(this).attr('roadType', 'HIGHWAY');
-    } else if (hexData.improvements.includes('ROAD')) {
-        $(this).attr('roadType', 'ROAD');
-    }
-    return $(this);
 }
 
 $.fn.addDefs = function () {
     $(this).appendSvg('defs')
-        .stylize()
-        .decorate();
+        .stylize();
     return $(this);
 }
 
@@ -125,15 +113,6 @@ $.fn.stylize = function() {
         createPattern('desert', '/img/Desert/Desert003.png'),
         createPattern('hill', '/img/GreenHills/GreenHills001.png'),
         createPattern('water', '/img/Ocean/Ocean005.png')
-    ]);
-}
-
-$.fn.decorate = function() {
-    return $(this).append([
-        // Road filters
-        ...Array.from({length: 63}, (_, index) =>
-            createFilter('Road', index + 1)
-        )
     ]);
 }
 
@@ -270,7 +249,7 @@ function linkSettlement(hexData) {
     }
 }
 
-$.fn.drawRivers = function (rivers) {
+$.fn.drawRivers = function (rivers, mapData) {
     if (!rivers || rivers.size === 0) return $(this);
 
     const riverContainer = $(this).appendSvgAttr('g', {
@@ -278,24 +257,33 @@ $.fn.drawRivers = function (rivers) {
         transform: `translate(${offsetX * circumradius * 2} ${offsetY * inradius * 2})`
     })
 
-    function processRiverPath(path, start) {
+    function processRiverPath(path, start, startEdgeX, startEdgeY) {
         if (!path) return;
         let pathString = ""
-        path.childNodes.forEach((childPath, index) => {
+        const center = getHexCenter(path.x, path.y);
+        if (start) pathString += `M ${center.x} ${center.y}`
+        let isWater = Object.entries(mapData).some(([coordinate, hexData]) =>
+            coordinate === `${path.x}:${path.y}` && hexData.terrainType === 'WATER'
+        );
+        if (!isWater && path.childNodes.length === 0) pathString += ` L ${center.x} ${center.y}`
+        else path.childNodes.forEach((childPath, index) => {
             // Get centers for both hexes
-            const start = getHexCenter(path.x, path.y);
-            const end = getHexCenter(childPath.x, childPath.y);
+            const childCenter = getHexCenter(childPath.x, childPath.y);
 
             // Calculate control point for curve
-            const controlX = (start.x + end.x) / 2;
-            const controlY = (start.y + end.y) / 2;
+            const edgeX = (center.x + childCenter.x) / 2;
+            const edgeY = (center.y + childCenter.y) / 2;
 
             // Create SVG path
-            if (start) pathString += `M ${start.x} ${start.y}`
-            else if (index !== 0) pathString += ` M ${start.x} ${start.y}`
-            pathString += ` Q ${controlX} ${controlY} ${end.x} ${end.y}`
+            if (startEdgeX === 0 || startEdgeY === 0) pathString += ` M ${center.x} ${center.y} L ${edgeX} ${edgeY}`
+            else {
+                if (index !== 0) {
+                    pathString += ` M ${startEdgeX} ${startEdgeY}`
+                }
+                pathString += ` Q ${center.x} ${center.y} ${edgeX} ${edgeY}`
+            }
             // Continue processing child paths
-            pathString += processRiverPath(childPath, false);
+            pathString += processRiverPath(childPath, false, edgeX, edgeY);
         });
         return pathString;
     }
@@ -303,10 +291,89 @@ $.fn.drawRivers = function (rivers) {
     // Process each river path
     rivers.forEach(path => {
         riverContainer.appendSvgAttr('path', {
-            d: processRiverPath(path, true),
+            d: processRiverPath(path, true, 0, 0),
             fill: 'none',
             stroke: '#4a90e2',
             'stroke-width': circumradius * riverWidth,
+            'stroke-linecap': 'round',
+            'stroke-linejoin': 'round'
+        });
+    });
+
+    return $(this);
+}
+$.fn.drawRoads = function (roads) {
+    if (!roads || roads.size === 0) return $(this);
+
+    const roadContainer = $(this).appendSvgAttr('g', {
+        id: 'roadContainer',
+        transform: `translate(${offsetX * circumradius * 2} ${offsetY * inradius * 2})`
+    });
+    let currX = 0,
+        currY = 0;
+
+    function processRoadPath(path, start, startEdgeX, startEdgeY) {
+        if (!path) return;
+        let pathString = ""
+        const center = getHexCenter(path.x, path.y);
+        if (start) {
+            pathString += `M ${center.x} ${center.y}`;
+            currX = center.x;
+            currY = center.y;
+        }
+        if (path.childNodes.length === 0 && !path.ephemeral) {
+            pathString += ` L ${center.x} ${center.y}`
+            currX = center.x;
+            currY = center.y;
+        }
+        else path.childNodes.forEach((childPath, index) => {
+            // Get centers for both hexes
+            const childCenter = getHexCenter(childPath.x, childPath.y);
+
+            // Calculate control point for curve
+            const edgeX = (center.x + childCenter.x) / 2;
+            const edgeY = (center.y + childCenter.y) / 2;
+
+            // Create SVG path
+            if (startEdgeX === 0 || startEdgeY === 0) {
+                if(path.childNodes.length < 2) {
+                    pathString += ` M ${center.x} ${center.y} L ${edgeX} ${edgeY}`
+                    currX = edgeX;
+                    currY = edgeY;
+                }
+            } else {
+                if (index !== 0 || (currX !== startEdgeX && currY !== startEdgeY)) {
+                    pathString += ` M ${startEdgeX} ${startEdgeY}`
+                }
+                pathString += ` Q ${center.x} ${center.y} ${edgeX} ${edgeY}`
+                currX = edgeX;
+                currY = edgeY;
+            }
+
+            path.childNodes.forEach((childPathB, indexB) => {
+                if (indexB > index) {
+                    const childCenterB = getHexCenter(childPathB.x, childPathB.y);
+                    const edgeBX = (center.x + childCenterB.x) / 2;
+                    const edgeBY = (center.y + childCenterB.y) / 2;
+
+                    pathString += ` M ${edgeBX} ${edgeBY} Q ${center.x} ${center.y} ${edgeX} ${edgeY}`
+                    currX = edgeX;
+                    currY = edgeY;
+                }
+            })
+            // Continue processing child paths
+            if(!path.emphemeral) pathString += processRoadPath(childPath, false, edgeX, edgeY);
+        });
+        return pathString;
+    }
+
+    // Process each road path
+    roads.forEach(path => {
+        roadContainer.appendSvgAttr('path', {
+            d: processRoadPath(path, true, 0, 0),
+            fill: 'none',
+            stroke: '#daa06d',
+            'stroke-width': circumradius * roadWidth,
             'stroke-linecap': 'round',
             'stroke-linejoin': 'round'
         });

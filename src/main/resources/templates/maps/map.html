@@ -116,8 +116,9 @@
         let mapData = /*[[${map.mapData}]]*/ null;
         let campaignId = /*[[${campaign.id}]]*/ 0;
         let rivers = /*[[${map.rivers}]]*/ null;
+        let roads = /*[[${map.roads}]]*/ null;
 
-        $('#mapView').addMap(campaignId, true, offsetX, offsetY, mapData, rivers);
+        $('#mapView').addMap(campaignId, true, offsetX, offsetY, mapData, rivers, roads);
     </script>
 </th:block>
 <th:block th:replace="~{tags/forms :: forms}"/>

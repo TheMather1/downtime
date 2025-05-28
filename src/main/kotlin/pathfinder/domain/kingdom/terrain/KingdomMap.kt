@@ -8,6 +8,7 @@ import pathfinder.domain.support.coordinate.HexCoordinateConverter
 import pathfinder.web.FLAT_TOP
 import pathfinder.web.frontend.dto.HexData
 import pathfinder.web.frontend.support.RiverTracer
+import pathfinder.web.frontend.support.RoadTracer
 
 @Entity
 class KingdomMap(
@@ -55,6 +56,9 @@ class KingdomMap(
 
     val rivers
         get() = RiverTracer(this).findRivers()
+
+    val roads
+        get() = RoadTracer(this).findRoads()
 
     val offsetX
         get() = mapData.maxOfOrNull { 1.5 - it.key.x } ?: 0

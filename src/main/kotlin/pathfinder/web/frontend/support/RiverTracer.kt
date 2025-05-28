@@ -27,14 +27,14 @@ class RiverTracer(kingdomMap: KingdomMap) {
         return rivers
     }
 
-    fun findRivers(parentNodes: MutableSet<Hex>, childNodes: MutableSet<Hex>): Set<Path> {
+    private fun findRivers(parentNodes: MutableSet<Hex>, childNodes: MutableSet<Hex>): Set<Path> {
         if (childNodes.isEmpty()) return emptySet()
         parentNodes.addAll(childNodes)
         val grandChildren = childNodes.flatMap {
             if (it.rawTerrain == TerrainType.WATER) emptyList()
             else it.neighbors.filter { it !in parentNodes && (it.hasRiver || it.rawTerrain == TerrainType.WATER) }
         }.toMutableSet()
-        val paths = findRivers(childNodes, grandChildren)
+        val paths = findRivers(parentNodes, grandChildren)
         val usedPaths = mutableSetOf<Path>()
         return childNodes.map { childNode ->
             val coordinate = childNode.coordinate.toCoordinate(FLAT_TOP)
