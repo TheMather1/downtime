@@ -254,6 +254,7 @@ $.fn.drawRivers = function (rivers, mapData) {
 
     const riverContainer = $(this).appendSvgAttr('g', {
         id: 'riverContainer',
+        'pointer-events': 'none',
         transform: `translate(${offsetX * circumradius * 2} ${offsetY * inradius * 2})`
     })
 
@@ -307,6 +308,7 @@ $.fn.drawRoads = function (roads) {
 
     const roadContainer = $(this).appendSvgAttr('g', {
         id: 'roadContainer',
+        'pointer-events': 'none',
         transform: `translate(${offsetX * circumradius * 2} ${offsetY * inradius * 2})`
     });
     let currX = 0,
