@@ -3,7 +3,8 @@ const
     halfCircumradius = circumradius / 2,
     inradius = Math.round(0.8660254 * circumradius),
     riverWidth = 0.25,
-    roadWidth = 0.15;
+    roadWidth = 0.15
+    lakeRadius = 25;
 
 let campaign, horizontal;
 
@@ -214,20 +215,25 @@ function getPointsVertical(coordinate) {
 }
 
 function createHex(coordinate, hexData) {
-    return createSvg('polygon').attr({
-        points: horizontal ? getPointsHorizontal(coordinate) : getPointsVertical(coordinate),
-        tabindex: 1
-    })
-        .setHexData(hexData)
+    let hex = createSvg('g')
         .click(function() {
             $('.mapHex.active, .newHex.active').removeClass('active');
-            $(this).addClass('active');
+            $(`.mapHex[x=${coordinate[0]}][y=${coordinate[1]}]`).addClass('active');
             $('#mapSidebar').show();
             linkSettlement(hexData);
             polulateForm(hexData);
             return false;
         });
-
+    hex.appendSvgAttr('polygon', {
+        x: coordinate[0],
+        y: coordinate[1],
+        points: horizontal ? getPointsHorizontal(coordinate) : getPointsVertical(coordinate),
+        tabindex: 1
+    }).setHexData(hexData);
+    hexData.features.forEach(feature => {
+        if (feature === 'LAKE') hex.drawLake(coordinate);
+    });
+    return hex;
 }
 
 function linkSettlement(hexData) {
@@ -381,5 +387,49 @@ $.fn.drawRoads = function (roads) {
         });
     });
 
+    return $(this);
+}
+
+$.fn.drawLake = function (coordinate) {
+    // Generate 8 points around a circle to create a natural lake shape
+    const points = [];
+    const position = getHexCenter(coordinate[0], coordinate[1]);
+
+    for (let i = 0; i < 8; i++) {
+        const angle = (i / 8) * Math.PI * 2;
+        // Add random variation to the radius for a more natural shape
+        const radius = lakeRadius + (Math.random() * 15 - 7.5);
+        points.push({
+            x: Math.cos(angle) * radius + position.x,
+            y: Math.sin(angle) * radius + position.y
+        });
+    }
+
+    // Create the SVG path string using cubic bezier curves
+    let pathData = `M ${points[0].x} ${points[0].y}`;
+
+    for (let i = 0; i < points.length; i++) {
+        const current = points[i];
+        const next = points[(i + 1) % points.length];
+
+        // Create smooth control points for the curve
+        const controlPoint1 = {
+            x: current.x + (next.x - current.x) * 0.5 + (Math.random() * 10 - 5),
+            y: current.y + (next.y - current.y) * 0.5 + (Math.random() * 10 - 5)
+        };
+
+        pathData += ` S ${controlPoint1.x} ${controlPoint1.y}, ${next.x} ${next.y}`;
+    }
+
+    pathData += ' Z';
+
+    $(this).appendSvgAttr('path', {
+        d: pathData,
+        fill: '#4a90e2',
+        stroke: '#9c8566',
+        'stroke-width': '1.5',
+        'stroke-opacity': '0.8',
+        'fill-opacity': '0.9'
+    });
     return $(this);
 }
