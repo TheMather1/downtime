@@ -28,6 +28,9 @@ class KingdomMap(
     val kingdoms
         get() = hexes.values.map { it.owner }.toSet()
 
+    val settlements
+        get() = hexes.values.mapNotNull { it.settlement }.toSet()
+
     fun get(coordinate: HexCoordinate) =
         hexes[coordinate]
 

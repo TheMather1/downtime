@@ -31,7 +31,7 @@
                         </ul>
                     </nav>
                 </header>
-                <div class="mapContent" th:if="${settlementMap} != null">
+                <div class="pagedContent" th:if="${settlementMap} != null">
                     <div id="settlementMapSidebar" style="display: none">
                         <div class="settlementForm">
                             <form id="settlementForm" th:action="@{'/api/map/{mapId}'(mapId = ${map.id})}" method="post">

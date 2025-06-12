@@ -31,7 +31,7 @@
                         </ul>
                     </nav>
                 </header>
-                <div class="mapContent" th:if="${map} != null">
+                <div class="pagedContent" th:if="${map} != null">
                     <div id="mapSidebar" style="display: none">
                         <div class="hexForm">
                             <form id="hexForm" th:action="@{'/api/map/{mapId}'(mapId = ${map.id})}" method="post">

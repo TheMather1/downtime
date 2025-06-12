@@ -122,5 +122,5 @@ class Settlement(
     }
 
     val settlementData
-        get() = SettlementData(id, name)
+        get() = SettlementData(id, name, type)
 }

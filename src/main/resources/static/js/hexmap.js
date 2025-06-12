@@ -20,7 +20,8 @@ $.fn.addMap = function(campaignId, flatTop, offsetX, offsetY, mapData, rivers, r
         .addDefs()
         .drawHexes(mapData)
         .drawRivers(rivers, mapData)
-        .drawRoads(roads);
+        .drawRoads(roads)
+        .drawSettlements(mapData);
 
     svgPanZoom('#svgMap', {
         dblClickZoomEnabled: false,
@@ -174,8 +175,8 @@ $.fn.appendSvgWithId = function(tag, id) {
     return $(this).appendSvg(tag).setId(id);
 }
 
-function point(x, y, centerX, centerY) {
-    return Math.round(x + centerX) + ',' + Math.round(y + centerY)
+function point(x, y) {
+    return Math.round(x) + ',' + Math.round(y)
 }
 
 function getHexCenter(x, y) {
@@ -190,27 +191,25 @@ function getHexCenter(x, y) {
     }
 }
 
-function getPointsHorizontal(coordinate) {
-    let center = getHexCenter(coordinate[0], coordinate[1]);
+function getPointsHorizontal() {
     return [
-        point(0 - halfCircumradius, 0 - inradius, center.x, center.y),
-        point(halfCircumradius, 0 - inradius, center.x, center.y),
-        point(circumradius, 0, center.x, center.y),
-        point(halfCircumradius, inradius, center.x, center.y),
-        point(0 - halfCircumradius, inradius, center.x, center.y),
-        point(0 - circumradius, 0, center.x, center.y)
+        point(0 - halfCircumradius, 0 - inradius),
+        point(halfCircumradius, 0 - inradius),
+        point(circumradius, 0),
+        point(halfCircumradius, inradius),
+        point(0 - halfCircumradius, inradius),
+        point(0 - circumradius, 0)
     ].join(' ');
 }
 
-function getPointsVertical(coordinate) {
-    let center = getHexCenter(coordinate[0], coordinate[1]);
+function getPointsVertical() {
     return [
-        point(0 - inradius, 0 - halfCircumradius, center.x, center.y),
-        point(0 - inradius, halfCircumradius, center.x, center.y),
-        point(0, circumradius, center.x, center.y),
-        point(inradius, halfCircumradius, center.x, center.y),
-        point(inradius, 0 - halfCircumradius, center.x, center.y),
-        point(0, 0 - circumradius, center.x, center.y)
+        point(0 - inradius, 0 - halfCircumradius),
+        point(0 - inradius, halfCircumradius),
+        point(0, circumradius),
+        point(inradius, halfCircumradius),
+        point(inradius, 0 - halfCircumradius),
+        point(0, 0 - circumradius)
     ].join(' ');
 }
 
@@ -223,12 +222,14 @@ function createHex(coordinate, hexData) {
             linkSettlement(hexData);
             polulateForm(hexData);
             return false;
-        });
+        }),
+        center = getHexCenter(coordinate[0], coordinate[1]);
     hex.appendSvgAttr('polygon', {
         x: coordinate[0],
         y: coordinate[1],
-        points: horizontal ? getPointsHorizontal(coordinate) : getPointsVertical(coordinate),
-        tabindex: 1
+        points: horizontal ? getPointsHorizontal() : getPointsVertical(),
+        tabindex: 1,
+        transform: `translate(${center.x} ${center.y})`,
     }).setHexData(hexData);
     hexData.features.forEach(feature => {
         if (feature === 'LAKE') hex.drawLake(coordinate);
@@ -431,5 +432,32 @@ $.fn.drawLake = function (coordinate) {
         'stroke-opacity': '0.8',
         'fill-opacity': '0.9'
     });
+    return $(this);
+}
+
+$.fn.drawSettlements = function (mapData) {
+    let container = $(this).appendSvgAttr('g', {
+        id: 'settlementContainer',
+        'pointer-events': 'none',
+        transform: `translate(${offsetX * circumradius * 2} ${offsetY * inradius * 2})`
+    })
+    Object.entries(mapData).forEach(([coordinate, hexData]) => {
+        if(hexData.settlementData != null) {
+            let rawCoord = coordinate.split(':'),
+                coords = getHexCenter(rawCoord[0], rawCoord[1]),
+                settlement = container.appendSvgAttr('g', {
+                    transform: `translate(${coords.x} ${coords.y})`
+                })
+            settlement.appendSvgAttr('image', {
+                href: `/img/Settlement/${hexData.settlementData.size}.svg`,
+                width: circumradius,
+                height: circumradius,
+                transform: `translate(-${(horizontal ? circumradius : inradius)/2} -${(horizontal ? inradius : circumradius)/2})`
+            })
+            settlement.appendSvgAttr('text', {
+                'text-anchor': 'middle'
+            }).text(hexData.settlementData.name)
+        }
+    })
     return $(this);
 }

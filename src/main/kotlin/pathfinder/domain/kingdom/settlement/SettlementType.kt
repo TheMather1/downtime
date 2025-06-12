@@ -16,4 +16,6 @@ enum class SettlementType(
     SMALL_CITY(1, 4, 5, 4000, 25000, 6),
     LARGE_CITY(2, 5, 10, 8000, 50000, 7),
     METROPOLIS(4, 6, 10, 16000, 100000, 8);
+
+    val plaintext = name.split('_').joinToString(" ") { it.lowercase().replaceFirstChar { it.uppercase() } }
 }

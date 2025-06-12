@@ -10,7 +10,7 @@
                 <a th:href="@{'/campaign/{id}/maps'(id=${campaign.id})}">Maps</a>
             </li>
             <li th:classappend="${page == 'settlements'} ? 'activeContent'">
-                <a th:href="@{'/campaign/{id}/maps'(id=${campaign.id})}">Maps</a>
+                <a th:href="@{'/campaign/{id}/settlements'(id=${campaign.id})}">Settlements</a>
             </li>
         </ul>
     </nav>

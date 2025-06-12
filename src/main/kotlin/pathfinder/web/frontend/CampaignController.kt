@@ -23,5 +23,8 @@ class CampaignController(jda: JDA, campaignRepository: CampaignRepository): Fron
     fun campaignPortal() = "campaign"
 
     @GetMapping("/maps")
-    fun maps() = "maps/map"
+    fun maps() = "maps/index"
+
+    @GetMapping("/settlements")
+    fun settlements() = "settlements/settlement"
 }

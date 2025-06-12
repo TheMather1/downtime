@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Server Portal - Pathfinder WeatherBot</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/portal.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/map.css}"/>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://bumbu.me/svg-pan-zoom/dist/svg-pan-zoom.js"></script>
+    <script src="/js/form_handler.js"></script>
+    <script src="/js/hexmap.js"></script>
+</head>
+<body>
+<div class="wrapper">
+    <div class="window">
+        <div class="container">
+            <div th:replace="~{campaign_sidebar :: sidebar}"></div>
+            <header class="navbarHeader" th:if="${campaign} != null" th:replace="~{campaign_navbar :: navbar(page='maps')}"></header>
+            <div th:if="${campaign} != null" class="contentWrapper">
+                <header class="mapsHeader">
+                    <nav class="mapsNavbar">
+                        <ul>
+                            <li th:each="m : ${#lists.sort(campaign.maps)}">
+                                <a th:href="@{'/map/{mapId}'(mapId=${m.id})}" th:text="${m.name}"/>
+                            </li>
+                            <li>
+                                <a id="newMapTab" class="formOpen" onclick="$('#newMapModal').show()">
+                                    +
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </header>
+                <div class="content pagedContent">
+                    <table>
+                        <tr>
+                            <th>Name</th>
+                            <th>Size</th>
+                            <th>Settlements</th>
+                        </tr>
+                        <tr th:each="m : ${#lists.sort(campaign.maps)}">
+                            <td>
+                                <a th:href="@{'/map/{mapId}'(mapId=${m.id})}" th:text="${m.name}"></a>
+                            </td>
+                            <td th:text="${#lists.size(m.hexes)}"></td>
+                            <td th:text="${#lists.size(m.settlements)}"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:if="${map != null}">
+    <script th:inline="javascript">
+        let offsetX = /*[[${map.offsetX}]]*/ 0;
+        let offsetY = /*[[${map.offsetY}]]*/ 0;
+        let mapData = /*[[${map.mapData}]]*/ null;
+        let campaignId = /*[[${campaign.id}]]*/ 0;
+        let rivers = /*[[${map.rivers}]]*/ null;
+        let roads = /*[[${map.roads}]]*/ null;
+
+        $('#mapView').addMap(campaignId, true, offsetX, offsetY, mapData, rivers, roads);
+    </script>
+</th:block>
+<th:block th:replace="~{tags/forms :: forms}"/>
+</body>
+</html>
