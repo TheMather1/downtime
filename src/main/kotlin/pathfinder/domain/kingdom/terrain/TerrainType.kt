@@ -20,4 +20,6 @@ enum class TerrainType(
     MOUNTAIN(3, 4, 12, null, 4, 0.5, 0.75, 0.75),
     PLAIN(1, 0, 1, 2, 1, 0.75, 1.0, 1.0),
     WATER(2, null, null, null, null, 1.0, 1.0, 1.0);
+
+    val displayName: String = this.name.lowercase().replaceFirstChar { it.uppercase() }
 }

@@ -1,0 +1,63 @@
+<!--/*@thymesVar id="config" type="pathfinder.web.frontend.dto.MapConfig"*/-->
+<!--/*@thymesVar id="map" type="pathfinder.domain.kingdom.terrain.KingdomMap"*/-->
+<svg xmlns:th="http://www.thymeleaf.org">
+    <g id="hexContainer" th:transform="${config.mapTransform}">
+        <g th:each="entry: ${map.hexesAndNeighbors}"
+           th:if="${entry.key.z == config.z}"
+           oncontextmenu="return false;"
+           hx-trigger="contextmenu consume"
+           hx-target="#mapWrapper"
+           hx-swap="beforeend"
+           th:hx-get="@{'/map/{mapId}/hex?q={q}&r={r}&z={z}'(mapId = ${map.id}, q = ${entry.key.q}, r = ${entry.key.r}, z = ${entry.key.z})}">
+            <title th:text="${entry.value?.tooltip ?: entry.key.axialKey}"/>
+            <polygon class="mapHex"
+                     th:terrain="${entry.value?.rawTerrain ?: 'null'}"
+                     th:q="${entry.key.q}"
+                     th:r="${entry.key.r}"
+                     th:points="${config.hexPoints}"
+                     th:transform="${config.hexTransform(entry.key)}"/>
+            <path th:if="${entry.value != null && entry.value.terrainFeatures.contains(T(pathfinder.domain.kingdom.terrain.features.TerrainFeature).LAKE)}"
+                  th:d="${config.randomLake(entry.key)}"
+                  class="lake"
+                  fill="#4a90e2"
+                  stroke="#9c8566"
+                  stroke-width="1.5"
+                  stroke-opacity="0.8"
+                  fill-opacity="0.9"
+            />
+        </g>
+    </g>
+    <g id="riverContainer" pointer-events="none" th:transform="${config.mapTransform}">
+        <path th:each="entry: ${map.rivers(config.z)}"
+              th:d="${config.processRiverPath(entry, map.hexes, true, null, null)}"
+              fill="none"
+              stroke="#4a90e2"
+              th:stroke-width="${config.circumradius * config.riverWidth}"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+        />
+    </g>
+    <g id="roadContainer" pointer-events="none" th:transform="${config.mapTransform}">
+        <path th:each="entry: ${map.roads(config.z)}"
+              th:d="${config.processRoadPath(entry)}"
+              fill="none"
+              stroke="#daa06d"
+              th:stroke-width="${config.circumradius * config.roadWidth}"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+        />
+    </g>
+    <g id="settlementContainer" pointer-events="none" th:transform="${config.mapTransform}">
+        <g th:each="entry: ${map.settlements}"
+           th:transform="${config.hexTransform(entry.hex.coordinate)}">
+            <image th:href="@{'/img/Settlement/{type}.svg'(type=${entry.type.displayName})}"
+                   th:height="${config.circumradius}"
+                   th:width="${config.circumradius}"
+                   th:transform="${config.settlementTransform}"
+            />
+            <text th:text="${entry.name}"
+                  text-anchor="middle"
+            />
+        </g>
+    </g>
+</svg>

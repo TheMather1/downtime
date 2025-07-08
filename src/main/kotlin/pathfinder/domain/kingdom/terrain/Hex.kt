@@ -37,21 +37,21 @@ data class Hex(
 
 
     val north: Hex?
-        get() = map.get(coordinate.north)
+        get() = map[coordinate.north]
     val northWest: Hex?
-        get() = map.get(coordinate.northWest)
+        get() = map[coordinate.northWest]
     val northEast: Hex?
-        get() = map.get(coordinate.northEast)
+        get() = map[coordinate.northEast]
     val south: Hex?
-        get() = map.get(coordinate.south)
+        get() = map[coordinate.south]
     val southWest: Hex?
-        get() = map.get(coordinate.southWest)
+        get() = map[coordinate.southWest]
     val southEast: Hex?
-        get() = map.get(coordinate.southEast)
+        get() = map[coordinate.southEast]
     val above: Hex?
-        get() = map.get(coordinate.above)
+        get() = map[coordinate.above]
     val below: Hex?
-        get() = map.get(coordinate.below)
+        get() = map[coordinate.below]
 
     val isOpaque: Boolean
         get() = TODO("Not yet implemented")
@@ -106,6 +106,16 @@ data class Hex(
     val neighbors
         get() = setOfNotNull(north, northWest, northEast, south, southWest, southEast, above, below)
 
+    val neighborCoordinates
+        get() = mapOf(
+            coordinate.north to north,
+            coordinate.northWest to northWest,
+            coordinate.northEast to northEast,
+            coordinate.south to south,
+            coordinate.southWest to southWest,
+            coordinate.southEast to southEast
+        )
+
     fun neighbors(filter: (hex: Hex) -> Boolean): Set<Hex> = neighbors.filter(filter).toSet()
 
 
@@ -130,6 +140,8 @@ data class Hex(
 
     val eligibleImprovements
         get() = Improvement.entries.filter { it.eligible(this) }.toSet()
+
+    fun getEligibleImprovements(terrainType: TerrainType) = copy(rawTerrain = terrainType).eligibleImprovements
 
     val hexData
         get() = HexData(
@@ -161,4 +173,15 @@ data class Hex(
             freetextHidden,
             settlement?.settlementData
         )
+
+    val tooltip: String
+        get() {
+            var string = "[${coordinate.axialKey}] ${rawTerrain.displayName}"
+            if (owner != null) string += "\nOwned by: ${owner.name}"
+            if (settlement != null) string += "\nSettlement: ${settlement!!.name} - ${settlement!!.type.displayName}"
+            if (terrainFeatures.isNotEmpty()) string += "\nTerrain features: ${terrainFeatures.joinToString(", ") { it.displayName}}"
+            if (improvements.isNotEmpty()) string += "\nImprovements: ${improvements.joinToString(", ") { it.displayName }}"
+            if (freetextVisible.isNotBlank()) string += "\n\nNotes:\n$freetextVisible"
+            return string
+        }
 }

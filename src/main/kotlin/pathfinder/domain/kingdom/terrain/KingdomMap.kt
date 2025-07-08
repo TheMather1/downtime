@@ -31,7 +31,7 @@ class KingdomMap(
     val settlements
         get() = hexes.values.mapNotNull { it.settlement }.toSet()
 
-    fun get(coordinate: HexCoordinate) =
+    operator fun get(coordinate: HexCoordinate) =
         hexes[coordinate]
 
     fun insert(hex: Hex) {
@@ -57,16 +57,19 @@ class KingdomMap(
             if (it.isEmpty()) it[Coordinate(0,0)] = HexData(0,0)
         }.toMap()
 
-    val rivers
-        get() = RiverTracer(this).findRivers()
+    val hexesAndNeighbors
+        get() = hexes.map { (k, v) ->
+            v.neighborCoordinates + (k to v)
+        }.reduce { a, b -> a + b }
 
-    val roads
-        get() = RoadTracer(this).findRoads()
+    fun rivers(z: Int) = RiverTracer(this, z).findRivers()
+
+    fun roads(z: Int) = RoadTracer(this, z).findRoads()
 
     val offsetX
-        get() = mapData.maxOfOrNull { 1.5 - it.key.x } ?: 0
+        get() = mapData.maxOfOrNull { 1.5 - it.key.x } ?: 0.0
     val offsetY
-        get() = mapData.maxOfOrNull { 1.5 - it.key.y } ?: 0
+        get() = mapData.maxOfOrNull { 1.5 - it.key.y } ?: 0.0
 
     override fun compareTo(other: KingdomMap): Int {
         return name.compareTo(other.name).takeUnless { it == 0 } ?: id.compareTo(other.id)

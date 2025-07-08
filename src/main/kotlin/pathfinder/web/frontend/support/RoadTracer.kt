@@ -6,8 +6,8 @@ import pathfinder.domain.support.coordinate.Coordinate
 import pathfinder.web.FLAT_TOP
 import pathfinder.web.frontend.dto.Path
 
-class RoadTracer(kingdomMap: KingdomMap) {
-    val hexes = kingdomMap.hexes
+class RoadTracer(kingdomMap: KingdomMap, z: Int = 0) {
+    val hexes = kingdomMap.hexes.filter { it.key.z == z }
     val roadHexes = hexes.filter { it.value.hasRoad }.mapKeys { it.key.toCoordinate(FLAT_TOP) }
 
     fun findRoads(): Set<Path> {

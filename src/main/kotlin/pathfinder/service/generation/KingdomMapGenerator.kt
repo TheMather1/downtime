@@ -131,11 +131,12 @@ class KingdomMapGenerator {
 
     private fun generateWaterBodies(map: KingdomMap) {
         // Generate lakes in appropriate locations
-        map.hexes.filter { (_, hex) ->
-            hex.rawTerrain == TerrainType.PLAIN ||
-                    hex.rawTerrain == TerrainType.MARSH
-        }.forEach { (coord, _) ->
-            if (random.nextFloat() < 0.05) generateLake(map, coord)
+        map.hexes.values.forEach { hex ->
+            when(hex.terrain) {
+                TerrainType.WATER -> {}
+                TerrainType.DESERT -> if (random.nextFloat() < 0.01) hex.terrainFeatures.add(TerrainFeature.LAKE)
+                else -> hex.terrainFeatures.add(TerrainFeature.LAKE)
+            }
         }
     }
 
@@ -340,9 +341,7 @@ class KingdomMapGenerator {
     private fun generateForests(map: KingdomMap) {
         // Find suitable starting points for forests
         val forestSeeds = map.hexes.filter { (_, hex) ->
-            hex.rawTerrain == TerrainType.PLAIN &&
-                    !hex.hasRiver &&
-                    !hex.terrainFeatures.contains(TerrainFeature.LAKE)
+            hex.rawTerrain == TerrainType.PLAIN
         }
 
         forestSeeds.forEach { (coord, _) ->
@@ -361,8 +360,8 @@ class KingdomMapGenerator {
             if (current in processed) continue
             processed.add(current)
 
-            map.get(current)?.let { hex ->
-                if (isValidForestHex(hex)) {
+            map[current]?.let { hex ->
+                if (hex.isValidForestHex()) {
                     // Determine if this should be jungle based on neighbors and temperature
                     val shouldBeJungle = shouldBeJungle(map, current)
                     hex.rawTerrain = if (shouldBeJungle) TerrainType.JUNGLE else TerrainType.FOREST
@@ -377,10 +376,8 @@ class KingdomMapGenerator {
         }
     }
 
-    private fun isValidForestHex(hex: Hex): Boolean =
-        hex.terrain == TerrainType.PLAIN && // Changed from rawTerrain
-                !hex.hasRiver &&
-                !hex.terrainFeatures.contains(TerrainFeature.LAKE)
+    private fun Hex.isValidForestHex(): Boolean =
+        terrain == TerrainType.PLAIN
 
     private fun shouldBeJungle(map: KingdomMap, coord: HexCoordinate): Boolean {
         // Check if near water or marsh (increases jungle likelihood)
@@ -476,27 +473,9 @@ class KingdomMapGenerator {
         }
     }
 
-    private fun generateLake(map: KingdomMap, center: HexCoordinate) {
-        val lakeHexes = mutableSetOf(center)
-        val size = random.nextInt(MIN_LAKE_SIZE, MAX_LAKE_SIZE)
-
-        repeat(size) { depth ->
-            lakeHexes.toSet().forEach { coord ->
-                getNeighborCoordinates(coord).forEach { neighbor ->
-                    if (random.nextFloat() < LAKE_SPREAD_CHANCE(depth)) lakeHexes.add(neighbor)
-                }
-            }
-        }
-
-        lakeHexes.forEach { coord ->
-            map.get(coord)?.terrainFeatures?.add(TerrainFeature.LAKE)
-        }
-    }
-
     private fun generateLandmarks(map: KingdomMap) {
         val eligibleHexes = map.hexes.filter {
-            it.value.rawTerrain != TerrainType.WATER &&
-                    it.value.terrainFeatures.none { f -> f == TerrainFeature.RIVER || f == TerrainFeature.LAKE }
+            it.value.rawTerrain != TerrainType.WATER
         }
 
         eligibleHexes.forEach { (_, hex) ->

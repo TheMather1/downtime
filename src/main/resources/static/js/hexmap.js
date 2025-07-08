@@ -3,7 +3,7 @@ const
     halfCircumradius = circumradius / 2,
     inradius = Math.round(0.8660254 * circumradius),
     riverWidth = 0.25,
-    roadWidth = 0.15
+    roadWidth = 0.15,
     lakeRadius = 25;
 
 let campaign, horizontal;

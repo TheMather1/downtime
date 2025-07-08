@@ -1,6 +1,8 @@
 package pathfinder.domain.support.coordinate
 
-data class HexCoordinate(val q: Int, val r: Int, val z: Int) {
+import pathfinder.web.FLAT_TOP
+
+data class HexCoordinate(val q: Int, val r: Int, val z: Int): Comparable<HexCoordinate> {
     private constructor(coords: List<String>): this(coords[0].toInt(), coords[1].toInt(), coords[2].toInt())
     constructor(axialKey: String) : this(axialKey.split(':'))
     val axialKey: String = "$q:$r:$z"
@@ -10,6 +12,10 @@ data class HexCoordinate(val q: Int, val r: Int, val z: Int) {
     val oddRX = q + (r - (r and 1)) / 2
     val evenRX = q + (r + (r and 2)) / 2
 
+    val x: Int
+        get() = if(FLAT_TOP) q else oddRX
+    val y: Int
+        get() = if(FLAT_TOP) oddQY else r
     fun toCoordinate(flat: Boolean) = if(flat) Coordinate(q, oddQY) else Coordinate(oddRX, r)
 
     fun getNeighborInDirection(direction: Int): HexCoordinate = when (direction) {
@@ -48,6 +54,10 @@ data class HexCoordinate(val q: Int, val r: Int, val z: Int) {
             southWest,
             northWest
         )
+
+    override fun compareTo(other: HexCoordinate): Int = z.compareTo(other.z).takeUnless { it == 0 }
+        ?: r.compareTo(other.r).takeUnless { it == 0 }
+        ?: q.compareTo(other.q)
 
     companion object {
         fun fromXYZ(x: Int, y: Int, z: Int) = HexCoordinate(

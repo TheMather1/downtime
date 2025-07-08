@@ -8,4 +8,7 @@ enum class TerrainFeature(val displayName: String) {
     RESOURCE("Resource"),
     RIVER("River"),
     SWAMP("Swamp");
+
+    val waterEligible
+        get() = this == LAIR || this == LANDMARK || this == RESOURCE
 }

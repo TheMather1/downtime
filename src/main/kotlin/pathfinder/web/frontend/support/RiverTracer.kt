@@ -6,8 +6,8 @@ import pathfinder.domain.kingdom.terrain.TerrainType
 import pathfinder.web.FLAT_TOP
 import pathfinder.web.frontend.dto.Path
 
-class RiverTracer(kingdomMap: KingdomMap) {
-    val hexes = kingdomMap.hexes
+class RiverTracer(kingdomMap: KingdomMap, z: Int = 0) {
+    val hexes = kingdomMap.hexes.filter { it.key.z == z }
     val riverHexes = hexes.filter { it.value.hasRiver }
 
     fun findRivers(): Set<Path> {

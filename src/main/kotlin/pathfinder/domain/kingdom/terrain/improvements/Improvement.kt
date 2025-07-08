@@ -92,7 +92,7 @@ enum class Improvement(
     ROAD("Road") {
         override fun cost(hex: Hex) = hex.terrain.roadCost ?: throw RuntimeException()
 
-        override fun eligible(hex: Hex) = hex.terrain != WATER
+        override fun eligible(hex: Hex) = hex.rawTerrain != WATER
     },
     SAWMILL(
         "Sawmill",

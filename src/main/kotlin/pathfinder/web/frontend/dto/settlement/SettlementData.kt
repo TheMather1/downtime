@@ -7,5 +7,5 @@ data class SettlementData(
     val name : String,
     val size: String
 ) {
-    constructor(id: Long, name: String, size: SettlementType): this(id, name, size.plaintext)
+    constructor(id: Long, name: String, size: SettlementType): this(id, name, size.displayName)
 }

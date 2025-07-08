@@ -1,0 +1,94 @@
+<div id="modal" _="on closeModal or keyup[key is 'Escape'] add .closing then wait for animationend then remove me"
+     xmlns:th="http://www.thymeleaf.org">
+    <div class="modal-underlay" _="on click or contextmenu trigger closeModal" oncontextmenu="return false;"></div>
+    <div class="modal-content">
+        <header class="modal-header" th:text="@{'Hex {coord}'(coord = ${coordinate.axialKey})}"></header>
+        <form id="hexForm"
+              th:hx-post="@{'/api/map/{mapId}'(mapId = ${map.id})}"
+              hx-target="#mapViewport"
+              hx-select="svg > g">
+            <input type="hidden" name="hexQ" th:value="${coordinate.q}"/>
+            <input type="hidden" name="hexR" th:value="${coordinate.r}"/>
+            <input type="hidden" name="hexZ" th:value="${coordinate.z}"/>
+            <label th:for="terrain">Terrain</label>
+            <select id="terrain"
+                    name="terrain"
+                    hx-target="#terrainDependent"
+                    hx-select="#terrainDependent"
+                    hx-trigger="change"
+                    th:hx-get="@{'/map/{mapId}/hex?q={q}&r={r}&z={z}'(mapId = ${map.id}, q = ${coordinate.q}, r = ${coordinate.r}, z = ${coordinate.z})}"
+                    hx-include="this"
+            >
+                <option th:value="${null}" th:text="${''}" th:if="${terrain == null}" th:selected="${true}"/>
+                <option th:each="terrainOption : ${T(pathfinder.domain.kingdom.terrain.TerrainType).entries}"
+                        th:if="${terrainOption != T(pathfinder.domain.kingdom.terrain.TerrainType).CAVERN || coordinate.z != 0}"
+                        th:text="${terrainOption.displayName}"
+                        th:value="${terrainOption}"
+                        th:selected="${terrain == terrainOption}"
+                />
+            </select>
+            <div id="terrainDependent">
+                <fieldset id="terrainImprovements" th:disabled="${hex == null}">
+                    <legend>Improvements</legend>
+                    <th:block th:if="${hex == null}" th:text="${'Setting improvements on new hexes is not supported due to missing entity for determining preconditions. E.g. Farms requiring water.'}"/>
+                    <label for="mainImprovement">Main</label>
+                    <select id="mainImprovement" name="improvement">
+                        <option value="">None</option>
+                        <option th:each="improvement : ${hex?.getEligibleImprovements(terrain)}"
+                                th:if="${improvement.main}"
+                                th:id="${improvement}"
+                                th:value="${improvement}"
+                                th:text="${improvement.displayName}"
+                                th:selected="${hex.improvements.contains(improvement)}"/>
+                    </select>
+                    <ul>
+                        <li th:each="improvement : ${hex?.getEligibleImprovements(terrain)}"
+                            th:if="${!improvement.road && !improvement.main}">
+                            <label th:for="${improvement}" th:text="${improvement.displayName}"></label>
+                            <input th:id="${improvement}" name="improvement" th:value="${improvement}"
+                                   th:checked="${hex.improvements.contains(improvement)}" type="checkbox"/>
+                        </li>
+                    </ul>
+                    <label for="road" th:if="${hex?.terrain?.getRoadCost() != null}">Road</label>
+                    <select id="road" name="improvement" th:if="${hex?.terrain?.getRoadCost() != null}">
+                        <option value="">None</option>
+                        <option value="ROAD"
+                                th:selected="${hex.improvements.contains(T(pathfinder.domain.kingdom.terrain.improvements.Improvement).ROAD)}">
+                            Road
+                        </option>
+                        <option value="HIGHWAY"
+                                th:selected="${hex.improvements.contains(T(pathfinder.domain.kingdom.terrain.improvements.Improvement).HIGHWAY)}">
+                            Highway
+                        </option>
+                    </select>
+                </fieldset>
+                <fieldset id="terrainFeatures" th:disabled="${terrain == null}">
+                    <legend>Features</legend>
+                    <ul>
+                        <li th:each="feature : ${T(pathfinder.domain.kingdom.terrain.features.TerrainFeature).entries}"
+                            th:if="${feature.waterEligible || terrain != T(pathfinder.domain.kingdom.terrain.TerrainType).WATER}">
+                            <label th:for="${feature}" th:text="${feature.displayName}"></label>
+                            <input th:id="${feature}" name="feature" th:value="${feature}" type="checkbox"
+                                   th:checked="${hex?.terrainFeatures?.contains(feature) ?: false}"/>
+                        </li>
+                    </ul>
+                </fieldset>
+            </div>
+            <label style="display: inline-grid">
+                Visible Text
+                <br>
+                <textarea id="visibleText" name="visibleText" cols="35" rows="5"
+                          th:text="${hex?.freetextVisible ?: ''}"/>
+            </label>
+            <label style="display: inline-grid">
+                Hidden Text
+                <br>
+                <textarea id="hiddenText" name="hiddenText" cols="35" rows="5"
+                          th:text="${hex?.freetextHidden ?: ''}"></textarea>
+            </label>
+            <br>
+            <input class="inputButton" type="submit" value="Edit hex"/>
+            <input class="stopButton" type="button" value="Close" _="on click trigger closeModal"/>
+        </form>
+    </div>
+</div>
