@@ -38,7 +38,7 @@ class MapController(jda: JDA, campaignRepository: CampaignRepository): FrontendC
     )
 
     @GetMapping
-    fun mapView() = "maps/map2"
+    fun mapView() = "maps/map"
 
     @GetMapping("/template")
     fun templateView() = "maps/mapTemplate"
