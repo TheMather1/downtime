@@ -1,20 +1,24 @@
 package pathfinder.domain.kingdom.leadership
 
+import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
+import jakarta.persistence.MappedSuperclass
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Transient
 import pathfinder.domain.character.PathfinderCharacter
 import pathfinder.domain.kingdom.Kingdom
 import pathfinder.domain.kingdom.KingdomScore
 
-@Embeddable
+@MappedSuperclass
 sealed class LeadershipRole: Cloneable {
     @ManyToOne
+    @JoinColumn(insertable = false, updatable = false)
     var character: PathfinderCharacter? = null
     @get:Transient
     abstract val roleName: RoleName
@@ -23,6 +27,7 @@ sealed class LeadershipRole: Cloneable {
 
     @Embeddable
     open class Ruler: LeadershipRole() {
+
         @Transient
         override val roleName = RoleName.RULER
 
@@ -38,8 +43,10 @@ sealed class LeadershipRole: Cloneable {
 
     @Embeddable
     class Consort: LeadershipRole() {
+
         @Transient
         override val roleName = RoleName.CONSORT
+        @Column(name = "consort_co_ruler")
         var coRuler: Boolean = false
 
         fun economyBonus(duties: RulerDuties) = if (coRuler && performedDuty && duties.selected(KingdomScore.ECONOMY)) character?.abilityScores?.charisma?.bonus ?: 0
@@ -58,6 +65,7 @@ sealed class LeadershipRole: Cloneable {
 
     @Embeddable
     class Heir: LeadershipRole() {
+
         @Transient
         override val roleName = RoleName.HEIR
         val loyaltyBonus
@@ -66,6 +74,7 @@ sealed class LeadershipRole: Cloneable {
     }
     @Embeddable
     class Councillor: LeadershipRole() {
+
         @Transient
         override val roleName = RoleName.COUNCILLOR
         val loyaltyBonus
@@ -76,6 +85,7 @@ sealed class LeadershipRole: Cloneable {
     }
     @Embeddable
     class General: LeadershipRole() {
+
         @Transient
         override val roleName = RoleName.GENERAL
         val stabilityBonus
@@ -89,6 +99,7 @@ sealed class LeadershipRole: Cloneable {
     }
     @Embeddable
     class GrandDiplomat: LeadershipRole() {
+
         @Transient
         override val roleName = RoleName.GRAND_DIPLOMAT
         val stabilityBonus
@@ -99,6 +110,7 @@ sealed class LeadershipRole: Cloneable {
     }
     @Embeddable
     class HighPriest: LeadershipRole() {
+
         @Transient
         override val roleName = RoleName.HIGH_PRIEST
         val stabilityBonus
@@ -112,6 +124,7 @@ sealed class LeadershipRole: Cloneable {
     }
     @Embeddable
     class Magister: LeadershipRole() {
+
         @Transient
         override val roleName = RoleName.MAGISTER
         val economyBonus
@@ -122,6 +135,7 @@ sealed class LeadershipRole: Cloneable {
     }
     @Embeddable
     class Marshal: LeadershipRole() {
+
         @Transient
         override val roleName = RoleName.MARSHAL
         val economyBonus
@@ -132,6 +146,7 @@ sealed class LeadershipRole: Cloneable {
     }
     @Embeddable
     class RoyalEnforcer: LeadershipRole() {
+
         @Transient
         override val roleName = RoleName.ROYAL_ENFORCER
         val loyaltyBonus
@@ -142,6 +157,8 @@ sealed class LeadershipRole: Cloneable {
     }
     @Embeddable
     class Spymaster: LeadershipRole() {
+
+        @Column(name = "spymaster_score")
         var score: KingdomScore? = null
         @Transient
         override val roleName = RoleName.SPYMASTER
@@ -167,6 +184,7 @@ sealed class LeadershipRole: Cloneable {
     }
     @Embeddable
     class Treasurer: LeadershipRole() {
+
         @Transient
         override val roleName = RoleName.TREASURER
         val economyBonus
@@ -177,6 +195,7 @@ sealed class LeadershipRole: Cloneable {
     }
     @Embeddable
     class Warden: LeadershipRole() {
+
         @Transient
         override val roleName = RoleName.WARDEN
         val loyalty
@@ -195,6 +214,7 @@ sealed class LeadershipRole: Cloneable {
         @OneToOne
         val videroyOf: Kingdom
     ): LeadershipRole() {
+
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         var id: Long = 0

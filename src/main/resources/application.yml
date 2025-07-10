@@ -1,8 +1,10 @@
 management:
   endpoint:
+    health:
+      access: unrestricted
     metrics:
       access: unrestricted
-    health:
+    prometheus:
       access: unrestricted
   endpoints:
     web:
@@ -10,6 +12,7 @@ management:
         include:
           - health
           - metrics
+          - prometheus
 
 logging.level:
   org.springframework.security: info

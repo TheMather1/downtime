@@ -43,3 +43,4 @@ bin/
 /.idea/
 /src/main/resources/static/img/
 /Database_new.lock.db
+/src/main/resources/keystore/keystore.p12

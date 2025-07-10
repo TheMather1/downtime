@@ -3,10 +3,10 @@ version = "1.0"
 
 plugins {
     war
-    kotlin("jvm") version "2.0.21"
-    kotlin("plugin.jpa") version "2.0.21"
-    kotlin("plugin.spring") version "2.0.21"
-    id("org.springframework.boot") version "3.4.2"
+    kotlin("jvm") version "2.2.0"
+    kotlin("plugin.jpa") version "2.2.0"
+    kotlin("plugin.spring") version "2.2.0"
+    id("org.springframework.boot") version "3.5.3"
     id("io.spring.dependency-management") version "1.1.7"
 }
 
@@ -29,8 +29,8 @@ dependencies {
     implementation("com.h2database", "h2", "2.3.232")
 //    implementation("com.github.Hexworks", "mixite", "2020.1.0")
 //    implementation("org.hexworks.cobalt", "cobalt.datatypes-jvm", "2020.0.12-RELEASE")
-    implementation("javax.servlet", "jstl", "1.2")
-    implementation("net.dv8tion", "JDA", "5.2.1")
+    implementation("io.micrometer", "micrometer-registry-prometheus", "1.15.1")
+    implementation("net.dv8tion", "JDA", "5.6.1")
     implementation("no.mather.ttrpg", "dice-syntax", "0.2.0")
     implementation("org.springframework.boot", "spring-boot-starter-actuator")
     implementation("org.springframework.boot", "spring-boot-starter-data-jpa")
