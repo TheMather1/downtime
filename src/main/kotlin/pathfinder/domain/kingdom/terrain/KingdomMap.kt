@@ -58,9 +58,9 @@ class KingdomMap(
         }.toMap()
 
     val hexesAndNeighbors
-        get() = hexes.map { (k, v) ->
+        get() = hexes.takeUnless { it.isEmpty() }?.map { (k, v) ->
             v.neighborCoordinates + (k to v)
-        }.reduce { a, b -> a + b }
+        }?.reduce { a, b -> a + b } ?: mapOf(HexCoordinate(0,0,0) to null)
 
     fun rivers(z: Int) = RiverTracer(this, z).findRivers()
 

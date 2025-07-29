@@ -1,4 +1,3 @@
-<!--/*@thymesVar id="campaign" type="pathfinder.domain.Campaign"*/-->
 <div id="modal" _="on closeModal or keyup[key is 'Escape'] add .closing then wait for animationend then remove me"
      xmlns:th="http://www.thymeleaf.org">
     <div class="modal-underlay" _="on click or contextmenu trigger closeModal" oncontextmenu="return false;"></div>
@@ -11,15 +10,6 @@
             <input type="hidden" name="hexQ" th:value="${coordinate.q}"/>
             <input type="hidden" name="hexR" th:value="${coordinate.r}"/>
             <input type="hidden" name="hexZ" th:value="${coordinate.z}"/>
-            <label th:for="owner">Owner</label>
-            <select id="owner" name="owner">
-                <option th:value="${null}">None</option>
-                <option th:each="k : ${campaign.kingdoms}"
-                        th:value="${k.id}"
-                        th:text="${k.name}"
-                        th:selected="${k == hex?.owner}"/>
-            </select>
-            <br>
             <label th:for="terrain">Terrain</label>
             <select id="terrain"
                     name="terrain"

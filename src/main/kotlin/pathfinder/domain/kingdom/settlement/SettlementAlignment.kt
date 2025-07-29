@@ -42,4 +42,6 @@ enum class SettlementAlignment(
         crimeBonus = 1,
         corruptionBonus = 1
     );
+
+    val displayName = name.split('_').joinToString(" ") { it.lowercase().replaceFirstChar { it.uppercase() } }
 }

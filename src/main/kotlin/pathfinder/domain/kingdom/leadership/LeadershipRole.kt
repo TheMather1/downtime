@@ -31,13 +31,16 @@ sealed class LeadershipRole: Cloneable {
         @Transient
         override val roleName = RoleName.RULER
 
-        fun economyBonus(duties: RulerDuties) = if (performedDuty && duties.selected(KingdomScore.ECONOMY)) character?.abilityScores?.charisma?.bonus ?: 0
+        val bonus
+            get() = character?.abilityScores?.charisma?.bonus ?: 0
+
+        fun economyBonus(duties: RulerDuties) = if (performedDuty && duties.selected(KingdomScore.ECONOMY)) bonus
             else 0
 
-        fun loyaltyBonus(duties: RulerDuties) = if (performedDuty && duties.selected(KingdomScore.LOYALTY)) character?.abilityScores?.charisma?.bonus ?: 0
+        fun loyaltyBonus(duties: RulerDuties) = if (performedDuty && duties.selected(KingdomScore.LOYALTY)) bonus
             else 0
 
-        fun  stabilityBonus(duties: RulerDuties) = if (performedDuty && duties.selected(KingdomScore.STABILITY)) character?.abilityScores?.charisma?.bonus ?: 0
+        fun stabilityBonus(duties: RulerDuties) = if (performedDuty && duties.selected(KingdomScore.STABILITY)) bonus
             else 0
     }
 
@@ -49,16 +52,20 @@ sealed class LeadershipRole: Cloneable {
         @Column(name = "consort_co_ruler")
         var coRuler: Boolean = false
 
-        fun economyBonus(duties: RulerDuties) = if (coRuler && performedDuty && duties.selected(KingdomScore.ECONOMY)) character?.abilityScores?.charisma?.bonus ?: 0
+        val bonus
+            get() = if (coRuler) character?.abilityScores?.charisma?.bonus ?: 0
+                else character?.abilityScores?.charisma?.bonus?.div(2) ?: 0
+
+        fun economyBonus(duties: RulerDuties) = if (coRuler && performedDuty && duties.selected(KingdomScore.ECONOMY)) bonus
             else 0
 
         fun loyaltyBonus(duties: RulerDuties) = when {
-                !coRuler -> character?.abilityScores?.charisma?.bonus?.div(2) ?: 0
-                performedDuty && duties.selected(KingdomScore.LOYALTY) -> character?.abilityScores?.charisma?.bonus ?: 0
-                else -> 0
+                !performedDuty -> 0
+                coRuler && duties.selected(KingdomScore.LOYALTY) -> bonus
+                else -> bonus
             }
 
-        fun stabilityBonus(duties: RulerDuties) = if (performedDuty && duties.selected(KingdomScore.STABILITY)) character?.abilityScores?.charisma?.bonus ?: 0
+        fun stabilityBonus(duties: RulerDuties) = if (performedDuty && duties.selected(KingdomScore.STABILITY)) bonus
             else 0
 
     }

@@ -11,69 +11,93 @@
     <div class="window">
         <div class="container">
             <div th:replace="~{campaign_sidebar :: sidebar}"></div>
-            <header class="campaignDetails" th:replace="~{campaign_navbar :: navbar(page='settlements')}"></header>
-            <div class="contentWrapper">
-                <div class="content" th:if="${settlement} != null">
-                    <div class="settlement-details">
-                        <h2 th:text="${settlement.name}">Settlement Name</h2>
-
-                        <div class="settlement-info">
-                            <div class="basic-info">
-                                <p><strong>Type:</strong> <span th:text="${settlement.type}">THORP</span></p>
-                                <p><strong>Alignment:</strong> <span th:text="${settlement.alignment}">TRUE_NEUTRAL</span></p>
-                                <p><strong>Government:</strong> <span th:text="${settlement.government}">AUTOCRACY</span></p>
-                                <p><strong>Size:</strong> <span th:text="${settlement.size}">1</span> districts</p>
-                                <p><strong>Spellcasting:</strong> <span th:text="${settlement.spellcasting}">1</span></p>
-                            </div>
-
-                            <div class="settlement-stats">
-                                <h3>Settlement Statistics</h3>
-                                <div class="stats-grid">
-                                    <div class="stat-item">
-                                        <label>Corruption:</label>
-                                        <span th:text="${settlement.corruption}">0</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <label>Crime:</label>
-                                        <span th:text="${settlement.crime}">0</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <label>Law:</label>
-                                        <span th:text="${settlement.law}">0</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <label>Lore:</label>
-                                        <span th:text="${settlement.lore}">0</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <label>Productivity:</label>
-                                        <span th:text="${settlement.productivity}">0</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <label>Society:</label>
-                                        <span th:text="${settlement.society}">0</span>
+            <header class="navbarHeader" th:if="${campaign} != null" th:replace="~{campaign_navbar :: navbar(page='settlements')}"></header>
+            <div id="settlementWrapper" th:if="${campaign} != null" class="contentWrapper">
+                <header class="domainHeader">
+                    <nav class="navbar domainNavbar">
+                        <ul>
+                            <li th:each="s : ${campaign.settlements}">
+                                <a th:href="@{'/settlement/{settlementId}'(settlementId=${s.id})}" th:text="${s.name}" th:classappend="${settlement?.id == s.id} ? 'activeContent'"/>
+                            </li>
+                        </ul>
+                    </nav>
+                </header>
+                <div class="subcontentWrapper">
+                    <header class="subdomainHeader">
+                        <nav class="navbar subdomainNavbar">
+                            <ul>
+                                <li class="activeContent">
+                                    <a th:href="@{'/settlement/{settlementId}'(settlementId=${settlement.id})}">Index</a>
+                                </li>
+                                <li>
+                                    <a th:href="@{'/settlement/{settlementId}/map'(settlementId=${settlement.id})}">Map</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </header>
+                    <div class="content" th:if="${settlement} != null">
+                        <div class="settlement-details">
+                            <h1 th:text="${settlement.name}">Settlement Name</h1>
+                            <div class="settlement-info">
+                                <div class="basic-info">
+                                    <p><strong>Type:</strong> <th:block th:text="${settlement.type.displayName}"/></p>
+                                    <p><strong>Alignment:</strong> <th:block th:text="${settlement.alignment.displayName}"/></p>
+                                    <p><strong>Government:</strong> <th:block th:text="${settlement.government.displayName}"/></p>
+                                    <p><strong>Size:</strong> <th:block th:text="@{'{size} {noun}'(size=${settlement.size}, noun=${settlement.size == 1 ? 'district' : 'districts'})}"/></p>
+                                    <p><strong>Spellcasting:</strong> <th:block th:text="@{'{level}{numerator}'(
+                                    level=${settlement.spellcasting},
+                                    numerator=${settlement.spellcasting == 1 ? 'st' : (settlement.spellcasting == 2 ? 'nd' : (settlement.spellcasting == 3 ? 'rd' : 'th'))}
+                                )}"/></p>
+                                </div>
+                                <div class="settlement-stats">
+                                    <h3>Settlement Statistics</h3>
+                                    <div class="stats-grid">
+                                        <div class="stat-item">
+                                            <label>Corruption:</label>
+                                            <span th:text="${settlement.corruption}">0</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <label>Crime:</label>
+                                            <span th:text="${settlement.crime}">0</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <label>Law:</label>
+                                            <span th:text="${settlement.law}">0</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <label>Lore:</label>
+                                            <span th:text="${settlement.lore}">0</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <label>Productivity:</label>
+                                            <span th:text="${settlement.productivity}">0</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <label>Society:</label>
+                                            <span th:text="${settlement.society}">0</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="kingdom-stats">
-                                <h3>Kingdom Impact</h3>
-                                <div class="stats-grid">
-                                    <div class="stat-item">
-                                        <label>Consumption:</label>
-                                        <span th:text="${settlement.consumption}">0</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <label>Economy:</label>
-                                        <span th:text="${settlement.economy}">0</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <label>Loyalty:</label>
-                                        <span th:text="${settlement.loyalty}">0</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <label>Stability:</label>
-                                        <span th:text="${settlement.stability}">0</span>
+                                <div class="kingdom-stats">
+                                    <h3>Kingdom Impact</h3>
+                                    <div class="stats-grid">
+                                        <div class="stat-item">
+                                            <label>Consumption:</label>
+                                            <span th:text="${settlement.consumption}">0</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <label>Economy:</label>
+                                            <span th:text="${settlement.economy}">0</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <label>Loyalty:</label>
+                                            <span th:text="${settlement.loyalty}">0</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <label>Stability:</label>
+                                            <span th:text="${settlement.stability}">0</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

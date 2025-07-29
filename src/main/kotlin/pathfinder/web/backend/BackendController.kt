@@ -7,20 +7,24 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import pathfinder.domain.Campaign
 import pathfinder.domain.CampaignRepository
+import pathfinder.domain.kingdom.Kingdom
 import pathfinder.domain.kingdom.settlement.Settlement
 import pathfinder.domain.kingdom.terrain.KingdomMap
 import pathfinder.domain.kingdom.terrain.KingdomMapRepository
+import pathfinder.domain.kingdom.terrain.KingdomRepository
 import pathfinder.domain.kingdom.terrain.TerrainType
 import pathfinder.domain.kingdom.terrain.features.TerrainFeature
 import pathfinder.domain.kingdom.terrain.improvements.Improvement
 import pathfinder.domain.support.coordinate.HexCoordinate
 import pathfinder.service.generation.KingdomMapGenerator
 import pathfinder.web.security.DiscordUser
+import java.awt.Color
 
 @Controller
 @RequestMapping("/api")
 class BackendController(
     private val campaignRepository: CampaignRepository,
+    private val kingdomRepository: KingdomRepository,
     private val kingdomMapRepository: KingdomMapRepository,
     private val kingdomMapGenerator: KingdomMapGenerator
 ) {
@@ -36,6 +40,18 @@ class BackendController(
         logger.debug("Received campaign name $name")
         val campaign = campaignRepository.saveAndFlush(Campaign(name, user)) //Required to populate id
         return "redirect:/campaign/" + campaign.id
+    }
+
+    @PostMapping("/campaign/{campaign}/kingdom")
+    @Transactional
+    fun createKingdom(
+        @PathVariable("campaign") campaign: Campaign,
+        @RequestParam("name") name: String,
+        @RequestParam("mapColor") color: String
+    ): String {
+        logger.debug("Received kingdom name $name with map color $color")
+        val kingdom = kingdomRepository.saveAndFlush(Kingdom(campaign, name, Color.decode(color)))
+        return "redirect:/kingdom/${kingdom.id}"
     }
 
     @PostMapping("/campaign/{campaign}/map")
@@ -61,6 +77,7 @@ class BackendController(
         @PathVariable("map") map: KingdomMap,
         @RequestParam("hexQ") q: Int,
         @RequestParam("hexR") r: Int,
+        @RequestParam("owner") owner: Kingdom?,
         @RequestParam("terrain") terrainType: TerrainType,
         @RequestParam("feature", required = false, defaultValue = "") features: Set<TerrainFeature>,
         @RequestParam("improvement", required = false, defaultValue = "") improvements: Set<Improvement>,
@@ -69,6 +86,7 @@ class BackendController(
     ): String {
         map.update(HexCoordinate(q, r, 0)) { hex ->
             hex.rawTerrain = terrainType
+            hex.owner = owner
             hex.terrainFeatures.replaceAll(features)
             hex.improvements.replaceAll(improvements)
             if((Improvement.ROAD in improvements || Improvement.HIGHWAY in improvements)
@@ -98,9 +116,12 @@ class BackendController(
         map.update(coordinate) {
             it.settlement = Settlement(it, name)
         }
-        val settlement = kingdomMapRepository.saveAndFlush(map).get(coordinate)!!.settlement!!
+        val settlement = kingdomMapRepository.saveAndFlush(map)[coordinate]!!.settlement!!
         return "redirect:/settlement/${settlement.id}"
     }
 
-    fun <E> MutableSet<E>.replaceAll(values: Set<E>) = addAll(values) || retainAll(values)
+    fun <E> MutableSet<E>.replaceAll(values: Set<E>) {
+        removeAll { it !in values }
+        addAll(values)
+    }
 }

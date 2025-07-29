@@ -7,91 +7,104 @@
     <link rel="stylesheet" type="text/css" th:href="@{/styles/map.css}"/>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://bumbu.me/svg-pan-zoom/dist/svg-pan-zoom.js"></script>
-    <script src="/js/form_handler.js"></script>
-    <script src="/js/hexmap.js"></script>
+    <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.14"></script>
 </head>
 <body>
 <div class="wrapper">
     <div class="window">
         <div class="container">
             <div th:replace="~{campaign_sidebar :: sidebar}"></div>
-            <header class="navbarHeader" th:if="${campaign} != null" th:replace="~{campaign_navbar :: navbar(page='maps')}"></header>
+            <header class="navbarHeader" th:if="${campaign} != null" th:replace="~{campaign_navbar :: navbar(page='settlements')}"></header>
+            <!--/*@thymesVar id="campaign" type="pathfinder.domain.Campaign"*/-->
+            <!--/*@thymesVar id="settlement" type="pathfinder.domain.kingdom.settlement.Settlement"*/-->
             <div th:if="${campaign} != null" class="contentWrapper">
-                <header class="mapsHeader">
-                    <nav class="mapsNavbar">
+                <header class="domainHeader">
+                    <nav class="navbar domainNavbar">
                         <ul>
-                            <li th:each="m : ${#lists.sort(campaign.maps)}" th:classappend="${map?.id == m.id} ? 'activeContent'">
-                                <a th:href="@{'/map/{mapId}'(mapId=${m.id})}" th:text="${m.name}"/>
-                            </li>
-                            <li>
-                                <a id="newMapTab" class="formOpen" onclick="$('#newMapModal').show()">
-                                    +
-                                </a>
+                            <li th:each="s : ${campaign.settlements}" th:classappend="${settlement?.id == s.id} ? 'activeContent'">
+                                <a th:href="@{'/settlement/{settlementId}'(settlementId=${s.id})}" th:text="${s.name}"/>
                             </li>
                         </ul>
                     </nav>
                 </header>
-                <div class="pagedContent" th:if="${settlementMap} != null">
-                    <div id="settlementMapSidebar" style="display: none">
-                        <div class="settlementForm">
-                            <form id="settlementForm" th:action="@{'/api/map/{mapId}'(mapId = ${map.id})}" method="post">
-                                <label for="lotX">Coordinate X</label>
-                                <input name="lotX" id="lotX" class="lotX" type="number" multiple readonly>
-                                <br>
-                                <label for="lotY">Coordinate Y</label>
-                                <input name="lotY" id="lotY" class="lotY" type="number" multiple readonly>
-                                <br>
-                                <label for="lotCount">Number of lots</label>
-                                <input name="lotCount" id="lotCount" class="lotCount" type="number" readonly onchange="
-                                    let buildings = /*[${T(pathfinder.domain.kingdom.settlement.buildings.LotBuildingType).entries]*/ [];
-                                    buildings.forEach(building => {
-                                        if(building.size === 'NORMAL' && value !== 1) $(`#${building}Option`).prop('disabled', true)
-                                        else if(building.size === 'NORMAL_OR_LARGE' && (value !== 1 || value !== 2)) $(`#${building}Option`).prop('disabled', true)
-                                        else if(building.size === 'LARGE' && value !== 2) $(`#${building}Option`).prop('disabled', true)
-                                        else if(building.size === 'HUGE' && value !== 4) $(`#${building}Option`).prop('disabled', true)
-                                        else $(`#${building}Option`).prop('disabled', false);
-                                    })
-                                ">
-                                <br>
-                                <label for="lotBuilding">Terrain</label>
-                                <select name="building" id="lotBuilding">
-                                    <option th:each="type : ${T(pathfinder.domain.kingdom.settlement.buildings.LotBuildingType).entries}" th:value="${type}" th:text="${type}" th:id="${type}Option"/>
-                                </select>
-                                <br>
-<!--                                <select name="upgrade"-->
-                                <label for="visibleText">Visible Text</label>
-                                <textarea id="visibleText" name="visibleText" cols="20" rows="5"></textarea>
-                                <br>
-                                <label for="hiddenText">Hidden Text</label>
-                                <textarea id="hiddenText" name="hiddenText" cols="20" rows="5"></textarea>
-                                <br>
-                                <input class="inputButton" type="submit" value="Edit hex"/>
-                            </form>
-                        </div>
-                        <hr>
-                        <div id="settlementField">
-                            <button id="newSettlementButton" class="inputButton formOpen" type="button" onclick="$('#newSettlementModal').show()" style="display: none">
-                                New Settlement
-                            </button>
-                            <a id="settlementLink" style="display: none"></a>
-                        </div>
+                <div class="subcontentWrapper">
+                    <header class="subdomainHeader">
+                        <nav class="navbar subdomainNavbar">
+                            <ul>
+                                <li>
+                                    <a th:href="@{'/settlement/{settlementId}'(settlementId=${settlement.id})}">Index</a>
+                                </li>
+                                <li class="activeContent">
+                                    <a th:href="@{'/settlement/{settlementId}/map'(settlementId=${settlement.id})}">Map</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </header>
+                    <!--/*@thymesVar id="settlementMap" type="pathfinder.web.frontend.dto.settlement.SettlementMapConfig"*/-->
+                    <div class="pagedContent" th:if="${settlementMap} != null">
+                    <div id="mapView" class="mapView">
+                        <svg id="svgMap"
+                             height="100%"
+                             width="100%"
+                             oncontextmenu="return false;"
+                        >
+                            <g id="mapViewport"
+                               class="svg-pan-zoom_viewport">
+                                <g id="borders">
+                                    <polygon class="border"
+                                             th:each="border: ${settlementMap.borders}"
+                                             th:district="${border.districtId}"
+                                             th:points="${border.pointsString}"
+                                             th:borderType="${border.borderType}"
+                                    />
+                                </g>
+                                <g id="streets">
+                                    <rect th:each="street: ${settlementMap.streets}"
+                                          th:district="${street.districtId}"
+                                          th:x="${street.x}"
+                                          th:y="${street.y}"
+                                          th:width="${street.width}"
+                                          th:height="${street.height}"
+                                          th:class="${street.paved ? 'pavedStreets' : 'dirtStreets'}"
+                                    />
+                                </g>
+                                <g id="emptyLots">
+                                    <rect class="emptyLot" th:each="lot: ${settlementMap.emptyLots}"
+                                          th:district="${lot.districtId}"
+                                          th:lotX="${lot.lotX}"
+                                          th:lotY="${lot.lotY}"
+                                          th:x="${lot.x}"
+                                          th:y="${lot.y}"
+                                          th:width="${lot.width}"
+                                          th:height="${lot.height}"
+                                          th:class="emptyLot"/>
+                                </g>
+                                <g id="buildings">
+                                    <rect class="building" th:each="building: ${settlementMap.buildings}"
+                                          th:buildingId="${building.building}"
+                                          th:district="${building.districtId}"
+                                          th:x="${building.x}"
+                                          th:y="${building.y}"
+                                          th:width="${building.width}"
+                                          th:height="${building.height}"
+                                          th:buildingType="${building.buildingType.name}"/>
+                                </g>
+                            </g>
+                        </svg>
+                        <script th:inline="javascript">
+                            svgPanZoom('#svgMap', {
+                                dblClickZoomEnabled: false,
+                                minZoom: 0.1
+                            });
+                        </script>
                     </div>
-                    <div id="mapView" class="mapView"></div>
+                </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<th:block th:if="${map != null}">
-    <script th:inline="javascript">
-        let offsetX = /*[[${map.offsetX}]]*/ 0;
-        let offsetY = /*[[${map.offsetY}]]*/ 0;
-        let mapData = /*[[${map.mapData}]]*/ null;
-        let campaignId = /*[[${campaign.id}]]*/ 0;
-
-        $('#mapView').addMap(campaignId, true, offsetX, offsetY, mapData);
-    </script>
-</th:block>
 <th:block th:replace="~{tags/forms :: forms}"/>
 </body>
 </html>

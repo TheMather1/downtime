@@ -10,19 +10,18 @@
     <script src="https://bumbu.me/svg-pan-zoom/dist/svg-pan-zoom.js"></script>
     <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/hyperscript.org@0.9.14"></script>
-    <script th:src="@{/js/debug.js}"></script>
 </head>
 <body>
 <!--/*@thymesVar id="config" type="pathfinder.web.frontend.dto.MapConfig"*/-->
-<!--/*@thymesVar id="map" type="pathfinder.domain.kingdom.terrain.KingdomMap"*/-->
+<!--/*@thymesVar id="kingdomMap" type="pathfinder.domain.kingdom.terrain.KingdomMap"*/-->
 <div class="wrapper">
     <div class="window">
         <div class="container">
             <div th:replace="~{campaign_sidebar :: sidebar}"></div>
             <header class="navbarHeader" th:if="${campaign} != null" th:replace="~{campaign_navbar :: navbar(page='maps')}"></header>
             <div id="mapWrapper" th:if="${campaign} != null" class="contentWrapper">
-                <header class="mapsHeader">
-                    <nav class="mapsNavbar">
+                <header class="domainHeader">
+                    <nav class="navbar domainNavbar">
                         <ul>
                             <li th:each="m : ${#lists.sort(campaign.maps)}" th:classappend="${map?.id == m.id} ? 'activeContent'">
                                 <a th:href="@{'/map/{mapId}'(mapId=${m.id})}" th:text="${m.name}"/>
@@ -126,17 +125,22 @@
                                             th:href="@{'/img/Ocean/Ocean005.png'}"
                                     />
                                 </pattern>
+                                <filter th:each="k: ${campaign.kingdoms}" th:id="@{'kingdom{kingdomId}'(kingdomId=${k.id})}">
+                                    <feFlood th:flood-color="${k.hexColor}" result="kingdomColor" flood-opacity="0.2"/>
+                                    <feComposite in="kingdomColor" in2="SourceGraphic" operator="atop" />
+                                </filter>
                             </defs>
                             <g id="mapViewport"
                                class="svg-pan-zoom_viewport">
                                 <g id="hexContainer" th:transform="${config.mapTransform}">
-                                    <g th:each="entry: ${map.hexesAndNeighbors}"
+                                    <g th:each="entry: ${kingdomMap.hexesAndNeighbors}"
                                        th:if="${entry.key.z == config.z}"
                                        oncontextmenu="return false;"
                                        hx-trigger="contextmenu consume"
                                        hx-target="#mapWrapper"
                                        hx-swap="beforeend"
-                                       th:hx-get="@{'/map/{mapId}/hex?q={q}&r={r}&z={z}'(mapId = ${map.id}, q = ${entry.key.q}, r = ${entry.key.r}, z = ${entry.key.z})}">
+                                       th:hx-get="@{'/map/{mapId}/hex?q={q}&r={r}&z={z}'(mapId = ${kingdomMap.id}, q = ${entry.key.q}, r = ${entry.key.r}, z = ${entry.key.z})}"
+                                       th:attr="filter=${entry.value?.owner != null} ? 'url(#kingdom' + ${entry.value.owner.id} + ')'">
                                         <title th:text="${entry.value?.tooltip ?: entry.key.axialKey}"/>
                                         <polygon class="mapHex"
                                                  th:terrain="${entry.value?.rawTerrain ?: 'null'}"
@@ -156,8 +160,8 @@
                                     </g>
                                 </g>
                                 <g id="riverContainer" pointer-events="none" th:transform="${config.mapTransform}">
-                                    <path th:each="entry: ${map.rivers(config.z)}"
-                                          th:d="${config.processRiverPath(entry, map.hexes, true, null, null)}"
+                                    <path th:each="entry: ${kingdomMap.rivers(config.z)}"
+                                          th:d="${config.processRiverPath(entry, kingdomMap.hexes, true, null, null)}"
                                           fill="none"
                                           stroke="#4a90e2"
                                           th:stroke-width="${config.circumradius * config.riverWidth}"
@@ -166,7 +170,7 @@
                                     />
                                 </g>
                                 <g id="roadContainer" pointer-events="none" th:transform="${config.mapTransform}">
-                                    <path th:each="entry: ${map.roads(config.z)}"
+                                    <path th:each="entry: ${kingdomMap.roads(config.z)}"
                                           th:d="${config.processRoadPath(entry)}"
                                           fill="none"
                                           stroke="#daa06d"
@@ -176,7 +180,7 @@
                                     />
                                 </g>
                                 <g id="settlementContainer" pointer-events="none" th:transform="${config.mapTransform}">
-                                    <g th:each="entry: ${map.settlements}"
+                                    <g th:each="entry: ${kingdomMap.settlements}"
                                        th:transform="${config.hexTransform(entry.hex.coordinate)}">
                                         <image th:href="@{'/img/Settlement/{type}.svg'(type=${entry.type.displayName})}"
                                                th:height="${config.circumradius}"
@@ -194,7 +198,7 @@
                                 hx-trigger="every 10s"
                                 hx-target="#mapViewport"
                                 hx-select="svg > g"
-                                th:hx-get="@{'/map/{mapId}/template'(mapId = ${map.id})}">
+                                th:hx-get="@{'/map/{mapId}/template'(mapId = ${kingdomMap.id})}">
                             svgPanZoom('#svgMap', {
                                 dblClickZoomEnabled: false,
                                 minZoom: 0.1

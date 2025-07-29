@@ -1,3 +1,6 @@
+logging.level:
+  org.springframework.security: info
+
 management:
   endpoint:
     health:
@@ -13,9 +16,6 @@ management:
           - health
           - metrics
           - prometheus
-
-logging.level:
-  org.springframework.security: info
 
 server:
   port: ${PORT:8080}

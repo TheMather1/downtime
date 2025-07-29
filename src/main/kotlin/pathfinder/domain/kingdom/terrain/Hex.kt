@@ -29,7 +29,7 @@ data class Hex(
     @Enumerated(EnumType.STRING)
     val improvements: MutableSet<Improvement> = mutableSetOf()
     @ManyToOne
-    val owner: Kingdom? = null
+    var owner: Kingdom? = null
     @OneToOne(mappedBy = "hex", cascade = [CascadeType.ALL], orphanRemoval = true)
     var settlement: Settlement? = null
     var freetextVisible = ""
@@ -177,7 +177,7 @@ data class Hex(
     val tooltip: String
         get() {
             var string = "[${coordinate.axialKey}] ${rawTerrain.displayName}"
-            if (owner != null) string += "\nOwned by: ${owner.name}"
+            owner?.let { string += "\nOwned by: ${it.name}" }
             if (settlement != null) string += "\nSettlement: ${settlement!!.name} - ${settlement!!.type.displayName}"
             if (terrainFeatures.isNotEmpty()) string += "\nTerrain features: ${terrainFeatures.joinToString(", ") { it.displayName}}"
             if (improvements.isNotEmpty()) string += "\nImprovements: ${improvements.joinToString(", ") { it.displayName }}"

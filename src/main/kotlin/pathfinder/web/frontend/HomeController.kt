@@ -1,6 +1,5 @@
 package pathfinder.web.frontend
 
-import net.dv8tion.jda.api.JDA
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
@@ -9,7 +8,7 @@ import pathfinder.domain.CampaignRepository
 
 @Controller
 @RequestMapping("/home")
-class HomeController(jda: JDA, campaignRepository: CampaignRepository): FrontendController(jda, campaignRepository) {
+class HomeController(override val campaignRepository: CampaignRepository): FrontendController {
 
     private val logger = LoggerFactory.getLogger(this.javaClass)
 

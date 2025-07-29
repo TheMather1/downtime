@@ -1,18 +1,19 @@
 package pathfinder.web.frontend
 
-import net.dv8tion.jda.api.JDA
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Controller
+import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import pathfinder.domain.CampaignRepository
 import pathfinder.domain.kingdom.settlement.Settlement
+import pathfinder.web.frontend.dto.settlement.SettlementMapConfig
 
 @Controller
 @RequestMapping("/settlement/{settlement}")
-class SettlementController(jda: JDA, campaignRepository: CampaignRepository): FrontendController(jda, campaignRepository) {
+class SettlementController(override val campaignRepository: CampaignRepository): FrontendController {
 
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
@@ -32,5 +33,14 @@ class SettlementController(jda: JDA, campaignRepository: CampaignRepository): Fr
     ) = settlement.hex.map.campaign
 
     @GetMapping
-    fun mapView() = "settlements/settlement"
+    fun indexView() = "settlements/settlement"
+
+    @GetMapping("/map")
+    fun mapView(
+        settlement: Settlement,
+        model: Model
+    ): String {
+        model.addAttribute("settlementMap", SettlementMapConfig(districts = settlement.districts))
+        return "settlements/map"
+    }
 }

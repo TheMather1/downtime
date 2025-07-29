@@ -33,4 +33,6 @@ enum class SettlementGovernment(
         productivityBonus = 2,
         lawBonus = -6
     );
+
+    val displayName = name.split('_').joinToString(" ") { it.lowercase().replaceFirstChar { it.uppercase() } }
 }

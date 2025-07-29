@@ -9,12 +9,16 @@ import pathfinder.domain.kingdom.settlement.buildings.LotBuildingType.FOUNDRY
 import pathfinder.domain.kingdom.settlement.buildings.LotBuildingType.STOCKYARD
 import pathfinder.domain.kingdom.terrain.Hex
 import pathfinder.domain.kingdom.terrain.improvements.Improvement.*
+import pathfinder.domain.support.jpa.ColorConverter
+import java.awt.Color
 
 @Entity
 class Kingdom(
     @ManyToOne
     val campaign: Campaign,
-    var name: String
+    var name: String,
+    @Convert(converter = ColorConverter::class)
+    var color: Color
 ): Comparable<Kingdom> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,6 +49,11 @@ class Kingdom(
 
     val earningsBonus
         get() = hexEarnings
+
+    var granary: Int = 0
+        set(value) {
+            field = value.coerceAtMost(settlements.sumOf { it.granaryCapacity })
+        }
 
     val consumption
         get() = settlements.sumOf(Settlement::consumption) +
@@ -132,6 +141,9 @@ class Kingdom(
 
     val controlDC
         get() = 20 + size + settlements.sumOf { it.districts.size }
+
+    val hexColor
+        get() = "#" + Integer.toHexString(color.rgb and 0xffffff)
 
 
     override fun compareTo(other: Kingdom): Int {

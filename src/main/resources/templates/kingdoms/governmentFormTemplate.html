@@ -1,0 +1,237 @@
+<!--/*@thymesVar id="kingdom" type="pathfinder.domain.kingdom.Kingdom"*/-->
+<!--/*@thymesVar id="campaign" type="pathfinder.domain.Campaign"*/-->
+<!--/*@thymesVar id="government" type="pathfinder.domain.kingdom.leadership.Government"*/-->
+<div id="modal" _="on closeModal or keyup[key is 'Escape'] add .closing then wait for animationend then remove me"
+     xmlns:th="http://www.thymeleaf.org">
+    <div class="modal-underlay" _="on click or contextmenu trigger closeModal" oncontextmenu="return false;"></div>
+    <div class="modal-content">
+        <header class="modal-header" th:text="@{'{kingdomName} government'(kingdomName = ${kingdom.name})}"></header>
+        <form id="governmentForm"
+              th:hx-patch="@{'/kingdom/{kingdomId}/government'(kingdomId = ${kingdom.id})}"
+              hx-trigger="change"
+              hx-target="#governmentForm"
+              hx-select="#governmentForm > select">
+            <label for="ruler">Ruler</label>
+            <select id="ruler" name="ruler">
+                <option th:value="${null}" th:text="${''}"/>
+                <option th:if="${government.ruler.character != null}" th:text="${government.ruler.character.name}" th:value="${government.ruler.character.id}" selected="selected"/>
+                <option th:each="character : ${campaign.characters}"
+                        th:unless="${#lists.contains(government.characters, character)}"
+                        th:text="${character.name}"
+                        th:value="${character.id}"
+                        th:selected="${character == government.ruler}"
+                />
+            </select>
+            <label for="rulerFirstDuty">First score</label>
+            <select id="rulerFirstDuty" name="rulerFirstDuty">
+                <option th:value="${null}" th:text="${''}"/>
+                <option th:each="score : ${T(pathfinder.domain.kingdom.KingdomScore).values()}"
+                        th:text="${score}"
+                        th:value="${score}"
+                        th:selected="${score == government.rulerDuties.firstScore}"
+                />
+            </select>
+            <label for="rulerSecondDuty">Second score</label>
+            <select id="rulerSecondDuty" name="rulerSecondDuty" th:disabled="${kingdom.size <= 25}">
+                <option th:value="${null}" th:text="${''}"/>
+                <option th:each="score : ${T(pathfinder.domain.kingdom.KingdomScore).values()}"
+                        th:text="${score}"
+                >
+            </select>
+            <label for="rulerThirdDuty">Third score</label>
+            <select id="rulerThirdDuty" name="rulerThirdDuty" th:disabled="${kingdom.size <= 100}">
+                <option th:value="${null}" th:text="${''}"/>
+                <option th:each="score : ${T(pathfinder.domain.kingdom.KingdomScore).values()}">
+            </select>
+            <label for="rulerPerformedDuty">Performed duty</label>
+            <input id="rulerPerformedDuty" name="rulerPerformedDuty" type="checkbox" th:disabled="${government.ruler.character == null}" th:checked="${government.ruler.performedDuty}"/>
+            <br>
+            <label for="consort">Consort</label>
+            <select id="consort" name="consort">
+                <option th:value="${null}" th:text="${''}"/>
+                <option th:if="${government.consort.character != null}" th:text="${government.consort.character.name}" th:value="${government.consort.character.id}" selected="selected"/>
+                <option th:each="character : ${campaign.characters}"
+                        th:unless="${#lists.contains(government.characters, character)}"
+                        th:text="${character.name}"
+                        th:value="${character.id}"
+                        th:selected="${character == government.consort}"
+                />
+            </select>
+            <label for="coRuler">Co-ruler</label>
+            <input id="coRuler" name="coRuler" type="checkbox" th:disabled="${government.consort.character == null}" th:checked="${government.consort.coRuler}"/>
+            <label for="consortPerformedDuty">Performed duty</label>
+            <input id="consortPerformedDuty" name="consortPerformedDuty" type="checkbox" th:disabled="${government.consort.character == null}" th:checked="${government.consort.performedDuty}"/>
+            <br>
+            <label for="heir">Heir</label>
+            <select id="heir" name="heir">
+                <option th:value="${null}" th:text="${''}"/>
+                <option th:if="${government.heir.character != null}" th:text="${government.heir.character.name}" th:value="${government.heir.character.id}" selected="selected"/>
+                <option th:each="character : ${campaign.characters}"
+                        th:unless="${#lists.contains(government.characters, character)}"
+                        th:text="${character.name}"
+                        th:value="${character.id}"
+                        th:selected="${character == government.heir}"
+                />
+            </select>
+            <label for="heirPerformedDuty">Performed duty</label>
+            <input id="heirPerformedDuty" name="heirPerformedDuty" type="checkbox" th:disabled="${government.heir.character == null}" th:checked="${government.heir.performedDuty}"/>
+            <br>
+            <label for="councillor">Councillor</label>
+            <select id="councillor" name="councillor">
+                <option th:value="${null}" th:text="${''}"/>
+                <option th:if="${government.councillor.character != null}" th:text="${government.councillor.character.name}" th:value="${government.councillor.character.id}" selected="selected"/>
+                <option th:each="character : ${campaign.characters}"
+                        th:unless="${#lists.contains(government.characters, character)}"
+                        th:text="${character.name}"
+                        th:value="${character.id}"
+                        th:selected="${character == government.councillor}"
+                />
+            </select>
+            <label for="councillorPerformedDuty">Performed duty</label>
+            <input id="councillorPerformedDuty" name="councillorPerformedDuty" type="checkbox" th:disabled="${government.councillor.character == null}" th:checked="${government.councillor.performedDuty}"/>
+            <br>
+            <label for="general">General</label>
+            <select id="general" name="general">
+                <option th:value="${null}" th:text="${''}"/>
+                <option th:if="${government.general.character != null}" th:text="${government.general.character.name}" th:value="${government.general.character.id}" selected="selected"/>
+                <option th:each="character : ${campaign.characters}"
+                        th:unless="${#lists.contains(government.characters, character)}"
+                        th:text="${character.name}"
+                        th:value="${character.id}"
+                        th:selected="${character == government.general}"
+                />
+            </select>
+            <label for="generalPerformedDuty">Performed duty</label>
+            <input id="generalPerformedDuty" name="generalPerformedDuty" type="checkbox" th:disabled="${government.general.character == null}" th:checked="${government.general.performedDuty}"/>
+            <br>
+            <label for="grandDiplomat">Grand Diplomat</label>
+            <select id="grandDiplomat" name="grandDiplomat">
+                <option th:value="${null}" th:text="${''}"/>
+                <option th:if="${government.grandDiplomat.character != null}" th:text="${government.grandDiplomat.character.name}" th:value="${government.grandDiplomat.character.id}" selected="selected"/>
+                <option th:each="character : ${campaign.characters}"
+                        th:unless="${#lists.contains(government.characters, character)}"
+                        th:text="${character.name}"
+                        th:value="${character.id}"
+                        th:selected="${character == government.grandDiplomat}"
+                />
+            </select>
+            <label for="grandDiplomatPerformedDuty">Performed duty</label>
+            <input id="grandDiplomatPerformedDuty" name="grandDiplomatPerformedDuty" type="checkbox" th:disabled="${government.grandDiplomat.character == null}" th:checked="${government.grandDiplomat.performedDuty}"/>
+            <br>
+            <label for="highPriest">High Priest</label>
+            <select id="highPriest" name="highPriest">
+                <option th:value="${null}" th:text="${''}"/>
+                <option th:if="${government.highPriest.character != null}" th:text="${government.highPriest.character.name}" th:value="${government.highPriest.character.id}" selected="selected"/>
+                <option th:each="character : ${campaign.characters}"
+                        th:unless="${#lists.contains(government.characters, character)}"
+                        th:text="${character.name}"
+                        th:value="${character.id}"
+                        th:selected="${character == government.highPriest}"
+                >
+            </select>
+            <label for="highPriestPerformedDuty">Performed duty</label>
+            <input id="highPriestPerformedDuty" name="highPriestPerformedDuty" type="checkbox" th:disabled="${government.highPriest.character == null}" th:checked="${government.highPriest.performedDuty}"/>
+            <br>
+            <label for="magister">Magister</label>
+            <select id="magister" name="magister">
+                <option th:value="${null}" th:text="${''}"/>
+                <option th:if="${government.magister.character != null}" th:text="${government.magister.character.name}" th:value="${government.magister.character.id}" selected="selected"/>
+                <option th:each="character : ${campaign.characters}"
+                        th:unless="${#lists.contains(government.characters, character)}"
+                        th:text="${character.name}"
+                        th:value="${character.id}"
+                        th:selected="${character == government.magister}"
+                >
+            </select>
+            <label for="magisterPerformedDuty">Performed duty</label>
+            <input id="magisterPerformedDuty" name="magisterPerformedDuty" type="checkbox" th:disabled="${government.magister.character == null}" th:checked="${government.magister.performedDuty}"/>
+            <br>
+            <label for="marshal">Marshal</label>
+            <select id="marshal" name="marshal">
+                <option th:value="${null}" th:text="${''}"/>
+                <option th:if="${government.marshal.character != null}" th:text="${government.marshal.character.name}" th:value="${government.marshal.character.id}" selected="selected"/>
+                <option th:each="character : ${campaign.characters}"
+                        th:unless="${#lists.contains(government.characters, character)}"
+                        th:text="${character.name}"
+                        th:value="${character.id}"
+                        th:selected="${character == government.marshal}"
+                />
+            </select>
+            <label for="marshalPerformedDuty">Performed duty</label>
+            <input id="marshalPerformedDuty" name="marshalPerformedDuty" type="checkbox" th:disabled="${government.marshal.character == null}" th:checked="${government.marshal.performedDuty}"/>
+            <br>
+            <label for="royalEnforcer">Royal Enforcer</label>
+            <select id="royalEnforcer" name="royalEnforcer">
+                <option th:value="${null}" th:text="${''}"/>
+                <option th:if="${government.royalEnforcer.character != null}" th:text="${government.royalEnforcer.character.name}" th:value="${government.royalEnforcer.character.id}" selected="selected"/>
+                <option th:each="character : ${campaign.characters}"
+                        th:unless="${#lists.contains(government.characters, character)}"
+                        th:text="${character.name}"
+                        th:value="${character.id}"
+                        th:selected="${character == government.royalEnforcer}"
+                >
+            </select>
+            <label for="royalEnforcerPerformedDuty">Performed duty</label>
+            <input id="royalEnforcerPerformedDuty" name="royalEnforcerPerformedDuty" type="checkbox" th:disabled="${government.royalEnforcer.character == null}" th:checked="${government.royalEnforcer.performedDuty}"/>
+            <br>
+            <label for="spymaster">Spymaster</label>
+            <select id="spymaster" name="spymaster">
+                <option th:value="${null}" th:text="${''}"/>
+                <option th:if="${government.spymaster.character != null}" th:text="${government.spymaster.character.name}" th:value="${government.spymaster.character.id}" selected="selected"/>
+                <option th:each="character : ${campaign.characters}"
+                        th:unless="${#lists.contains(government.characters, character)}"
+                        th:text="${character.name}"
+                        th:value="${character.id}"
+                        th:selected="${character == government.spymaster}"
+                >
+            </select>
+            <label for="spymasterDuty">Score</label>
+            <select id="spymasterDuty" name="spymasterDuty">
+                <option th:value="${null}" th:text="${''}"/>
+                <option th:each="score : ${T(pathfinder.domain.kingdom.KingdomScore).values()}"
+                        th:text="${score}"
+                        th:value="${score}"
+                        th:selected="${score == government.spymaster.score}"
+                />
+            </select>
+            <label for="spymasterPerformedDuty">Performed duty</label>
+            <input id="spymasterPerformedDuty" name="spymasterPerformedDuty" type="checkbox" th:disabled="${government.spymaster.character == null}" th:checked="${government.spymaster.performedDuty}"/>
+            <br>
+            <label for="treasurer">Treasurer</label>
+            <select id="treasurer" name="treasurer">
+                <option th:value="${null}" th:text="${''}"/>
+                <option th:if="${government.treasurer.character != null}" th:text="${government.treasurer.character.name}" th:value="${government.treasurer.character.id}" selected="selected"/>
+                <option th:each="character : ${campaign.characters}"
+                        th:unless="${#lists.contains(government.characters, character)}"
+                        th:text="${character.name}"
+                        th:value="${character.id}"
+                        th:selected="${character == government.treasurer}"
+                >
+            </select>
+            <label for="treasurerPerformedDuty">Performed duty</label>
+            <input id="treasurerPerformedDuty" name="treasurerPerformedDuty" type="checkbox" th:disabled="${government.treasurer.character == null}" th:checked="${government.treasurer.performedDuty}"/>
+            <br>
+            <label for="warden">Warden</label>
+            <select id="warden" name="warden">
+                <option th:value="${null}" th:text="${''}"/>
+                <option th:if="${government.warden.character != null}" th:text="${government.warden.character.name}" th:value="${government.warden.character.id}" selected="selected"/>
+                <option th:each="character : ${campaign.characters}"
+                        th:unless="${#lists.contains(government.characters, character)}"
+                        th:text="${character.name}"
+                        th:value="${character.id}"
+                        th:selected="${character == government.warden}"
+                >
+            </select>
+            <label for="wardenPerformedDuty">Performed duty</label>
+            <input id="wardenPerformedDuty" name="wardenPerformedDuty" type="checkbox" th:disabled="${government.warden.character == null}" th:checked="${government.warden.performedDuty}"/>
+            <br>
+            <input class="inputButton"
+                   th:hx-put="@{'/kingdom/{kingdomId}/government'(kingdomId = ${kingdom.id})}"
+                   hx-target="body"
+                   hx-select="body"
+                   type="submit"
+                   value="Edit hex"/>
+            <input class="stopButton" type="button" value="Close" _="on click trigger closeModal"/>
+        </form>
+    </div>
+</div>

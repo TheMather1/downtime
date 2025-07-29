@@ -95,3 +95,31 @@
 .mapHex[terrain="CAVERN"] {
     fill: saddlebrown;
 }
+
+.border[borderType="land"] {
+    fill: green;
+}
+
+.border[borderType="water"] {
+    fill: blue;
+}
+
+.border[borderType="wall"] {
+    fill: dimgray;
+}
+
+.pavedStreets {
+    fill: grey;
+}
+
+.dirtStreets {
+    fill: saddlebrown;
+}
+
+.emptyLot {
+    fill: lawngreen;
+}
+
+.building {
+    fill: saddlebrown;
+}

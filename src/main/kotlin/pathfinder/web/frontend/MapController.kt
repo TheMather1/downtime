@@ -1,6 +1,5 @@
 package pathfinder.web.frontend
 
-import net.dv8tion.jda.api.JDA
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -13,7 +12,7 @@ import pathfinder.web.frontend.dto.MapConfig
 
 @Controller
 @RequestMapping("/map/{map}")
-class MapController(jda: JDA, campaignRepository: CampaignRepository): FrontendController(jda, campaignRepository) {
+class MapController(override val campaignRepository: CampaignRepository): FrontendController {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 

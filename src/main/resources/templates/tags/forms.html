@@ -39,13 +39,33 @@
     <div id="newSettlementModal" class="formModal" th:if="${map != null}">
         <div class="formModal-content">
             <span class="settlementFormClose" onclick="$('#newSettlementModal').hide()">&times;</span>
-            <form name="NewSettlementForm" th:action="@{'/api/map/{mapId}/settlement'(mapId = ${map.id})}" method="post">
+            <form name="NewSettlementForm" th:action="@{'/api/campaign/{campaignId}/settlement'(campaignId = ${campaign.id})}" method="post">
                 <input type="hidden" class="hexQ" name="hexQ" value=""/>
                 <input type="hidden" class="hexR" name="hexR" value=""/>
                 <label for="settlementName">Settlement name:</label>
                 <input type="text" name="name" id="settlementName"/>
                 <br><br>
                 <input class="formSubmit inputButton" type="submit" value="Create Settlement" onclick=/>
+            </form>
+        </div>
+    </div>
+</th:block>
+
+
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="forms">
+    <!--/*@thymesVar id="campaign" type="pathfinder.domain.Campaign"*/-->
+    <!--/*@thymesVar id="map" type="pathfinder.domain.kingdom.terrain.KingdomMap"*/-->
+    <div id="newKingdomModal" class="formModal" th:if="${campaign != null}">
+        <div class="formModal-content">
+            <span class="kingdomFormClose" onclick="$('#newKingdomModal').hide()">&times;</span>
+            <form name="NewKingdomForm" th:action="@{'/api/campaign/{campaignId}/kingdom'(campaignId = ${campaign.id})}" method="post">
+                <label for="kingdomName">Kingdom name:</label>
+                <input type="text" name="name" id="kingdomName"/>
+                <br>
+                <label for="kingdomColor">Map color:</label>
+                <input type="color" name="mapColor" id="kingdomColor"/>
+                <br><br>
+                <input class="formSubmit inputButton" type="submit" value="Create Kingdom" onclick=/>
             </form>
         </div>
     </div>

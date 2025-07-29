@@ -1,9 +1,7 @@
 package pathfinder.domain.character
 
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
+import jakarta.persistence.*
+import pathfinder.domain.Campaign
 import pathfinder.domain.character.stats.ACBonus.ArmorClass
 import pathfinder.domain.character.stats.BaseAttackBonus
 import pathfinder.domain.character.stats.Speeds
@@ -14,6 +12,8 @@ class PathfinderCharacter(
     var name: String,
     var race: String,
     var ownerId: Long,
+    @ManyToOne
+    val campaign: Campaign
 ) {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0

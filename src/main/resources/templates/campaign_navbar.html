@@ -1,16 +1,22 @@
 <!DOCTYPE html>
 <header class="navbarHeader" xmlns:th="http://www.thymeleaf.org" th:if="${campaign} != null"  th:fragment="navbar(page)">
     <!--/*@thymesVar id="campaign" type="pathfinder.domain.Campaign"*/-->
-    <nav class="contentNavbar">
+    <nav class="navbar contentNavbar">
         <ul>
             <li th:classappend="${page == 'main'} ? 'activeContent'">
                 <a th:href="@{'/campaign/{id}'(id=${campaign.id})}">Overview</a>
+            </li>
+            <li th:classappend="${page == 'kingdoms'} ? 'activeContent'">
+                <a th:href="@{'/campaign/{id}/kingdoms'(id=${campaign.id})}">Kingdoms</a>
             </li>
             <li th:classappend="${page == 'maps'} ? 'activeContent'">
                 <a th:href="@{'/campaign/{id}/maps'(id=${campaign.id})}">Maps</a>
             </li>
             <li th:classappend="${page == 'settlements'} ? 'activeContent'">
                 <a th:href="@{'/campaign/{id}/settlements'(id=${campaign.id})}">Settlements</a>
+            </li>
+            <li th:classappend="${page == 'characters'} ? 'activeContent'">
+                <a th:href="@{'/campaign/{id}/characters'(id=${campaign.id})}">Characters</a>
             </li>
         </ul>
     </nav>

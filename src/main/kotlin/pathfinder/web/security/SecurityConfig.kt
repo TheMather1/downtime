@@ -20,12 +20,14 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.exchange
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import pathfinder.domain.CampaignRepository
 
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
     val jda: JDA,
-    val publisher: DefaultAuthenticationEventPublisher
+    val publisher: DefaultAuthenticationEventPublisher,
+    val campaignRepository: CampaignRepository
 ) {
 
     private val restTemplate = RestTemplate()
@@ -38,7 +40,7 @@ class SecurityConfig(
         }.csrf {
             it.disable()
         }.authorizeHttpRequests {
-            it.requestMatchers("/home/**", "/campaign/**", "/map/**", "/settlement/**").authenticated()
+            it.requestMatchers("/home/**", "/campaign/**", "/map/**", "/settlement/**", "/kingdom/**", "/api/**").authenticated()
                 .anyRequest().permitAll()
         }.oauth2Login {
             it.tokenEndpoint {
@@ -57,7 +59,7 @@ class SecurityConfig(
             setBearerAuth(userRequest.accessToken.tokenValue)
             set(HttpHeaders.USER_AGENT, "KingdomBot")
         })
-    ).body?.let { DiscordUser(it, jda) }
+    ).body?.let { DiscordUser(it, jda, campaignRepository) }
 
     @Bean
     fun corsConfigurationSource() = UrlBasedCorsConfigurationSource().apply {

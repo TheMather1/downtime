@@ -13,16 +13,16 @@
     <div class="window">
         <div class="container">
             <div th:replace="~{campaign_sidebar :: sidebar}"></div>
-            <header class="navbarHeader" th:if="${campaign} != null" th:replace="~{campaign_navbar :: navbar(page='maps')}"></header>
+            <header class="navbarHeader" th:if="${campaign} != null" th:replace="~{campaign_navbar :: navbar(page='kingdoms')}"></header>
             <div th:if="${campaign} != null" class="contentWrapper">
                 <header class="domainHeader">
                     <nav class="navbar domainNavbar">
                         <ul>
-                            <li th:each="m : ${#lists.sort(campaign.maps)}">
-                                <a th:href="@{'/map/{mapId}'(mapId=${m.id})}" th:text="${m.name}"/>
+                            <li th:each="k : ${#lists.sort(campaign.kingdoms)}">
+                                <a th:href="@{'/kingdom/{kingdomId}'(kingdomId=${k.id})}" th:text="${k.name}"/>
                             </li>
                             <li>
-                                <a id="newMapTab" class="formOpen" onclick="$('#newMapModal').show()">
+                                <a id="newKingdomTab" class="formOpen" onclick="$('#newKingdomModal').show()">
                                     +
                                 </a>
                             </li>
@@ -36,12 +36,12 @@
                             <th>Size</th>
                             <th>Settlements</th>
                         </tr>
-                        <tr th:each="m : ${#lists.sort(campaign.maps)}">
+                        <tr th:each="k : ${#lists.sort(campaign.kingdoms)}">
                             <td>
-                                <a th:href="@{'/map/{mapId}'(mapId=${m.id})}" th:text="${m.name}"></a>
+                                <a th:href="@{'/kingdom/{kingdomId}'(kingdomId=${k.id})}" th:text="${k.name}"></a>
                             </td>
-                            <td th:text="${#lists.size(m.hexes)}"></td>
-                            <td th:text="${#lists.size(m.settlements)}"></td>
+                            <td th:text="${k.size}"></td>
+                            <td th:text="${#lists.size(k.settlements)}"></td>
                         </tr>
                     </table>
                 </div>

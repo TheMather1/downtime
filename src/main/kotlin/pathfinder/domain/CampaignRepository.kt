@@ -14,4 +14,5 @@ interface CampaignRepository: JpaRepository<Campaign, Long> {
     fun findAllByOwnersContains(user: User): Set<Campaign>
     fun findAllByAdminsContains(user: User): Set<Campaign>
     fun findAllByModeratorsContains(user: User): Set<Campaign>
+    fun findAllByUsersContains(user: User): Set<Campaign>
 }

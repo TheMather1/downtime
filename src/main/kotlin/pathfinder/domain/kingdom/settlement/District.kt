@@ -57,6 +57,11 @@ class District(
         (0..5).map { y -> Coordinate(x, y) }
     }.associateWith { Lot(it, this) }
     fun getBuildingMap() = buildingMap.toMap()
+    val buildingLots
+        get() = buildingMap.values.filter { it.building != null }.groupBy { it.building!! }
+    val emptyLots
+        get() = buildingMap.values.filter { it.building == null }
+
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
     private val infrastructure = mutableSetOf<Infrastructure>()
@@ -118,7 +123,7 @@ class District(
         coordinates.forEach { buildingMap[it]!!.building = null }
     }
 
-    fun Coordinate.assertBounds() = if(coordinate.x !in 0..5 && coordinate.y !in 0..5)
+    fun Coordinate.assertBounds() = if(x !in 0..5 && y !in 0..5)
         throw IllegalArgumentException("Coordinate $coordinate out of bounds.")
         else true
 }

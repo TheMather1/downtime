@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>Server Portal - Pathfinder WeatherBot</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/portal.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/modal.css}"/>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.14"></script>
+</head>
+<body>
+<!--/*@thymesVar id="config" type="pathfinder.web.frontend.dto.MapConfig"*/-->
+<!--/*@thymesVar id="kingdom" type="pathfinder.domain.kingdom.Kingdom"*/-->
+<div class="wrapper">
+    <div class="window">
+        <div class="container">
+            <div th:replace="~{campaign_sidebar :: sidebar}"></div>
+            <header class="navbarHeader" th:if="${campaign} != null" th:replace="~{campaign_navbar :: navbar(page='kingdoms')}"></header>
+            <div id="kingdomWrapper" th:if="${campaign} != null" class="contentWrapper">
+                <header class="domainHeader">
+                    <nav class="navbar domainNavbar">
+                        <ul>
+                            <li th:each="k : ${#lists.sort(campaign.kingdoms)}" th:classappend="${kingdom?.id == k.id} ? 'activeContent'">
+                                <a th:href="@{'/kingdom/{kingdomId}'(kingdomId=${k.id})}" th:text="${k.name}"/>
+                            </li>
+                            <li>
+                                <a id="newKingdomTab" class="formOpen" onclick="$('#newKingdomModal').show()">
+                                    +
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </header>
+                <div class="pagedContent content" th:if="${kingdom} != null">
+                    <h1 th:text="${kingdom.name}"></h1>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th title="Number of hexes claimed by the kingdom.">Size</th>
+                                <th title="Number of settlements claimed by the kingdom.">Settlements</th>
+                                <th title="Overall alignment of the kingdom.">Alignment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td th:text="${kingdom.size}"></td>
+                                <td th:text="${kingdom.settlements.size()}"></td>
+                                <td th:text="${kingdom.alignment.displayName}"></td>
+                            </tr>
+                        </tbody>
+                        <thead>
+                            <tr>
+                                <th>Stability</th>
+                                <th>Loyalty</th>
+                                <th>Economy</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td th:text="${kingdom.stability}"></td>
+                                <td th:text="${kingdom.loyalty}"></td>
+                                <td th:text="${kingdom.economy}"></td>
+                            </tr>
+                        </tbody>
+                        <thead>
+                            <tr>
+                                <th title="DC for Kingdom control checks.">Control DC</th>
+                                <th title="Accumulated Build Points in the kingdom's treasury.">BP</th>
+                                <th title="Accumulated Unrest in the kingdom.">Unrest</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td th:text="${kingdom.controlDC}"></td>
+                                <td th:text="${kingdom.treasury}"></td>
+                                <td th:text="${kingdom.unrest}"></td>
+                            </tr>
+                        </tbody>
+                        <thead>
+                            <tr>
+                                <th title="Bonus monthly BP earnings.">Earnings Bonus</th>
+                                <th title="Monthly BP consumption.">Consumption</th>
+                                <th title="Excess food stored to offset future consumption.">Granary</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td th:text="${kingdom.earningsBonus}"></td>
+                                <td th:text="${kingdom.consumption}"></td>
+                                <td th:text="${kingdom.granary}"></td>
+                            </tr>
+                        </tbody>
+                        <thead>
+                            <tr>
+                                <th colspan="3">Edicts</th>
+                            </tr>
+                            <tr>
+                                <th>Promotion</th>
+                                <th>Taxation</th>
+                                <th>Holiday</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td th:text="${kingdom.promotionEdict}"></td>
+                                <td th:text="${kingdom.taxationEdict}"></td>
+                                <td th:text="${kingdom.holidayEdict}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th colspan="5">Government</th>
+                            </tr>
+                            <tr>
+                                <th rowspan="2">Role</th>
+                                <th rowspan="2">Character</th>
+                                <th colspan="3">Bonus</th>
+                            </tr>
+                            <tr>
+                                <th>Loyalty</th>
+                                <th>Stability</th>
+                                <th>Economy</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>Ruler</th>
+                                <td th:text="${kingdom.government.ruler?.character?.name}"></td>
+                                <td th:if="${kingdom.government.rulerDuties.selected(T(pathfinder.domain.kingdom.KingdomScore).LOYALTY)}" th:text="${kingdom.government.ruler?.loyaltyBonus(kingdom.government.rulerDuties)}"></td>
+                                <td th:unless="${kingdom.government.rulerDuties.selected(T(pathfinder.domain.kingdom.KingdomScore).LOYALTY)}" style="background-color: dimgray"></td>
+                                <td th:if="${kingdom.government.rulerDuties.selected(T(pathfinder.domain.kingdom.KingdomScore).STABILITY)}" th:text="${kingdom.government.ruler?.stabilityBonus(kingdom.government.rulerDuties)}"></td>
+                                <td th:unless="${kingdom.government.rulerDuties.selected(T(pathfinder.domain.kingdom.KingdomScore).STABILITY)}" style="background-color: dimgray"></td>
+                                <td th:if="${kingdom.government.rulerDuties.selected(T(pathfinder.domain.kingdom.KingdomScore).ECONOMY)}" th:text="${kingdom.government.ruler?.economyBonus(kingdom.government.rulerDuties)}"></td>
+                                <td th:unless="${kingdom.government.rulerDuties.selected(T(pathfinder.domain.kingdom.KingdomScore).ECONOMY)}" style="background-color: dimgray"></td>
+                            </tr>
+                            <tr>
+                                <th>Consort</th>
+                                <td th:text="${kingdom.government.consort?.character?.name}"></td>
+                                <td th:if="${!kingdom.government.consort.coRuler || kingdom.government.rulerDuties.selected(T(pathfinder.domain.kingdom.KingdomScore).LOYALTY)}" th:text="${kingdom.government.consort?.loyaltyBonus(kingdom.government.rulerDuties)}"></td>
+                                <td th:unless="${!kingdom.government.consort.coRuler || kingdom.government.rulerDuties.selected(T(pathfinder.domain.kingdom.KingdomScore).LOYALTY)}" style="background-color: dimgray"></td>
+                                <td th:if="${kingdom.government.consort.coRuler && kingdom.government.rulerDuties.selected(T(pathfinder.domain.kingdom.KingdomScore).STABILITY)}" th:text="${kingdom.government.consort?.stabilityBonus(kingdom.government.rulerDuties)}"></td>
+                                <td th:unless="${kingdom.government.consort.coRuler && kingdom.government.rulerDuties.selected(T(pathfinder.domain.kingdom.KingdomScore).STABILITY)}" style="background-color: dimgray"></td>
+                                <td th:if="${kingdom.government.consort.coRuler && kingdom.government.rulerDuties.selected(T(pathfinder.domain.kingdom.KingdomScore).ECONOMY)}" th:text="${kingdom.government.consort?.economyBonus(kingdom.government.rulerDuties)}"></td>
+                                <td th:unless="${kingdom.government.consort.coRuler && kingdom.government.rulerDuties.selected(T(pathfinder.domain.kingdom.KingdomScore).ECONOMY)}" style="background-color: dimgray"></td>
+                            </tr>
+                            <tr>
+                                <th>Heir</th>
+                                <td th:text="${kingdom.government.heir?.character?.name}"></td>
+                                <td th:text="${kingdom.government.heir?.loyaltyBonus}"></td>
+                                <td style="background-color: dimgray"></td>
+                                <td style="background-color: dimgray"></td>
+                            </tr>
+                            <tr>
+                                <th>Councillor</th>
+                                <td th:text="${kingdom.government.councillor?.character?.name}"></td>
+                                <td th:text="${kingdom.government.councillor?.loyaltyBonus}"></td>
+                                <td style="background-color: dimgray"></td>
+                                <td style="background-color: dimgray"></td>
+                            </tr>
+                            <tr>
+                                <th>General</th>
+                                <td th:text="${kingdom.government.general?.character?.name}"></td>
+                                <td th:text="${kingdom.government.general?.loyaltyBonus}"></td>
+                                <td th:text="${kingdom.government.general?.stabilityBonus}"></td>
+                                <td style="background-color: dimgray"></td>
+                            </tr>
+                            <tr>
+                                <th>Grand Diplomat</th>
+                                <td th:text="${kingdom.government.grandDiplomat?.character?.name}"></td>
+                                <td style="background-color: dimgray"></td>
+                                <td th:text="${kingdom.government.grandDiplomat?.stabilityBonus}"></td>
+                                <td style="background-color: dimgray"></td>
+                            </tr>
+                            <tr>
+                                <th>High Priest</th>
+                                <td th:text="${kingdom.government.highPriest?.character?.name}"></td>
+                                <td th:text="${kingdom.government.highPriest?.loyaltyBonus}"></td>
+                                <td th:text="${kingdom.government.highPriest?.stabilityBonus}"></td>
+                                <td style="background-color: dimgray"></td>
+                            </tr>
+                            <tr>
+                                <th>Magister</th>
+                                <td th:text="${kingdom.government.magister?.character?.name}"></td>
+                                <td style="background-color: dimgray"></td>
+                                <td style="background-color: dimgray"></td>
+                                <td th:text="${kingdom.government.magister?.economyBonus}"></td>
+                            </tr>
+                            <tr>
+                                <th>Marshal</th>
+                                <td th:text="${kingdom.government.marshal?.character?.name}"></td>
+                                <td style="background-color: dimgray"></td>
+                                <td style="background-color: dimgray"></td>
+                                <td th:text="${kingdom.government.marshal?.economyBonus}"></td>
+                            </tr>
+                            <tr>
+                                <th>Royal Enforcer</th>
+                                <td th:text="${kingdom.government.royalEnforcer?.character?.name}"></td>
+                                <td th:text="${kingdom.government.royalEnforcer?.loyaltyBonus}"></td>
+                                <td style="background-color: dimgray"></td>
+                                <td style="background-color: dimgray"></td>
+                            </tr>
+                            <tr>
+                                <th>Spymaster</th>
+                                <td th:text="${kingdom.government.spymaster?.character?.name}"></td>
+                                <td th:if="${kingdom.government.spymaster.score == T(pathfinder.domain.kingdom.KingdomScore).LOYALTY}" th:text="${kingdom.government.spymaster?.loyaltyBonus}"></td>
+                                <td th:unless="${kingdom.government.spymaster.score == T(pathfinder.domain.kingdom.KingdomScore).LOYALTY}" style="background-color: dimgray"></td>
+                                <td th:if="${kingdom.government.spymaster.score == T(pathfinder.domain.kingdom.KingdomScore).STABILITY}" th:text="${kingdom.government.spymaster?.stabilityBonus}"></td>
+                                <td th:unless="${kingdom.government.spymaster.score == T(pathfinder.domain.kingdom.KingdomScore).STABILITY}" style="background-color: dimgray"></td>
+                                <td th:if="${!kingdom.government.spymaster.performedDuty || kingdom.government.spymaster.score == T(pathfinder.domain.kingdom.KingdomScore).LOYALTY}" th:text="${kingdom.government.spymaster?.economyBonus}"></td>
+                                <td th:unless="${!kingdom.government.spymaster.performedDuty || kingdom.government.spymaster.score == T(pathfinder.domain.kingdom.KingdomScore).LOYALTY}" style="background-color: dimgray"></td>
+                            </tr>
+                            <tr>
+                                <th>Treasurer</th>
+                                <td th:text="${kingdom.government.treasurer?.character?.name}"></td>
+                                <td style="background-color: dimgray"></td>
+                                <td style="background-color: dimgray"></td>
+                                <td th:text="${kingdom.government.treasurer?.economyBonus}"></td>
+                            </tr>
+                            <tr>
+                                <th>Warden</th>
+                                <td th:text="${kingdom.government.warden?.character?.name}"></td>
+                                <td style="background-color: dimgray"></td>
+                                <td th:text="${kingdom.government.warden?.stabilityBonus}"></td>
+                                <td style="background-color: dimgray"></td>
+                            </tr>
+                            <tr th:each="v: ${kingdom.government.viceroys}">
+                                <th th:text="@{'Viceroy of {vassal}'(vassal=${v.videroyOf.name})}"></th>
+                                <td th:text="${v.character.name}"></td>
+                                <td style="background-color: dimgray"></td>
+                                <td style="background-color: dimgray"></td>
+                                <td th:text="${v.economyBonus}"></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="5">
+                                    <button hx-target="#kingdomWrapper"
+                                            hx-swap="beforeend"
+                                            th:hx-get="@{'/kingdom/{kingdomId}/government'(kingdomId = ${kingdom.id})}"
+                                    >Edit Government</button>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:replace="~{tags/forms :: forms}"/>
+</body>
+</html>

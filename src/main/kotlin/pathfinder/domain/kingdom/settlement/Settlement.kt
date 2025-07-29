@@ -1,6 +1,7 @@
 package pathfinder.domain.kingdom.settlement
 
 import jakarta.persistence.*
+import pathfinder.domain.kingdom.settlement.buildings.LotBuildingType
 import pathfinder.domain.kingdom.terrain.Hex
 import pathfinder.domain.support.coordinate.Coordinate
 import pathfinder.domain.support.coordinate.CoordinateConverter
@@ -84,6 +85,9 @@ class Settlement(
 
     private val buildingSociety
         get() = buildings.sumOf { it.societyBonus }
+
+    val granaryCapacity
+        get() = buildings.count { it.type == LotBuildingType.GRANARY } * 5
 
     fun addDistrict(coordinate: Coordinate) {
         if(districts.containsKey(coordinate)) throw IllegalArgumentException("District $coordinate is already registered.")

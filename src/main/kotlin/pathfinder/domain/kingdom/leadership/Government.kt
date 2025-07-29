@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
 import jakarta.persistence.OneToOne
+import jakarta.persistence.PostLoad
 import pathfinder.domain.kingdom.Kingdom
 
 @Entity
@@ -26,7 +27,7 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "ruler_forced_vacancy"))
         ]
     )
-    val ruler: LeadershipRole.Ruler = LeadershipRole.Ruler(),
+    var ruler: LeadershipRole.Ruler = LeadershipRole.Ruler(),
 
     @Embedded
     @AttributeOverrides(
@@ -36,7 +37,7 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "consort_forced_vacancy"))
         ]
     )
-    val consort: LeadershipRole.Consort = LeadershipRole.Consort(),
+    var consort: LeadershipRole.Consort = LeadershipRole.Consort(),
 
     @Embedded
     @AttributeOverrides(
@@ -46,7 +47,7 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "heir_forced_vacancy"))
         ]
     )
-    val heir: LeadershipRole.Heir = LeadershipRole.Heir(),
+    var heir: LeadershipRole.Heir = LeadershipRole.Heir(),
 
     @Embedded
     @AttributeOverrides(
@@ -56,7 +57,7 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "councillor_forced_vacancy"))
         ]
     )
-    val councillor: LeadershipRole.Councillor = LeadershipRole.Councillor(),
+    var councillor: LeadershipRole.Councillor = LeadershipRole.Councillor(),
 
     @Embedded
     @AttributeOverrides(
@@ -66,7 +67,7 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "general_forced_vacancy"))
         ]
     )
-    val general: LeadershipRole.General = LeadershipRole.General(),
+    var general: LeadershipRole.General = LeadershipRole.General(),
 
     @Embedded
     @AttributeOverrides(
@@ -76,7 +77,7 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "grand_diplomat_forced_vacancy"))
         ]
     )
-    val grandDiplomat: LeadershipRole.GrandDiplomat = LeadershipRole.GrandDiplomat(),
+    var grandDiplomat: LeadershipRole.GrandDiplomat = LeadershipRole.GrandDiplomat(),
 
     @Embedded
     @AttributeOverrides(
@@ -86,7 +87,7 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "high_priest_forced_vacancy"))
         ]
     )
-    val highPriest: LeadershipRole.HighPriest = LeadershipRole.HighPriest(),
+    var highPriest: LeadershipRole.HighPriest = LeadershipRole.HighPriest(),
 
     @Embedded
     @AttributeOverrides(
@@ -96,7 +97,7 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "magister_forced_vacancy"))
         ]
     )
-    val magister: LeadershipRole.Magister = LeadershipRole.Magister(),
+    var magister: LeadershipRole.Magister = LeadershipRole.Magister(),
 
     @Embedded
     @AttributeOverrides(
@@ -106,7 +107,7 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "marshal_forced_vacancy"))
         ]
     )
-    val marshal: LeadershipRole.Marshal = LeadershipRole.Marshal(),
+    var marshal: LeadershipRole.Marshal = LeadershipRole.Marshal(),
 
     @Embedded
     @AttributeOverrides(
@@ -116,7 +117,7 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "royal_enforcer_forced_vacancy"))
         ]
     )
-    val royalEnforcer: LeadershipRole.RoyalEnforcer = LeadershipRole.RoyalEnforcer(),
+    var royalEnforcer: LeadershipRole.RoyalEnforcer = LeadershipRole.RoyalEnforcer(),
 
     @Embedded
     @AttributeOverrides(
@@ -126,7 +127,7 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "spymaster_forced_vacancy"))
         ]
     )
-    val spymaster: LeadershipRole.Spymaster = LeadershipRole.Spymaster(),
+    var spymaster: LeadershipRole.Spymaster = LeadershipRole.Spymaster(),
 
     @Embedded
     @AttributeOverrides(
@@ -136,7 +137,7 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "treasurer_forced_vacancy"))
         ]
     )
-    val treasurer: LeadershipRole.Treasurer = LeadershipRole.Treasurer(),
+    var treasurer: LeadershipRole.Treasurer = LeadershipRole.Treasurer(),
 
     @Embedded
     @AttributeOverrides(
@@ -146,12 +147,13 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "warden_forced_vacancy"))
         ]
     )
-    val warden: LeadershipRole.Warden = LeadershipRole.Warden(),
+    var warden: LeadershipRole.Warden = LeadershipRole.Warden(),
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "government")
     val viceroys: MutableSet<LeadershipRole.Viceroy> = mutableSetOf(),
-    
-    val rulerDuties: RulerDuties = RulerDuties()
+
+    @Embedded
+    var rulerDuties: RulerDuties = RulerDuties()
 ): Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -226,4 +228,20 @@ data class Government(
         get() = nonRulerRoles.mapNotNull { it.character }
 
     public override fun clone() = super.clone() as Government
+
+    @PostLoad
+    @Suppress("SENSELESS_COMPARISON")
+    fun assertComposites() {
+        if (rulerDuties == null) rulerDuties = RulerDuties()
+        if (ruler == null) ruler = LeadershipRole.Ruler()
+        if (consort == null) consort = LeadershipRole.Consort()
+        if (heir == null) heir = LeadershipRole.Heir()
+        if (councillor == null) councillor = LeadershipRole.Councillor()
+        if (general == null) general = LeadershipRole.General()
+        if (grandDiplomat == null) grandDiplomat = LeadershipRole.GrandDiplomat()
+        if (highPriest == null) highPriest = LeadershipRole.HighPriest()
+        if (magister == null) magister = LeadershipRole.Magister()
+        if (marshal == null) marshal = LeadershipRole.Marshal()
+        if (royalEnforcer == null) royalEnforcer = LeadershipRole.RoyalEnforcer()
+    }
 }

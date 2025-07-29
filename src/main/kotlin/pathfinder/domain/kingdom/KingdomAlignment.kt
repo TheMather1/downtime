@@ -38,4 +38,6 @@ enum class KingdomAlignment(
         economyBonus = 2,
         loyaltyBonus = 2
     );
+
+    val displayName = name.split('_').joinToString(" ") { it.lowercase().replaceFirstChar { it.uppercase() } }
 }

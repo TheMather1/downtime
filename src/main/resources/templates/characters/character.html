@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>Server Portal - Pathfinder WeatherBot</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/portal.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/modal.css}"/>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.14"></script>
+</head>
+<body>
+<!--/*@thymesVar id="config" type="pathfinder.web.frontend.dto.MapConfig"*/-->
+<!--/*@thymesVar id="character" type="pathfinder.domain.character.PathfinderCharacter"*/-->
+<div class="wrapper">
+    <div class="window">
+        <div class="container">
+            <div th:replace="~{campaign_sidebar :: sidebar}"></div>
+            <header class="navbarHeader" th:if="${campaign} != null" th:replace="~{campaign_navbar :: navbar(page='characters')}"></header>
+            <div id="mapWrapper" th:if="${campaign} != null" class="contentWrapper">
+                <header class="domainHeader">
+                    <nav class="navbar domainNavbar">
+                        <ul>
+                            <li>
+                                <a th:href="@{'/campaign/{campaignId}/characters'(campaignId=${campaign.id})}">All Characters</a>
+                            </li>
+                            <li>
+                                <a th:href="@{'/character/{characterId}'(characterId=${character.id})}" th:text="${character.name}"/>
+                            </li>
+                            <li>
+                                <a th:href="@{'/character/{characterId}/abilityScores'(characterId=${character.id})}">Ability Scores</a>
+                            </li>
+                            <li>
+                                <a th:href="@{'/character/{characterId}/speeds'(characterId=${character.id})}">Speed</a>
+                            </li>
+                            <li>
+                                <a th:href="@{'/character/{characterId}/armorClass'(characterId=${character.id})}">AC</a>
+                            </li>
+                            <li>
+                                <a th:href="@{'/character/{characterId}/saves'(characterId=${character.id})}">Saves</a>
+                            </li>
+                            <li>
+                                <a th:href="@{'/character/{characterId}/skills'(characterId=${character.id})}">Skills</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </header>
+                <div class="pagedContent content">
+                    <h1 th:text="${character.name}"></h1>
+                    <h2 th:text="${character.race}"></h2>
+                    <br>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th colspan="4">Ability Scores</th>
+                            </tr>
+                            <tr>
+                                <th>Ability</th>
+                                <th>Bonus</th>
+                                <th>Base</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>Strength</th>
+                                <td th:text="${character.abilityScores.strength.bonus}"></td>
+                                <td th:text="${character.abilityScores.strength.base}"></td>
+                                <td th:text="${character.abilityScores.strength.value}"></td>
+                            </tr>
+                            <tr>
+                                <th>Constitution</th>
+                                <td th:text="${character.abilityScores.constitution.bonus}"></td>
+                                <td th:text="${character.abilityScores.constitution.base}"></td>
+                                <td th:text="${character.abilityScores.dexterity.value}"></td>
+                            </tr>
+                            <tr>
+                                <th>Dexterity</th>
+                                <td th:text="${character.abilityScores.dexterity.bonus}"></td>
+                                <td th:text="${character.abilityScores.dexterity.base}"></td>
+                                <td th:text="${character.abilityScores.dexterity.value}"></td>
+                            </tr>
+                            <tr>
+                                <th>Intelligence</th>
+                                <td th:text="${character.abilityScores.intelligence.bonus}"></td>
+                                <td th:text="${character.abilityScores.intelligence.base}"></td>
+                                <td th:text="${character.abilityScores.intelligence.value}"></td>
+                            </tr>
+                            <tr>
+                                <th>Wisdom</th>
+                                <td th:text="${character.abilityScores.wisdom.bonus}"></td>
+                                <td th:text="${character.abilityScores.wisdom.base}"></td>
+                                <td th:text="${character.abilityScores.wisdom.value}"></td>
+                            </tr>
+                            <tr>
+                                <th>Charisma</th>
+                                <td th:text="${character.abilityScores.charisma.bonus}"></td>
+                                <td th:text="${character.abilityScores.charisma.base}"></td>
+                                <td th:text="${character.abilityScores.charisma.value}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:replace="~{tags/forms :: forms}"/>
+</body>
+</html>

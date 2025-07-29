@@ -8,8 +8,7 @@
            hx-trigger="contextmenu consume"
            hx-target="#mapWrapper"
            hx-swap="beforeend"
-           th:hx-get="@{'/map/{mapId}/hex?q={q}&r={r}&z={z}'(mapId = ${map.id}, q = ${entry.key.q}, r = ${entry.key.r}, z = ${entry.key.z})}"
-           th:attr="filter=${entry.value?.owner != null} ? 'url(#kingdom' + ${entry.value.owner.id} + ')'">
+           th:hx-get="@{'/map/{mapId}/hex?q={q}&r={r}&z={z}'(mapId = ${map.id}, q = ${entry.key.q}, r = ${entry.key.r}, z = ${entry.key.z})}">
             <title th:text="${entry.value?.tooltip ?: entry.key.axialKey}"/>
             <polygon class="mapHex"
                      th:terrain="${entry.value?.rawTerrain ?: 'null'}"
