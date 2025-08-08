@@ -6,6 +6,9 @@ import jakarta.persistence.Inheritance
 sealed interface Direction<T: Direction<T>> {
     val orientation: Orientation
 
-    val opposite: T
+    val opposite: Direction<T>
+
+    val displayName: String
+
     fun towards(cardinal: Cardinal): Boolean
 }

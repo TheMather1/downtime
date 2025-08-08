@@ -1,0 +1,43 @@
+<!--/*@thymesVar id="campaign" type="pathfinder.domain.Campaign"*/-->
+<!--/*@thymesVar id="border" type="pathfinder.domain.kingdom.settlement.DistrictBorder"*/-->
+<div id="modal" _="on closeModal or keyup[key is 'Escape'] add .closing then wait for animationend then remove me"
+     xmlns:th="http://www.thymeleaf.org">
+    <div class="modal-underlay" _="on click or contextmenu trigger closeModal" oncontextmenu="return false;"></div>
+    <div class="modal-content">
+        <header class="modal-header">Modify border</header>
+        <form id="borderForm" method="post" th:action="@{'/api/settlement/{settlementId}/border/{borderId}'(settlementId = ${settlement.id}, borderId = ${border.id})}">
+            <label>
+                City Wall
+                <input type="checkbox" name="cityWall" th:checked="${border.cityWall}"/>
+            </label>
+            <br>
+            <label>
+                Moat
+                <input type="checkbox" name="moat" th:checked="${border.moat}"/>
+            </label>
+            <br>
+            <label>
+                Magical Streetlamps
+                <input type="checkbox" name="streetlamps" th:checked="${border.streetlamps}"/>
+            </label>
+            <br>
+            <label th:if="${border.facingDistrict}">
+                Facing
+                <select name="facing">
+                    <option th:value="${border.facing}" th:text="${border.facing.displayName}" selected/>
+                    <option th:value="${border.facing.opposite}" th:text="${border.facing.opposite.displayName}"/>
+                </select>
+            </label>
+            <label th:if="${!border.facingDistrict}">
+                Border type
+                <select name="type">
+                    <option value="LAND" th:selected="${border.type.name() == 'LAND'}">Land</option>
+                    <option value="WATER" th:selected="${border.type.name() == 'WATER'}">Water</option>
+                </select>
+            </label>
+            <br>
+            <input class="inputButton" type="submit" value="Edit district"/>
+            <input class="stopButton" type="button" value="Close" _="on click trigger closeModal"/>
+        </form>
+    </div>
+</div>

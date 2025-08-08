@@ -25,20 +25,26 @@ enum class LotBuildingType(
         productivityBonus = 1,
         societyBonus = 2
     ) {
-        override fun upgradesTo(building: LotBuildingType) = building == UNIVERSITY
+        override fun upgradesTo(type: LotBuildingType) = type == UNIVERSITY
     },
     ALCHEMIST(
         cost = 18,
         size = BuildingSize.NORMAL,
         economyBonus = 1,
         baseValueBonus = 1000,
-    ),
+    ) {
+        override fun validPosition(lots: Set<Lot>) = lots.any { l ->
+            l.neighbors.any { it !in lots && it.building?.type?.countsAs(HOUSE) == true}
+        }
+    },
     ARENA(
         cost = 40,
         size = BuildingSize.HUGE,
         stabilityBonus = 4,
         crimeBonus = 1
-    ),
+    ) {
+        override fun validPosition(lots: Set<Lot>) = lots.first().district.settlement.buildings.none { it.type == ARENA }
+    },
     BANK(
         cost = 28,
         size = BuildingSize.NORMAL,
@@ -58,7 +64,7 @@ enum class LotBuildingType(
         unrestBonus = -1,
         lawBonus = 1
     ){
-        override fun upgradesTo(building: LotBuildingType) = building == GARRISON
+        override fun upgradesTo(type: LotBuildingType) = type == GARRISON
     },
     BLACK_MARKET(
         cost = 50,
@@ -69,7 +75,11 @@ enum class LotBuildingType(
         corruptionBonus = 2,
         crimeBonus = 2,
         baseValueBonus = 2000
-    ),
+    ) {
+        override fun validPosition(lots: Set<Lot>) = lots.sumOf { l ->
+            l.neighbors.count { it !in lots && it.building?.type?.countsAs(HOUSE) == true}
+        } >= 2
+    },
     BREWERY(
         cost = 6,
         size = BuildingSize.NORMAL,
@@ -98,7 +108,9 @@ enum class LotBuildingType(
         loyaltyBonus = 2,
         stabilityBonus = 2,
         unrestBonus = -4
-    ),
+    ) {
+        override fun validPosition(lots: Set<Lot>) = lots.first().district.settlement.buildings.none { it.type == CASTLE }
+    },
     CATHEDRAL(
         cost = 58,
         size = BuildingSize.HUGE,
@@ -106,7 +118,9 @@ enum class LotBuildingType(
         stabilityBonus = 4,
         unrestBonus = -4,
         lawBonus = 2
-    ),
+    ) {
+        override fun validPosition(lots: Set<Lot>) = lots.first().district.settlement.buildings.none { it.type == CATHEDRAL }
+    },
     DANCE_HALL(
         cost = 4,
         size = BuildingSize.NORMAL,
@@ -115,18 +129,30 @@ enum class LotBuildingType(
         unrestBonus = 1,
         corruptionBonus = 1,
         crimeBonus = 1
-    ),
+    ) {
+        override fun validPosition(lots: Set<Lot>) = lots.any { l ->
+            l.neighbors.any { it !in lots && it.building?.type?.countsAs(HOUSE) == true }
+        }
+    },
     DUMP(
         cost = 4,
         size = BuildingSize.NORMAL,
         stabilityBonus = 1
-    ),
+    ) {
+        override fun validPosition(lots: Set<Lot>) = lots.any { l ->
+            l.neighbors.none { it !in lots && it.building?.type?.countsAs(HOUSE, MANSION, NOBLE_VILLA) == true}
+        }
+    },
     EXOTIC_ARTISAN(
         cost = 10,
         size = BuildingSize.NORMAL,
         economyBonus = 1,
         stabilityBonus = 1
-    ),
+    ) {
+        override fun validPosition(lots: Set<Lot>) = lots.any { l ->
+            l.neighbors.any { it !in lots && it.building?.type?.countsAs(HOUSE) == true}
+        }
+    },
     FOREIGN_QUARTERS(
         cost = 30,
         size = BuildingSize.HUGE,
@@ -150,7 +176,15 @@ enum class LotBuildingType(
         stabilityBonus = 1,
         unrestBonus = 1,
         productivityBonus = 1
-    ),
+    ) {
+        override fun validPosition(lots: Set<Lot>) = lots.any { l ->
+            l.neighbors.any { it !in lots && it.building?.type?.countsAs(WATERWAY) == true}
+                    || (l.coordinate.y == 0 && l.district.northBorder.hasWater)
+                    || (l.coordinate.y == 5 && l.district.southBorder.hasWater)
+                    || (l.coordinate.x == 0 && l.district.westBorder.hasWater)
+                    || (l.coordinate.x == 5 && l.district.eastBorder.hasWater)
+        }
+    },
     GARRISON(
         cost = 28,
         size = BuildingSize.LARGE,
@@ -158,7 +192,7 @@ enum class LotBuildingType(
         stabilityBonus = 2,
         unrestBonus = -2
     ),
-    GRANARY( //TODO: Store excess BP for future Consumption
+    GRANARY(
         cost = 12,
         size = BuildingSize.NORMAL,
         loyaltyBonus = 1,
@@ -183,7 +217,11 @@ enum class LotBuildingType(
         size = BuildingSize.NORMAL,
         loyaltyBonus = 1,
         stabilityBonus = 1
-    ),
+    ) {
+        override fun validPosition(lots: Set<Lot>) = lots.any { l ->
+            l.neighbors.any { it !in lots && it.building?.type?.countsAs(HOUSE) == true}
+        }
+    },
     HOSPITAL(
         cost = 30,
         size = BuildingSize.LARGE,
@@ -204,7 +242,11 @@ enum class LotBuildingType(
         loyaltyBonus = 1,
         societyBonus = 1,
         baseValueBonus = 500
-    ),
+    ) {
+        override fun validPosition(lots: Set<Lot>) = lots.any { l ->
+            l.neighbors.any { it !in lots && it.building?.type?.countsAs(HOUSE) == true}
+        }
+    },
     JAIL(
         cost = 14,
         size = BuildingSize.NORMAL,
@@ -221,7 +263,7 @@ enum class LotBuildingType(
         loyaltyBonus = 1,
         loreBonus = 1
     ){
-        override fun upgradesTo(building: LotBuildingType) = building == ACADEMY
+        override fun upgradesTo(type: LotBuildingType) = type == ACADEMY
     },
     LUXURY_STORE(
         cost = 28,
@@ -229,14 +271,21 @@ enum class LotBuildingType(
         economyBonus = 1,
         baseValueBonus = 2000
     ){
-        override fun upgradesTo(building: LotBuildingType) = building == MAGIC_SHOP
+        override fun validPosition(lots: Set<Lot>) = lots.any { l ->
+            l.neighbors.any { it !in lots && it.building?.type?.countsAs(HOUSE) == true}
+        }
+        override fun upgradesTo(type: LotBuildingType) = type == MAGIC_SHOP
     },
     MAGIC_SHOP(
         cost = 68,
         size = BuildingSize.NORMAL,
         economyBonus = 1,
         baseValueBonus = 2000
-    ),
+    ) {
+        override fun validPosition(lots: Set<Lot>) = lots.sumOf { l ->
+            l.neighbors.count { it !in lots && it.building?.type?.countsAs(HOUSE) == true}
+        } >= 2
+      },
     MAGICAL_ACADEMY(
         cost = 58,
         size = BuildingSize.LARGE,
@@ -251,7 +300,7 @@ enum class LotBuildingType(
         lawBonus = 1,
         societyBonus = 1
     ){
-        override fun upgradesTo(building: LotBuildingType) = building == NOBLE_VILLA
+        override fun upgradesTo(type: LotBuildingType) = type == NOBLE_VILLA
     },
     MARKET(
         cost = 48,
@@ -259,7 +308,11 @@ enum class LotBuildingType(
         economyBonus = 2,
         stabilityBonus = 2,
         baseValueBonus = 2000
-    ),
+    ) {
+        override fun validPosition(lots: Set<Lot>) = lots.sumOf { l ->
+            l.neighbors.count { it !in lots && it.building?.type?.countsAs(HOUSE) == true}
+        } >= 2
+    },
     MENAGERIE(
         cost = 16,
         size = BuildingSize.HUGE,
@@ -272,14 +325,31 @@ enum class LotBuildingType(
         stabilityBonus = 1,
         lawBonus = 1,
         loreBonus = 1
-    ),
+    ) {
+        override fun validPosition(lots: Set<Lot>) = lots.first().district.settlement.buildings.none { it.type == MILITARY_ACADEMY }
+    },
     MILL(
         cost = 6,
         size = BuildingSize.NORMAL,
         economyBonus = 1,
         stabilityBonus = 1,
         productivityBonus = 1
-    ),
+    ) {
+        override fun validPosition(lots: Set<Lot>) = lots.any { l ->
+            l.neighbors.any { it !in lots && it.building?.type?.countsAs(WATERWAY, MILLPOND) == true}
+                    || (l.coordinate.y == 0 && l.district.northBorder.hasWater)
+                    || (l.coordinate.y == 5 && l.district.southBorder.hasWater)
+                    || (l.coordinate.x == 0 && l.district.westBorder.hasWater)
+                    || (l.coordinate.x == 5 && l.district.eastBorder.hasWater)
+        }
+    },
+    MILLPOND(
+        cost = 3,
+        size = BuildingSize.NORMAL,
+        loyaltyBonus = 1
+    ) {
+        override fun validPosition(lots: Set<Lot>) = lots.first().district.settlement.hex.hasRiver
+    },
     MINT(
         cost = 30,
         size = BuildingSize.NORMAL,
@@ -351,7 +421,14 @@ enum class LotBuildingType(
         crimeBonus = 1,
         baseValueBonus = 1000
     ) {
-        override fun upgradesTo(building: LotBuildingType) = building == WATERFRONT
+        override fun validPosition(lots: Set<Lot>) = lots.any { l ->
+            l.neighbors.any { it !in lots && it.building?.type?.countsAs(WATERWAY) == true}
+                    || (l.coordinate.y == 0 && l.district.northBorder.hasWater)
+                    || (l.coordinate.y == 5 && l.district.southBorder.hasWater)
+                    || (l.coordinate.x == 0 && l.district.westBorder.hasWater)
+                    || (l.coordinate.x == 5 && l.district.eastBorder.hasWater)
+        }
+        override fun upgradesTo(type: LotBuildingType) = type == WATERFRONT
     },
     SHOP(
         cost = 8,
@@ -360,7 +437,10 @@ enum class LotBuildingType(
         productivityBonus = 1,
         baseValueBonus = 500
     ){
-        override fun upgradesTo(building: LotBuildingType) = building == LUXURY_STORE || building == MARKET
+        override fun validPosition(lots: Set<Lot>) = lots.any { l ->
+            l.neighbors.any { it !in lots && it.building?.type?.countsAs(HOUSE) == true}
+        }
+        override fun upgradesTo(type: LotBuildingType) = type == LUXURY_STORE || type == MARKET
     },
     SHRINE(
         cost = 8,
@@ -368,7 +448,7 @@ enum class LotBuildingType(
         loyaltyBonus = 1,
         unrestBonus = -1
     ){
-        override fun upgradesTo(building: LotBuildingType) = building == TEMPLE
+        override fun upgradesTo(type: LotBuildingType) = type == TEMPLE
     },
     SMITHY(
         cost = 6,
@@ -382,7 +462,11 @@ enum class LotBuildingType(
         economyBonus = 1,
         loyaltyBonus = 1,
         baseValueBonus = 500
-    ),
+    ) {
+        override fun validPosition(lots: Set<Lot>) = lots.any { l ->
+            l.neighbors.any { it !in lots && it.building?.type?.countsAs(HOUSE, MANSION, NOBLE_VILLA) == true}
+        }
+    },
     STOCKYARD(
         cost = 20,
         size = BuildingSize.HUGE,
@@ -396,7 +480,11 @@ enum class LotBuildingType(
         economyBonus = 1,
         stabilityBonus = 1,
         societyBonus = -1
-    ),
+    ) {
+        override fun validPosition(lots: Set<Lot>) = lots.any { l ->
+            l.neighbors.none { it !in lots && it.building?.type?.countsAs(HOUSE) == true}
+        }
+    },
     TAVERN(
         cost = 12,
         size = BuildingSize.NORMAL,
@@ -404,7 +492,11 @@ enum class LotBuildingType(
         loyaltyBonus = 1,
         corruptionBonus = 1,
         baseValueBonus = 500
-    ),
+    ) {
+        override fun validPosition(lots: Set<Lot>) = lots.any { l ->
+            l.neighbors.any { it !in lots && it.building?.type?.countsAs(HOUSE) == true}
+        }
+    },
     TEMPLE(
         cost = 32,
         size = BuildingSize.LARGE,
@@ -417,7 +509,8 @@ enum class LotBuildingType(
         size = BuildingSize.NORMAL,
         unrestBonus = 2
     ) {
-        override fun upgradesTo(building: LotBuildingType) = building == HOUSE
+        override fun countsAs(vararg type: BuildingType) = type.any { it == HOUSE || it == this }
+        override fun upgradesTo(type: LotBuildingType) = type == HOUSE
     },
     THEATER(
         cost = 24,
@@ -425,7 +518,7 @@ enum class LotBuildingType(
         economyBonus = 2,
         stabilityBonus = 2
     ) {
-        override fun upgradesTo(building: LotBuildingType) = building == ARENA
+        override fun upgradesTo(type: LotBuildingType) = type == ARENA
     },
     TOWN_HALL(
         cost = 22,
@@ -443,7 +536,10 @@ enum class LotBuildingType(
         productivityBonus = 1,
         baseValueBonus = 500
     ) {
-        override fun upgradesTo(building: LotBuildingType) = building == GUILDHALL
+        override fun validPosition(lots: Set<Lot>) = lots.any { l ->
+            l.neighbors.any { it !in lots && it.building?.type?.countsAs(HOUSE) == true}
+        }
+        override fun upgradesTo(type: LotBuildingType) = type == GUILDHALL
     },
     UNIVERSITY(
         cost = 78,
@@ -463,13 +559,33 @@ enum class LotBuildingType(
         economyBonus = 4,
         productivityBonus = 2,
         baseValueBonus = 4000
-    ),
+    ) {
+        override fun validPosition(lots: Set<Lot>) = lots.first().district.settlement.buildings.none { it.type == WATERFRONT }
+                && lots.any { l ->
+                    l.neighbors.any { it !in lots && it.building?.type?.countsAs(WATERWAY) == true}
+                            || (l.coordinate.y == 0 && l.district.northBorder.hasWater)
+                            || (l.coordinate.y == 5 && l.district.southBorder.hasWater)
+                            || (l.coordinate.x == 0 && l.district.westBorder.hasWater)
+                            || (l.coordinate.x == 5 && l.district.eastBorder.hasWater)
+        }
+    },
     WATERWAY(
         cost = 3,
         size = BuildingSize.NORMAL_OR_LARGE
     );
 
+    open fun countsAs(vararg type: BuildingType) = type.any { it == this }
     open fun upgradesTo(type: LotBuildingType) = false
+    open fun validPosition(lots: Set<Lot>) = true
+    fun eligible(lots: Set<Lot>): Boolean {
+        val buildings = lots.mapNotNull { it.building }.distinctBy { it.id }
+        return buildings.size <= 1
+                && size.isSize(lots.size)
+                && buildings.firstOrNull()?.type?.let{ if (it == this) return@eligible true else it.upgradesTo(this) } != false
+                && validPosition(lots)
+    }
+
+    override val displayName = name.split("_").joinToString(" ") { it.lowercase().replaceFirstChar { c -> c.uppercase() } }
 
     enum class BuildingSize {
         NORMAL,
@@ -480,5 +596,11 @@ enum class LotBuildingType(
         HUGE;
 
         open fun isSize(size: BuildingSize) = this == size
+        open fun isSize(size: Int) = when(size) {
+            1 -> isSize(NORMAL)
+            2 -> isSize(LARGE)
+            4 -> isSize(HUGE)
+            else -> false
+        }
     }
 }

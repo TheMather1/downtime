@@ -1,10 +1,13 @@
 <!DOCTYPE html>
+<!--/*@thymesVar id="campaign" type="pathfinder.domain.Campaign"*/-->
+<!--/*@thymesVar id="settlement" type="pathfinder.domain.kingdom.settlement.Settlement"*/-->
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Server Portal - Pathfinder WeatherBot</title>
+    <title th:text="@{'{settlementName} map - Pathfinder DowntimeBot'(settlementName=${settlement.name})}"/>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" th:href="@{/styles/portal.css}"/>
     <link rel="stylesheet" type="text/css" th:href="@{/styles/map.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/modal.css}"/>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://bumbu.me/svg-pan-zoom/dist/svg-pan-zoom.js"></script>
     <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
@@ -16,9 +19,7 @@
         <div class="container">
             <div th:replace="~{campaign_sidebar :: sidebar}"></div>
             <header class="navbarHeader" th:if="${campaign} != null" th:replace="~{campaign_navbar :: navbar(page='settlements')}"></header>
-            <!--/*@thymesVar id="campaign" type="pathfinder.domain.Campaign"*/-->
-            <!--/*@thymesVar id="settlement" type="pathfinder.domain.kingdom.settlement.Settlement"*/-->
-            <div th:if="${campaign} != null" class="contentWrapper">
+            <div id="mapWrapper" th:if="${campaign} != null" class="contentWrapper">
                 <header class="domainHeader">
                     <nav class="navbar domainNavbar">
                         <ul>
@@ -51,52 +52,198 @@
                         >
                             <g id="mapViewport"
                                class="svg-pan-zoom_viewport">
+                                <g id="neighborDistricts">
+                                    <rect th:each="neighbor: ${settlementMap.neighborDistricts}"
+                                          th:x="${neighbor.x}"
+                                          th:y="${neighbor.y}"
+                                          th:width="${neighbor.width}"
+                                          th:height="${neighbor.height}"
+                                          th:class="${neighbor.terrainType}"
+                                          th:hx-post="@{'/api/settlement/{settlementId}/district/'(settlementId=${settlement.id})}"
+                                          th:hx-vals="${neighbor.coordinateString}"
+                                          hx-confirm="Are you sure you want to create a new district here?"
+                                          hx-trigger="contextmenu consume"
+                                          hx-target="#mapViewport"
+                                          hx-select="svg > g"
+                                          oncontextmenu="return false;"
+                                    />
+                                </g>
                                 <g id="borders">
-                                    <polygon class="border"
-                                             th:each="border: ${settlementMap.borders}"
-                                             th:district="${border.districtId}"
-                                             th:points="${border.pointsString}"
-                                             th:borderType="${border.borderType}"
-                                    />
+                                    <g class="border" th:each="border: ${settlementMap.borders}"
+                                       th:hx-get="@{'/api/settlement/{settlementId}/border/{borderId}'(settlementId=${settlement.id}, borderId=${border.borderId})}"
+                                       hx-target="#mapWrapper"
+                                       hx-swap="beforeend"
+                                       hx-trigger="contextmenu consume"
+                                       oncontextmenu="return false;">
+                                        <polygon class="border inner" th:points="${border.innerPointString}" th:borderType="${border.innerBorderType}"/>
+                                        <polygon class="border outer" th:points="${border.outerPointString}" th:borderType="${border.outerBorderType}"/>
+                                    </g>
                                 </g>
-                                <g id="streets">
-                                    <rect th:each="street: ${settlementMap.streets}"
-                                          th:district="${street.districtId}"
-                                          th:x="${street.x}"
-                                          th:y="${street.y}"
-                                          th:width="${street.width}"
-                                          th:height="${street.height}"
-                                          th:class="${street.paved ? 'pavedStreets' : 'dirtStreets'}"
-                                    />
-                                </g>
-                                <g id="emptyLots">
-                                    <rect class="emptyLot" th:each="lot: ${settlementMap.emptyLots}"
-                                          th:district="${lot.districtId}"
-                                          th:lotX="${lot.lotX}"
-                                          th:lotY="${lot.lotY}"
-                                          th:x="${lot.x}"
-                                          th:y="${lot.y}"
-                                          th:width="${lot.width}"
-                                          th:height="${lot.height}"
-                                          th:class="emptyLot"/>
-                                </g>
-                                <g id="buildings">
-                                    <rect class="building" th:each="building: ${settlementMap.buildings}"
-                                          th:buildingId="${building.building}"
-                                          th:district="${building.districtId}"
-                                          th:x="${building.x}"
-                                          th:y="${building.y}"
-                                          th:width="${building.width}"
-                                          th:height="${building.height}"
-                                          th:buildingType="${building.buildingType.name}"/>
+                                <g id="districts">
+                                    <g class="district" th:each="district: ${settlementMap.districtElements}">
+                                        <g class="streets"
+                                           th:hx-get="@{'/api/settlement/{settlementId}/district/{districtId}'(settlementId=${settlement.id}, districtId=${district.districtId})}"
+                                           hx-target="#mapWrapper"
+                                           hx-swap="beforeend"
+                                           hx-trigger="contextmenu consume"
+                                           oncontextmenu="return false;">
+                                            <title>District infrastructure</title>
+                                            <rect th:each="street: ${district.streets}"
+                                                  th:district="${district.districtId}"
+                                                  th:x="${street.x}"
+                                                  th:y="${street.y}"
+                                                  th:width="${street.width}"
+                                                  th:height="${street.height}"
+                                                  th:class="${district.paved ? 'street paved' : 'street dirt'}"/>
+                                        </g>
+                                        <g class="lotContainer empty" stroke="black" stroke-width="1"
+                                           oncontextmenu="return false;">
+                                            <rect class="emptyLot lot" th:each="lot: ${district.emptyLots}"
+                                                  th:district="${lot.districtId}"
+                                                  th:lotId="${lot.lotId}"
+                                                  th:lotX="${lot.lotX}"
+                                                  th:lotY="${lot.lotY}"
+                                                  th:x="${lot.x}"
+                                                  th:y="${lot.y}"
+                                                  th:width="${lot.width}"
+                                                  th:height="${lot.height}"
+                                                  th:onclick="clickLot(event, [(${lot.toString()})])"
+                                            />
+                                        </g>
+                                        <g class="lotContainer building" stroke="black" stroke-width="1"
+                                           oncontextmenu="return false;">
+                                            <g th:each="building: ${district.buildings}">
+                                                <title th:text="${building.buildingType.displayName}"/>
+                                                <rect class="building lot"
+                                                      th:buildingId="${building.building}"
+                                                      th:district="${building.districtId}"
+                                                      th:x="${building.x}"
+                                                      th:y="${building.y}"
+                                                      th:width="${building.width}"
+                                                      th:height="${building.height}"
+                                                      th:buildingType="${building.buildingType.name}"
+                                                      th:onclick="clickBuilding(event, [(${building.toString()})])"
+                                                />
+                                            </g>
+                                        </g>
+                                    </g>
                                 </g>
                             </g>
                         </svg>
+                        <form id="settlementMapForm" hidden
+                              hx-trigger="contextmenu from:g.lotContainer consume"
+                              th:hx-get="@{'/api/settlement/{settlementId}/building'(settlementId=${settlement.id})}"
+                              hx-target="#mapWrapper"
+                              hx-swap="beforeend">
+                        </form>
                         <script th:inline="javascript">
                             svgPanZoom('#svgMap', {
                                 dblClickZoomEnabled: false,
                                 minZoom: 0.1
                             });
+
+                            let selectedLots = [];
+                            let selectedBuildings = [];
+
+                            function inRange(lotA, lotB) {
+                                return lotA.districtId === lotB.districtId &&
+                                    lotA.x >= lotB.x - 1 && lotA.x <= lotB.x + 1 &&
+                                    lotA.y >= lotB.y - 1 && lotA.y <= lotB.y + 1;
+                            }
+
+                            function filterLots(lot) {
+                                let removedBuildings = selectedBuildings.filter(it => it.lots.some(lotB => !inRange(lot, lotB)));
+                                let removedLots = selectedLots.filter(it => !inRange(lot, it));
+                                removedLots.forEach(it => {
+                                    $(`#settlementMapForm input[value=${it.lotId}]`).remove();
+                                    $(`rect.emptyLot.selected[lotId="${it.lotId}"]`).removeClass("selected");
+                                });
+                                removedBuildings.forEach(it => {
+                                    it.lots.forEach(obj => {
+                                        $(`#settlementMapForm input[value=${obj.lotId}]`).remove();
+                                    });
+                                    $(`rect.building.selected[buildingId="${it.buildingId}"]`).removeClass("selected");
+                                });
+                                selectedBuildings = selectedBuildings.filter(it => !removedBuildings.some(that => that.buildingId === it.buildingId));
+                                selectedLots = selectedLots.filter(it => !removedLots.some(that => that.lotId === it.lotId));
+                            }
+
+                            function clickLot(event, data) {
+                                if (event.ctrlKey) selectMultiLot(data)
+                                else selectLot(data);
+                            }
+
+                            function selectLot(lot) {
+                                selectedLots = [lot];
+                                selectedBuildings = [];
+                                $("#settlementMapForm input").remove();
+                                $("rect.building.selected, rect.emptyLot.selected").removeClass("selected");
+                                $("#settlementMapForm").append($("<input>", {
+                                    type: "hidden",
+                                    name: "lot[]",
+                                    value: lot.lotId
+                                }));
+                                $(`rect.emptyLot[lotId="${lot.lotId}"]`).addClass("selected");
+                            }
+
+                            function selectMultiLot(lot) {
+                                if (selectedLots.some(it => it.lotId === lot.lotId)) {
+                                    selectedLots = selectedLots.filter(it => it.lotId !== lot.lotId)
+                                    $(`#settlementMapForm input[value=${lot.lotId}]`).remove();
+                                    $(`rect.emptyLot[lotId="${lot.lotId}"]`).removeClass("selected");
+                                } else {
+                                    filterLots(lot);
+                                    selectedLots.push(lot);
+                                    $("#settlementMapForm").append($("<input>", {
+                                        type: "hidden",
+                                        name: "lot[]",
+                                        value: lot.lotId
+                                    }));
+                                    $(`rect.emptyLot[lotId="${lot.lotId}"]`).addClass("selected");
+                                }
+                            }
+
+                            function clickBuilding(event, data) {
+                                if (event.ctrlKey) selectMultiBuilding(data)
+                                else selectBuilding(data);
+                            }
+
+                            function selectBuilding(building) {
+                                selectedLots = [];
+                                selectedBuildings = [building];
+                                $("#settlementMapForm input").remove();
+                                $("rect.building.selected, rect.emptyLot.selected").removeClass("selected");
+                                building.lots.forEach(lot => {
+                                    $("#settlementMapForm").append($("<input>", {
+                                        type: "hidden",
+                                        name: "lot[]",
+                                        value: lot.lotId
+                                    }));
+                                });
+                                $(`rect.building[buildingId="${building.buildingId}"]`).addClass("selected");
+                            }
+
+                            function selectMultiBuilding(building) {
+                                if (selectedBuildings.some(it => it.buildingId === building.buildingId)) {
+                                    selectedBuildings = selectedBuildings.filter(it => it.buildingId !== building.buildingId)
+                                    building.lots.forEach(lot => {
+                                        $(`#settlementMapForm input[value=${lot.lotId}]`).remove();
+                                    })
+                                    $(`rect.building.selected[buildingId="${building.buildingId}"]`).removeClass("selected");
+                                }
+                                else {
+                                    building.lots.forEach(lot => filterLots(lot));
+                                    selectedBuildings.push(building);
+                                    building.lots.forEach(lot => {
+                                        $("#settlementMapForm").append($("<input>", {
+                                            type: "hidden",
+                                            name: "lot[]",
+                                            value: lot.lotId
+                                        }));
+                                    });
+                                    $(`rect.building[buildingId="${building.buildingId}"]`).addClass("selected");
+                                }
+                            }
                         </script>
                     </div>
                 </div>

@@ -1,8 +1,11 @@
 package pathfinder.domain.kingdom.settlement.buildings
 
-import jakarta.persistence.Embeddable
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
 
-@Embeddable
+@Entity
 class CustomBuildingType(
     override var name: String,
     override var corruptionBonus: Int = 0,
@@ -18,5 +21,11 @@ class CustomBuildingType(
     override var consumptionBonus: Int = 0,
     override val baseValueBonus: Int = 0
 ) : BuildingType {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0
     override val cost = 0
+
+    override val displayName: String
+        get() = name
 }

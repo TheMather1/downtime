@@ -32,4 +32,6 @@ enum class InfrastructureType(
         crimeBonus = 1,
         productivityBonus = 2
     );
+
+    override val displayName = name.split('_').joinToString(" ") { it.lowercase().replaceFirstChar { it.uppercase() } }
 }

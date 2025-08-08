@@ -19,7 +19,7 @@ enum class UpgradeType(
         cost = 6,
         economyBonus = 1
     ) {
-        override fun eligible(lot: Lot, neighbors: List<Lot>) = lot.building?.type == LotBuildingType.WATERWAY
+        override fun eligible(lot: Lot, neighbors: Collection<Lot>) = lot.building?.type == LotBuildingType.WATERWAY
     },
     CISTERN(
         cost = 6,
@@ -32,7 +32,7 @@ enum class UpgradeType(
             LotBuildingType.STOCKYARD,
             LotBuildingType.TANNERY
         )
-        override fun eligible(lot: Lot, neighbors: List<Lot>) = (neighbors + lot).none {
+        override fun eligible(lot: Lot, neighbors: Collection<Lot>) = (neighbors + lot).none {
             it.building?.type in ineligibleNeighbors
         }
     },
@@ -47,12 +47,14 @@ enum class UpgradeType(
             LotBuildingType.PARK,
             LotBuildingType.TOWN_HALL
         )
-        override fun eligible(lot: Lot, neighbors: List<Lot>) = lot.building?.type in eligibleBuldings
+        override fun eligible(lot: Lot, neighbors: Collection<Lot>) = lot.building?.type in eligibleBuldings
     },
     MAGICAL_STREETLAMPS(
         cost = 5,
         crimeBonus = -1
     );
 
-    open fun eligible(lot: Lot, neighbors: List<Lot>): Boolean = true
+    open fun eligible(lot: Lot, neighbors: Collection<Lot>): Boolean = true
+
+    override val displayName = name.split('_').joinToString(" ") { it.lowercase().replaceFirstChar { it.uppercase() } }
 }

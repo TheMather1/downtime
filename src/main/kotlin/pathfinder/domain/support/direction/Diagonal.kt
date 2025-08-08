@@ -22,5 +22,7 @@ enum class Diagonal: Direction<Diagonal> {
         override fun towards(cardinal: Cardinal) = cardinal == Cardinal.SOUTH || cardinal == Cardinal.EAST
     };
 
+    override val displayName = name.lowercase().replaceFirstChar { it.uppercase() }
+
     override val orientation = Orientation.DiagonalOrientation.DIAGONAL
 }

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
-import pathfinder.domain.CampaignRepository
+import pathfinder.repository.CampaignRepository
 import pathfinder.domain.kingdom.settlement.Settlement
 import pathfinder.web.frontend.dto.settlement.SettlementMapConfig
 

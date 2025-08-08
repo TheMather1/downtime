@@ -38,9 +38,14 @@
     /*filter: var(--north,none), var(--northWest,none), var(--northEast,none), var(--south,none), var(--southWest,none), var(--southEast,none);*/
 }
 
-.mapHex.active, .newHex.active {
+.mapHex.active, .newHex.active, .emptyLot.selected, .building.selected {
     stroke: red;
-    stroke-width: 1px;
+    stroke-width: 2px;
+}
+
+.emptyLot:hover, .building:hover {
+     stroke: blue;
+     stroke-width: 2px;
 }
 
 .mapHex[terrain="null"] {
@@ -96,24 +101,29 @@
     fill: saddlebrown;
 }
 
-.border[borderType="land"] {
+.border[borderType="land"], rect.land {
     fill: green;
 }
 
-.border[borderType="water"] {
-    fill: blue;
+.border[borderType="water"], rect.water {
+    fill: cadetblue;
 }
 
 .border[borderType="wall"] {
     fill: dimgray;
 }
 
-.pavedStreets {
+.street.paved {
     fill: grey;
 }
 
-.dirtStreets {
+.street.dirt {
     fill: saddlebrown;
+}
+
+.streets:hover, .border:hover {
+    stroke: blue;
+    stroke-width: 5px;
 }
 
 .emptyLot {
@@ -122,4 +132,8 @@
 
 .building {
     fill: saddlebrown;
+}
+
+.building[buildingType="WATERWAY"] {
+    fill: cadetblue;
 }

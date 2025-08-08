@@ -1,0 +1,33 @@
+<!--/*@thymesVar id="campaign" type="pathfinder.domain.Campaign"*/-->
+<div id="modal" _="on closeModal or keyup[key is 'Escape'] add .closing then wait for animationend then remove me"
+     xmlns:th="http://www.thymeleaf.org">
+    <div class="modal-underlay" _="on click or contextmenu trigger closeModal" oncontextmenu="return false;"></div>
+    <div class="modal-content">
+        <header class="modal-header">Choose building</header>
+        <form id="buildingForm" method="post" th:action="@{'/api/settlement/{settlementId}/building'(settlementId = ${settlement.id})}">
+            <th:block th:each="lot: ${lots}">
+                <label>
+                    <th:block th:text="${lot.coordinate.toString() + ' - ' + lot.building?.displayName ?: 'Empty'}"/>
+                    <input type="hidden" name="lot[]" th:value="${lot.id}" readonly/>
+                </label>
+                <a href="#" th:if="${lot.building != null}"
+                   th:hx-get="@{'/api/settlement/{settlementId}/lot/{lotId}'(settlementId=${settlement.id}, lotId=${lot.id})}"
+                   hx-trigger="click"
+                   hx-target="#modal"
+                   hx-swap="outerHTML">(edit)</a>
+                <br>
+            </th:block>
+            <label th:for="buildingSelect">Building type</label>
+            <select id="buildingSelect" name="buildingType">
+                <option value="">None</option>
+                <option th:each="type : ${buildingOptions}"
+                        th:value="${type.name}"
+                        th:selected="${building != null && type == building}"
+                        th:text="${type.displayName}"/>
+            </select>
+            <br>
+            <input class="inputButton" type="submit" value="Edit lots"/>
+            <input class="stopButton" type="button" value="Close" _="on click trigger closeModal"/>
+        </form>
+    </div>
+</div>

@@ -15,4 +15,6 @@ sealed interface BuildingType {
     val productivityBonus: Int
     val societyBonus: Int
     val baseValueBonus: Int
+
+    val displayName: String
 }

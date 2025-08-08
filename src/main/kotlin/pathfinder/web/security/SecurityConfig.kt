@@ -20,7 +20,7 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.exchange
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
-import pathfinder.domain.CampaignRepository
+import pathfinder.repository.CampaignRepository
 
 @Configuration
 @EnableWebSecurity

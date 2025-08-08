@@ -1,0 +1,28 @@
+<!--/*@thymesVar id="campaign" type="pathfinder.domain.Campaign"*/-->
+<!--/*@thymesVar id="district" type="pathfinder.domain.kingdom.settlement.District"*/-->
+<div id="modal" _="on closeModal or keyup[key is 'Escape'] add .closing then wait for animationend then remove me"
+     xmlns:th="http://www.thymeleaf.org">
+    <div class="modal-underlay" _="on click or contextmenu trigger closeModal" oncontextmenu="return false;"></div>
+    <div class="modal-content">
+        <header class="modal-header">Modify district</header>
+        <form id="districtForm" method="post" th:action="@{'/api/settlement/{settlementId}/district/{districtId}'(settlementId = ${settlement.id}, districtId = ${district.id})}">
+            <label>
+                Paved Streets
+                <input type="checkbox" name="paved" th:checked="${district.paved}"/>
+            </label>
+            <br>
+            <label>
+                Sewer System
+                <input type="checkbox" name="sewer" th:checked="${district.sewer}"/>
+            </label>
+            <br>
+            <label>
+                Magical Streetlamps
+                <input type="checkbox" name="streetlamps" th:checked="${district.streetlamps}"/>
+            </label>
+            <br>
+            <input class="inputButton" type="submit" value="Edit district"/>
+            <input class="stopButton" type="button" value="Close" _="on click trigger closeModal"/>
+        </form>
+    </div>
+</div>

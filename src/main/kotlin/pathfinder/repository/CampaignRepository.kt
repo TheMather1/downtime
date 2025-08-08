@@ -1,10 +1,11 @@
-package pathfinder.domain
+package pathfinder.repository
 
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
+import pathfinder.domain.Campaign
 
 @Repository
 interface CampaignRepository: JpaRepository<Campaign, Long> {

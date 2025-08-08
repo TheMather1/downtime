@@ -69,7 +69,9 @@ class Settlement(
         get() = districts.values.flatMap { it.buildings }.toSet()
 
     private val buildingCorruption
-        get() = buildings.sumOf { it.corruptionBonus }
+        get() = buildings.sumOf {
+            it.corruptionBonus
+        }
 
     private val buildingCrime
         get() = buildings.sumOf { it.crimeBonus }
@@ -89,13 +91,13 @@ class Settlement(
     val granaryCapacity
         get() = buildings.count { it.type == LotBuildingType.GRANARY } * 5
 
-    fun addDistrict(coordinate: Coordinate) {
+    fun addDistrict(coordinate: Coordinate): District {
         if(districts.containsKey(coordinate)) throw IllegalArgumentException("District $coordinate is already registered.")
         val north = districts[coordinate.north]
         val east = districts[coordinate.east]
         val south = districts[coordinate.south]
         val west = districts[coordinate.west]
-        districts[coordinate] = District(
+        val district = District(
             settlement = this,
             coordinate = coordinate,
             northBorder = north?.southBorder,
@@ -103,6 +105,26 @@ class Settlement(
             southBorder = south?.northBorder,
             westBorder = west?.eastBorder
         )
+        Cardinal.entries.forEach { a ->
+            val border = when(a) {
+                Cardinal.NORTH -> district.northBorder
+                Cardinal.EAST -> district.eastBorder
+                Cardinal.SOUTH -> district.southBorder
+                Cardinal.WEST -> district.westBorder
+            }
+            if (!border.facingDistrict && Cardinal.entries.any { b ->
+                a != b && districts[coordinate.get(a).get(b)]?.let {
+                    when(b) {
+                        Cardinal.NORTH -> it.southBorder
+                        Cardinal.EAST -> it.westBorder
+                        Cardinal.SOUTH -> it.northBorder
+                        Cardinal.WEST -> it.eastBorder
+                    }.type == DistrictBorder.BorderType.WATER
+                } ?: false
+            }) border.type = DistrictBorder.BorderType.WATER
+        }
+        districts[coordinate] = district
+        return district
     }
 
     fun removeDistrict(coordinate: Coordinate) {

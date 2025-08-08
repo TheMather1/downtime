@@ -7,5 +7,8 @@ class LotRectElement(
     height: Double,
     districtId: Long,
     val lotX: Int,
-    val lotY: Int
-): DistrictRectElement(x, y, width, height, districtId)
+    val lotY: Int,
+    val lotId: Long
+): DistrictRectElement(x, y, width, height, districtId) {
+    override fun toString() = "{lotId: $lotId, districtId: $districtId, x: $lotX, y: $lotY}"
+}

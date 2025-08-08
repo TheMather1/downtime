@@ -31,14 +31,37 @@ abstract class DistrictBorder(
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
     private val buildings = mutableSetOf<BorderBuilding>()
-
     open fun getBuildings() = buildings.toSet()
-    fun addBuilding(building: BorderBuildingType) = if (buildings.any { it.type == building }) throw IllegalArgumentException("Duplicate building type.")
-        else buildings.add(BorderBuilding(building))
-    fun removeBuilding(building: BorderBuildingType) = buildings.removeIf { it.type == building }
+    var cityWall
+        get() = buildings.any { it.type == BorderBuildingType.CITY_WALL }
+        set(value) {
+            if(value && !cityWall) buildings.add(BorderBuilding(BorderBuildingType.CITY_WALL))
+            else if(!value && cityWall) buildings.removeIf { it.type == BorderBuildingType.CITY_WALL }
+        }
+    var moat
+        get() = buildings.any { it.type == BorderBuildingType.MOAT }
+        set(value) {
+            if(value && !moat) buildings.add(BorderBuilding(BorderBuildingType.MOAT))
+            else if(!value && moat) buildings.removeIf { it.type == BorderBuildingType.MOAT }
+        }
+    var streetlamps
+        get() = buildings.any { it.type == BorderBuildingType.MAGICAL_STREETLAMPS }
+        set(value) {
+            if(value && !streetlamps) buildings.add(BorderBuilding(BorderBuildingType.MAGICAL_STREETLAMPS))
+            else if(!value && streetlamps) buildings.removeIf { it.type == BorderBuildingType.MAGICAL_STREETLAMPS }
+        }
+    var watergate
+        get() = buildings.any { it.type == BorderBuildingType.WATERGATE }
+        set(value) {
+            if(value && !watergate) buildings.add(BorderBuilding(BorderBuildingType.WATERGATE))
+            else if(!value && watergate) buildings.removeIf { it.type == BorderBuildingType.WATERGATE }
+        }
+
+    val hasWater
+        get() = type == BorderType.WATER || buildings.any { it.type == BorderBuildingType.MOAT }
 
     fun flip() {
-        facing = facing.opposite
+        facing = facing.opposite as Cardinal
     }
 
     abstract val facingDistrict: Boolean

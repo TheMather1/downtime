@@ -28,4 +28,6 @@ enum class BorderBuildingType(
     WATERGATE(
         cost = 2
     );
+
+    override val displayName = name.split('_').joinToString(" ") { it.lowercase().replaceFirstChar { it.uppercase() } }
 }

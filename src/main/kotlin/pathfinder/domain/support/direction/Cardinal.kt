@@ -18,5 +18,7 @@ enum class Cardinal(override val orientation: Orientation): Direction<Cardinal> 
             get() = NORTH
     };
 
+    override val displayName = name.lowercase().replaceFirstChar { it.uppercase() }
+
     override fun towards(cardinal: Cardinal) = this == cardinal
 }

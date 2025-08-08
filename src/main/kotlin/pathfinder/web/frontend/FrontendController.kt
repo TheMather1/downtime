@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.entities.User
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.ModelAttribute
-import pathfinder.domain.CampaignRepository
+import pathfinder.repository.CampaignRepository
 import pathfinder.web.security.DiscordUser
 
 interface FrontendController {

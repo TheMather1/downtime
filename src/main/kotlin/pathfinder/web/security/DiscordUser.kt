@@ -7,7 +7,7 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.security.oauth2.core.user.OAuth2UserAuthority
-import pathfinder.domain.CampaignRepository
+import pathfinder.repository.CampaignRepository
 
 class DiscordUser(
     private val attributes: Map<String, String>,

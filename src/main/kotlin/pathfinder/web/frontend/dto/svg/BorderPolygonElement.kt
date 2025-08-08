@@ -1,20 +1,28 @@
 package pathfinder.web.frontend.dto.svg
 
 import pathfinder.domain.kingdom.settlement.DistrictBorder
-import pathfinder.domain.kingdom.settlement.buildings.BorderBuildingType
-import pathfinder.domain.support.direction.Cardinal
 
 open class BorderPolygonElement(
-    side: Cardinal,
-    coordinates: Set<Pair<Double, Double>>,
-    districtId: Long,
+    val innerCoordinates: Set<Pair<Double, Double>>,
+    val outerCoordinates: Set<Pair<Double, Double>>,
+    val borderId: Long,
     val type: DistrictBorder.BorderType,
-    val building: BorderBuildingType?
-) : DistrictPolygonElement(coordinates, districtId) {
-    val borderType = when {
-        building == BorderBuildingType.CITY_WALL -> "wall"
-        building == BorderBuildingType.MOAT -> "water"
+    val wall: Boolean,
+    val moat: Boolean
+) {
+    val innerBorderType = when {
+        wall -> "wall"
         type == DistrictBorder.BorderType.WATER -> "water"
         else -> "land"
     }
+    val outerBorderType = when {
+        moat -> "water"
+        type == DistrictBorder.BorderType.WATER -> "water"
+        else -> "land"
+    }
+
+    val innerPointString
+        get() = innerCoordinates.joinToString(" ") { "${it.first},${it.second}" }
+    val outerPointString
+        get() = outerCoordinates.joinToString(" ") { "${it.first},${it.second}" }
 }

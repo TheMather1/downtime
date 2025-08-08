@@ -4,7 +4,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
-import pathfinder.domain.CampaignRepository
+import pathfinder.repository.CampaignRepository
 import pathfinder.domain.kingdom.terrain.KingdomMap
 import pathfinder.domain.kingdom.terrain.TerrainType
 import pathfinder.domain.support.coordinate.HexCoordinate

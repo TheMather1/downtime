@@ -1,0 +1,40 @@
+<!--/*@thymesVar id="campaign" type="pathfinder.domain.Campaign"*/-->
+<!--/*@thymesVar id="lot" type="pathfinder.domain.kingdom.settlement.buildings.Lot"*/-->
+<div id="modal" _="on closeModal or keyup[key is 'Escape'] add .closing then wait for animationend then remove me"
+     xmlns:th="http://www.thymeleaf.org">
+    <div class="modal-underlay" _="on click or contextmenu trigger closeModal" oncontextmenu="return false;"></div>
+    <div class="modal-content">
+        <header class="modal-header">Modify lot</header>
+        <form id="districtForm" method="post" th:action="@{'/api/settlement/{settlementId}/lot/{lotId}'(settlementId = ${settlement.id}, lotId = ${lot.id})}">
+            <th:block th:if="${lot.bridgeEligible}">
+                <label>
+                    Bridge
+                    <input type="checkbox" name="bridge" th:checked="${lot.bridge}"/>
+                </label>
+                <br>
+            </th:block>
+            <th:block th:if="${lot.cisternEligible}">
+                <label>
+                    Cistern
+                    <input type="checkbox" name="cistern" th:checked="${lot.cistern}"/>
+                </label>
+                <br>
+            </th:block>
+            <th:block th:if="${lot.everflowingSpringEligible}">
+                <label>
+                    Everflowing Spring
+                    <input type="checkbox" name="everflowingSpring" th:checked="${lot.everflowingSpring}"/>
+                </label>
+                <br>
+            </th:block>
+            <label>
+                Magical Streetlamps
+                <input type="checkbox" name="streetlamps" th:checked="${lot.streetlamps}"/>
+                <br>
+            </label>
+            <br>
+            <input class="inputButton" type="submit" value="Edit lot"/>
+            <input class="stopButton" type="button" value="Close" _="on click trigger closeModal"/>
+        </form>
+    </div>
+</div>

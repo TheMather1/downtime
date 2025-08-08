@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
-import pathfinder.domain.CampaignRepository
+import pathfinder.repository.CampaignRepository
 import pathfinder.domain.character.PathfinderCharacter
 import pathfinder.domain.kingdom.Kingdom
 import pathfinder.domain.kingdom.KingdomScore
