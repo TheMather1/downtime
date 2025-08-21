@@ -7,6 +7,7 @@ import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Embedded
 import jakarta.persistence.Entity
+import jakarta.persistence.ForeignKey
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -28,7 +29,10 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "ruler_forced_vacancy"))
         ]
     )
-    @AssociationOverride(name = "character", joinColumns = [JoinColumn(name = "ruler_character_id")])
+    @AssociationOverride(name = "character", joinColumns = [JoinColumn(
+        name = "ruler_character_id",
+        foreignKey = ForeignKey(foreignKeyDefinition = "FOREIGN KEY (ruler_character_id) REFERENCES pathfinder_character(id) ON DELETE SET NULL")
+    )])
     var ruler: LeadershipRole.Ruler = LeadershipRole.Ruler(),
 
     @Embedded
@@ -38,7 +42,10 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "consort_forced_vacancy"))
         ]
     )
-    @AssociationOverride(name = "character", joinColumns = [JoinColumn(name = "consort_character_id")])
+    @AssociationOverride(name = "character", joinColumns = [JoinColumn(
+        name = "consort_character_id",
+        foreignKey = ForeignKey(foreignKeyDefinition = "FOREIGN KEY (consort_character_id) REFERENCES pathfinder_character(id) ON DELETE SET NULL")
+    )])
     var consort: LeadershipRole.Consort = LeadershipRole.Consort(),
 
     @Embedded
@@ -48,7 +55,10 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "heir_forced_vacancy"))
         ]
     )
-    @AssociationOverride(name = "character", joinColumns = [JoinColumn(name = "heir_character_id")])
+    @AssociationOverride(name = "character", joinColumns = [JoinColumn(
+        name = "heir_character_id",
+        foreignKey = ForeignKey(foreignKeyDefinition = "FOREIGN KEY (heir_character_id) REFERENCES pathfinder_character(id) ON DELETE SET NULL")
+    )])
     var heir: LeadershipRole.Heir = LeadershipRole.Heir(),
 
     @Embedded
@@ -58,7 +68,10 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "councillor_forced_vacancy"))
         ]
     )
-    @AssociationOverride(name = "character", joinColumns = [JoinColumn(name = "councillor_character_id")])
+    @AssociationOverride(name = "character", joinColumns = [JoinColumn(
+        name = "councillor_character_id",
+        foreignKey = ForeignKey(foreignKeyDefinition = "FOREIGN KEY (councillor_character_id) REFERENCES pathfinder_character(id) ON DELETE SET NULL")
+    )])
     var councillor: LeadershipRole.Councillor = LeadershipRole.Councillor(),
 
     @Embedded
@@ -68,7 +81,10 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "general_forced_vacancy"))
         ]
     )
-    @AssociationOverride(name = "character", joinColumns = [JoinColumn(name = "general_character_id")])
+    @AssociationOverride(name = "character", joinColumns = [JoinColumn(
+        name = "general_character_id",
+        foreignKey = ForeignKey(foreignKeyDefinition = "FOREIGN KEY (general_character_id) REFERENCES pathfinder_character(id) ON DELETE SET NULL")
+    )])
     var general: LeadershipRole.General = LeadershipRole.General(),
 
     @Embedded
@@ -78,7 +94,10 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "grand_diplomat_forced_vacancy"))
         ]
     )
-    @AssociationOverride(name = "character", joinColumns = [JoinColumn(name = "grand_diplomat_character_id")])
+    @AssociationOverride(name = "character", joinColumns = [JoinColumn(
+        name = "grand_diplomat_character_id",
+        foreignKey = ForeignKey(foreignKeyDefinition = "FOREIGN KEY (grand_diplomat_character_id) REFERENCES pathfinder_character(id) ON DELETE SET NULL")
+    )])
     var grandDiplomat: LeadershipRole.GrandDiplomat = LeadershipRole.GrandDiplomat(),
 
     @Embedded
@@ -88,7 +107,10 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "high_priest_forced_vacancy"))
         ]
     )
-    @AssociationOverride(name = "character", joinColumns = [JoinColumn(name = "high_priest_character_id")])
+    @AssociationOverride(name = "character", joinColumns = [JoinColumn(
+        name = "high_priest_character_id",
+        foreignKey = ForeignKey(foreignKeyDefinition = "FOREIGN KEY (high_priest_character_id) REFERENCES pathfinder_character(id) ON DELETE SET NULL")
+    )])
     var highPriest: LeadershipRole.HighPriest = LeadershipRole.HighPriest(),
 
     @Embedded
@@ -98,7 +120,10 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "magister_forced_vacancy"))
         ]
     )
-    @AssociationOverride(name = "character", joinColumns = [JoinColumn(name = "magister_character_id")])
+    @AssociationOverride(name = "character", joinColumns = [JoinColumn(
+        name = "magister_character_id",
+        foreignKey = ForeignKey(foreignKeyDefinition = "FOREIGN KEY (magister_character_id) REFERENCES pathfinder_character(id) ON DELETE SET NULL")
+    )])
     var magister: LeadershipRole.Magister = LeadershipRole.Magister(),
 
     @Embedded
@@ -108,7 +133,10 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "marshal_forced_vacancy"))
         ]
     )
-    @AssociationOverride(name = "character", joinColumns = [JoinColumn(name = "marshal_character_id")])
+    @AssociationOverride(name = "character", joinColumns = [JoinColumn(
+        name = "marshal_character_id",
+        foreignKey = ForeignKey(foreignKeyDefinition = "FOREIGN KEY (marshal_character_id) REFERENCES pathfinder_character(id) ON DELETE SET NULL")
+    )])
     var marshal: LeadershipRole.Marshal = LeadershipRole.Marshal(),
 
     @Embedded
@@ -118,7 +146,10 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "royal_enforcer_forced_vacancy"))
         ]
     )
-    @AssociationOverride(name = "character", joinColumns = [JoinColumn(name = "royal_enforcer_character_id")])
+    @AssociationOverride(name = "character", joinColumns = [JoinColumn(
+        name = "royal_enforcer_character_id",
+        foreignKey = ForeignKey(foreignKeyDefinition = "FOREIGN KEY (royal_enforcer_character_id) REFERENCES pathfinder_character(id) ON DELETE SET NULL")
+    )])
     var royalEnforcer: LeadershipRole.RoyalEnforcer = LeadershipRole.RoyalEnforcer(),
 
     @Embedded
@@ -128,7 +159,10 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "spymaster_forced_vacancy"))
         ]
     )
-    @AssociationOverride(name = "character", joinColumns = [JoinColumn(name = "spymaster_character_id")])
+    @AssociationOverride(name = "character", joinColumns = [JoinColumn(
+        name = "spymaster_character_id",
+        foreignKey = ForeignKey(foreignKeyDefinition = "FOREIGN KEY (spymaster_character_id) REFERENCES pathfinder_character(id) ON DELETE SET NULL")
+    )])
     var spymaster: LeadershipRole.Spymaster = LeadershipRole.Spymaster(),
 
     @Embedded
@@ -138,7 +172,10 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "treasurer_forced_vacancy"))
         ]
     )
-    @AssociationOverride(name = "character", joinColumns = [JoinColumn(name = "treasurer_character_id")])
+    @AssociationOverride(name = "character", joinColumns = [JoinColumn(
+        name = "treasurer_character_id",
+        foreignKey = ForeignKey(foreignKeyDefinition = "FOREIGN KEY (treasurer_character_id) REFERENCES pathfinder_character(id) ON DELETE SET NULL")
+    )])
     var treasurer: LeadershipRole.Treasurer = LeadershipRole.Treasurer(),
 
     @Embedded
@@ -148,7 +185,10 @@ data class Government(
             AttributeOverride(name = "forcedVacancy", column = Column(name = "warden_forced_vacancy"))
         ]
     )
-    @AssociationOverride(name = "character", joinColumns = [JoinColumn(name = "warden_character_id")])
+    @AssociationOverride(name = "character", joinColumns = [JoinColumn(
+        name = "warden_character_id",
+        foreignKey = ForeignKey(foreignKeyDefinition = "FOREIGN KEY (warden_character_id) REFERENCES pathfinder_character(id) ON DELETE SET NULL")
+    )])
     var warden: LeadershipRole.Warden = LeadershipRole.Warden(),
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "government")
