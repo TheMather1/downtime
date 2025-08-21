@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="navbar">
+    <!--/*@thymesVar id="campaign" type="pathfinder.domain.Campaign"*/-->
+    <!--/*@thymesVar id="map" type="pathfinder.domain.kingdom.terrain.KingdomMap"*/-->
+    <header class="domainHeader">
+        <nav class="navbar domainNavbar">
+            <ul>
+                <li th:each="m : ${#lists.sort(campaign.maps)}" th:classappend="${map?.id == m.id} ? 'activeContent'">
+                    <a th:href="@{'/map/{mapId}'(mapId=${m.id})}" th:text="${m.name}"/>
+                </li>
+                <li>
+                    <button id="newMapTab" class="formOpen" popovertarget="newMapModal">
+                        +
+                    </button>
+                </li>
+            </ul>
+            <div id="newMapModal" class="formModal-content" popover>
+                <form name="NewMapForm" th:action="@{'/api/campaign/{campaignId}/map'(campaignId = ${campaign.id})}" method="post">
+                    <label for="mapName">Map name:</label>
+                    <input type="text" name="name" id="mapName"/>
+                    <br>
+                    <label for="generateCheckbox">Generate map?</label>
+                    <input type="checkbox" id="generateCheckbox" onchange="$('#mapSize').prop('disabled', !this.checked)"/>
+                    <br>
+                    <fieldset id="mapSize" disabled>
+                        <legend>Map size</legend>
+                        <label for="mapHeight">Height:</label>
+                        <input type="number" name="height" id="mapHeight" min="1" max="250"/>
+                        <label for="mapWidth">Width:</label>
+                        <input type="number" name="width" id="mapWidth" min="1" max="250"/><br>
+                        Warning: Larger maps may take several minutes to generate.
+                    </fieldset>
+                    <br><br>
+                    <input class="formSubmit inputButton" type="submit" value="Create Map" onclick="disabled ='true'; value = 'Generating...'; form.submit();"/>
+                </form>
+            </div>
+        </nav>
+    </header>
+</th:block>

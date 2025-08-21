@@ -18,7 +18,6 @@ import pathfinder.domain.kingdom.KingdomScore
 @MappedSuperclass
 sealed class LeadershipRole: Cloneable {
     @ManyToOne
-    @JoinColumn(insertable = false, updatable = false)
     var character: PathfinderCharacter? = null
     @get:Transient
     abstract val roleName: RoleName

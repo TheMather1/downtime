@@ -52,7 +52,7 @@ class SettlementBackendController(
         model.addAttribute("buildingOptions", options)
         model.addAttribute("settlement", settlement)
         model.addAttribute("lots", lots)
-        return "settlements/buildingForm"
+        return "settlements/templates/buildingForm"
     }
 
     @PostMapping("/{settlement}/building")
@@ -76,7 +76,7 @@ class SettlementBackendController(
         @PathVariable("lot") @ModelAttribute lot: Lot
     ): String {
         assert(lot.building != null)
-        return "settlements/lotForm"
+        return "settlements/templates/lotForm"
     }
 
     @PostMapping("/{settlement}/lot/{lot}")
@@ -102,7 +102,7 @@ class SettlementBackendController(
     fun getBorder(
         @PathVariable("border") @ModelAttribute border: DistrictBorder
     ): String {
-        return "/settlements/borderForm"
+        return "/settlements/templates/borderForm"
     }
 
     @PostMapping("/{settlement}/border/{border}")
@@ -165,7 +165,7 @@ class SettlementBackendController(
     fun getDistrict(
         @PathVariable("district") @ModelAttribute district: District
     ): String {
-        return "/settlements/districtForm"
+        return "/settlements/templates/districtForm"
     }
 
     @PostMapping("/{settlement}/district/{district}")

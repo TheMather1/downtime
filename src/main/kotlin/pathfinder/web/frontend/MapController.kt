@@ -40,7 +40,7 @@ class MapController(override val campaignRepository: CampaignRepository): Fronte
     fun mapView() = "maps/map"
 
     @GetMapping("/template")
-    fun templateView() = "maps/mapTemplate"
+    fun templateView() = "maps/templates/hexMap"
 
     @GetMapping("/hex")
     fun getHexForm(
@@ -56,6 +56,6 @@ class MapController(override val campaignRepository: CampaignRepository): Fronte
         val hex = map.get(coordinate)
         model.addAttribute("hex", hex)
         model.addAttribute("terrain", terrain ?: hex?.terrain)
-        return "maps/formTemplate"
+        return "maps/templates/hexForm"
     }
 }

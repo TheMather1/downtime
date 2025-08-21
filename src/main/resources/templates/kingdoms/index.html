@@ -12,23 +12,10 @@
 <div class="wrapper">
     <div class="window">
         <div class="container">
-            <div th:replace="~{campaign_sidebar :: sidebar}"></div>
-            <header class="navbarHeader" th:if="${campaign} != null" th:replace="~{campaign_navbar :: navbar(page='kingdoms')}"></header>
+            <div th:replace="~{tags/navigation :: sidebar}"></div>
+            <header class="navbarHeader" th:if="${campaign} != null" th:replace="~{tags/navigation :: navbar(page='kingdoms')}"></header>
             <div th:if="${campaign} != null" class="contentWrapper">
-                <header class="domainHeader">
-                    <nav class="navbar domainNavbar">
-                        <ul>
-                            <li th:each="k : ${#lists.sort(campaign.kingdoms)}">
-                                <a th:href="@{'/kingdom/{kingdomId}'(kingdomId=${k.id})}" th:text="${k.name}"/>
-                            </li>
-                            <li>
-                                <a id="newKingdomTab" class="formOpen" onclick="$('#newKingdomModal').show()">
-                                    +
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                </header>
+                <header class="domainHeader" th:replace="~{kingdoms/templates/fragments :: navbar}"></header>
                 <div class="content pagedContent">
                     <table>
                         <tr>
@@ -61,6 +48,5 @@
         $('#mapView').addMap(campaignId, true, offsetX, offsetY, mapData, rivers, roads);
     </script>
 </th:block>
-<th:block th:replace="~{tags/forms :: forms}"/>
 </body>
 </html>

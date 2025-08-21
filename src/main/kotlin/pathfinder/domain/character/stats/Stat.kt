@@ -1,17 +1,18 @@
 package pathfinder.domain.character.stats
 
-import jakarta.persistence.*
+import jakarta.persistence.MappedSuperclass
+import jakarta.persistence.Transient
 
-@Embeddable
-@Inheritance(strategy = InheritanceType.JOINED)
-abstract class Stat(open var base: Int = 0) {
-    @Lob
-    @Column(columnDefinition = "CLOB")
-    val bonuses: MutableList<Bonus> = mutableListOf()
+@MappedSuperclass
+abstract class Stat() {
+    abstract var base: Int
+    abstract val bonuses: BonusSet
 
+    @get:Transient
+    val applicableBonuses
+        get() = BonusType.applicableTo(this)
+
+    @get:Transient
     val value
-        get() = base + bonuses.groupBy(Bonus::type).map {
-            if(it.key.stacks) it.value.sumOf { it.value }
-            else it.value.maxOf { it.value }
-        }.sum()
+        get() = base + bonuses.sum()
 }

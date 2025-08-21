@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="navbar">
+    <!--/*@thymesVar id="campaign" type="pathfinder.domain.Campaign"*/-->
+    <!--/*@thymesVar id="kingdom" type="pathfinder.domain.kingdom.Kingdom"*/-->
+    <header class="domainHeader">
+        <nav class="navbar domainNavbar">
+            <ul>
+                <li th:each="k : ${#lists.sort(campaign.kingdoms)}" th:classappend="${kingdom?.id == k.id} ? 'activeContent'">
+                    <a th:href="@{'/kingdom/{kingdomId}'(kingdomId=${k.id})}" th:text="${k.name}"/>
+                </li>
+                <li>
+                    <button id="newKingdomTab" class="formOpen" popovertarget="newKingdomModal">
+                        +
+                    </button>
+                </li>
+            </ul>
+            <div id="newKingdomModal" class="formModal-content" popover>
+                <form name="NewKingdomForm" th:action="@{'/api/campaign/{campaignId}/kingdom'(campaignId = ${campaign.id})}" method="post">
+                    <label for="kingdomName">Kingdom name:</label>
+                    <input type="text" name="name" id="kingdomName"/>
+                    <br>
+                    <label for="kingdomColor">Map color:</label>
+                    <input type="color" name="mapColor" id="kingdomColor"/>
+                    <br><br>
+                    <input class="formSubmit inputButton" type="submit" value="Create Kingdom" onclick=/>
+                </form>
+            </div>
+        </nav>
+    </header>
+</th:block>

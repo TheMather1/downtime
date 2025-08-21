@@ -11,8 +11,8 @@
 <div class="wrapper">
     <div class="window">
         <div class="container">
-            <div th:replace="~{campaign_sidebar :: sidebar}"></div>
-            <header class="campaignDetails" th:replace="~{campaign_navbar :: navbar(page='main')}"></header>
+            <div th:replace="~{tags/navigation :: sidebar}"></div>
+            <header class="campaignDetails" th:replace="~{tags/navigation :: navbar(page='main')}"></header>
             <div class="contentWrapper">
                 <div class="content">
                     <section class="settings">
@@ -46,6 +46,5 @@
         </div>
     </div>
 </div>
-<th:block th:replace="~{tags/forms :: forms}"/>
 </body>
 </html>

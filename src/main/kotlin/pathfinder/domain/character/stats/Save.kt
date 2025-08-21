@@ -1,24 +1,43 @@
 package pathfinder.domain.character.stats
 
-import jakarta.persistence.Embeddable
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
-import jakarta.persistence.Inheritance
-import jakarta.persistence.InheritanceType
+import jakarta.persistence.*
 import pathfinder.domain.character.PathfinderCharacter
+import pathfinder.domain.support.jpa.BonusConverter
 
-@Embeddable
-@Inheritance(strategy = InheritanceType.JOINED)
-sealed class Save(
-    @Enumerated(EnumType.STRING)
-    var abilityScore: AbilityScore.Value,
-): Stat(0) {
+@MappedSuperclass
+sealed class Save(): Stat() {
+    abstract var abilityScore: AbilityScore.Value
+
     @Embeddable
-    class Fortitude: Save(AbilityScore.Value.CONSTITUTION)
+    class Fortitude: Save() {
+        override var base = 0
+        @Enumerated(EnumType.STRING)
+        override var abilityScore: AbilityScore.Value = AbilityScore.Value.CONSTITUTION
+
+        @Column(columnDefinition = "CLOB")
+        @Convert(converter = BonusConverter::class)
+        override val bonuses: BonusSet = BonusSet()
+    }
     @Embeddable
-    class Reflex: Save(AbilityScore.Value.DEXTERITY)
+    class Reflex: Save() {
+        override var base = 0
+        @Enumerated(EnumType.STRING)
+        override var abilityScore: AbilityScore.Value = AbilityScore.Value.DEXTERITY
+
+        @Column(columnDefinition = "CLOB")
+        @Convert(converter = BonusConverter::class)
+        override val bonuses: BonusSet = BonusSet()
+    }
     @Embeddable
-    class Willpower: Save(AbilityScore.Value.WISDOM)
+    class Willpower: Save() {
+        override var base = 0
+        @Enumerated(EnumType.STRING)
+        override var abilityScore: AbilityScore.Value = AbilityScore.Value.WISDOM
+
+        @Column(columnDefinition = "CLOB")
+        @Convert(converter = BonusConverter::class)
+        override val bonuses: BonusSet = BonusSet()
+    }
 
     fun bonus(character: PathfinderCharacter) = value + character.abilityScores[abilityScore].bonus
 }

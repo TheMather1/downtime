@@ -1,41 +1,5 @@
 <!DOCTYPE html>
 <th:block xmlns:th="http://www.thymeleaf.org" th:fragment="forms">
-    <!--/*@thymesVar id="campaign" type="pathfinder.domain.Campaign"*/-->
-    <!--/*@thymesVar id="map" type="pathfinder.domain.kingdom.terrain.KingdomMap"*/-->
-    <div id="newCampaignModal" class="formModal">
-        <div class="formModal-content">
-            <span class="campaignFormClose" onclick="$('#newCampaignModal').hide()">&times;</span>
-            <form name="NewCampaignForm" action="/api/campaign" method="post">
-                <label for="campaignName">Campaign name:</label>
-                <input type="text" name="name" id="campaignName"/>
-                <br><br>
-                <input class="formSubmit inputButton" type="submit" value="Create Campaign" onclick=/>
-            </form>
-        </div>
-    </div>
-    <div id="newMapModal" class="formModal" th:if="${campaign != null}">
-        <div class="formModal-content">
-            <span class="mapFormClose" onclick="$('#newMapModal').hide()">&times;</span>
-            <form name="NewMapForm" th:action="@{'/api/campaign/{campaignId}/map'(campaignId = ${campaign.id})}" method="post">
-                <label for="mapName">Map name:</label>
-                <input type="text" name="name" id="mapName"/>
-                <br>
-                <label for="generateCheckbox">Generate map?</label>
-                <input type="checkbox" id="generateCheckbox" onchange="$('#mapSize').prop('disabled', !this.checked)"/>
-                <br>
-                <fieldset id="mapSize" disabled>
-                    <legend>Map size</legend>
-                    <label for="mapHeight">Height:</label>
-                    <input type="number" name="height" id="mapHeight" min="1" max="250"/>
-                    <label for="mapWidth">Width:</label>
-                    <input type="number" name="width" id="mapWidth" min="1" max="250"/><br>
-                    Warning: Larger maps may take several minutes to generate.
-                </fieldset>
-                <br><br>
-                <input class="formSubmit inputButton" type="submit" value="Create Map" onclick="disabled ='true'; value = 'Generating...'; form.submit();"/>
-            </form>
-        </div>
-    </div>
     <div id="newSettlementModal" class="formModal" th:if="${map != null}">
         <div class="formModal-content">
             <span class="settlementFormClose" onclick="$('#newSettlementModal').hide()">&times;</span>
@@ -46,26 +10,6 @@
                 <input type="text" name="name" id="settlementName"/>
                 <br><br>
                 <input class="formSubmit inputButton" type="submit" value="Create Settlement" onclick=/>
-            </form>
-        </div>
-    </div>
-</th:block>
-
-
-<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="forms">
-    <!--/*@thymesVar id="campaign" type="pathfinder.domain.Campaign"*/-->
-    <!--/*@thymesVar id="map" type="pathfinder.domain.kingdom.terrain.KingdomMap"*/-->
-    <div id="newKingdomModal" class="formModal" th:if="${campaign != null}">
-        <div class="formModal-content">
-            <span class="kingdomFormClose" onclick="$('#newKingdomModal').hide()">&times;</span>
-            <form name="NewKingdomForm" th:action="@{'/api/campaign/{campaignId}/kingdom'(campaignId = ${campaign.id})}" method="post">
-                <label for="kingdomName">Kingdom name:</label>
-                <input type="text" name="name" id="kingdomName"/>
-                <br>
-                <label for="kingdomColor">Map color:</label>
-                <input type="color" name="mapColor" id="kingdomColor"/>
-                <br><br>
-                <input class="formSubmit inputButton" type="submit" value="Create Kingdom" onclick=/>
             </form>
         </div>
     </div>

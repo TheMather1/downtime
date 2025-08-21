@@ -4,11 +4,14 @@ import org.slf4j.LoggerFactory
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.stereotype.Controller
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import pathfinder.domain.Campaign
-import pathfinder.repository.CampaignRepository
 import pathfinder.domain.kingdom.Kingdom
 import pathfinder.domain.kingdom.terrain.KingdomMap
+import pathfinder.repository.CampaignRepository
 import pathfinder.repository.KingdomMapRepository
 import pathfinder.repository.KingdomRepository
 import pathfinder.service.generation.KingdomMapGenerator
@@ -37,10 +40,10 @@ class CampaignBackendController(
         return "redirect:/campaign/" + campaign.id
     }
 
-    @PostMapping("/{campaign}/kingdom")
+    @PostMapping("/{campaignId}/kingdom")
     @Transactional
     fun createKingdom(
-        @PathVariable("campaign") campaign: Campaign,
+        @PathVariable("campaignId") campaign: Campaign,
         @RequestParam("name") name: String,
         @RequestParam("mapColor") color: String
     ): String {
@@ -49,10 +52,10 @@ class CampaignBackendController(
         return "redirect:/kingdom/${kingdom.id}"
     }
 
-    @PostMapping("/{campaign}/map")
+    @PostMapping("/{campaignId}/map")
     @Transactional
     fun createMap(
-        @PathVariable("campaign") campaign: Campaign,
+        @PathVariable("campaignId") campaign: Campaign,
         @RequestParam("name") name: String,
         @RequestParam("height", required = false) mapHeight: Int?,
         @RequestParam("width", required = false) mapWidth: Int?

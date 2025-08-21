@@ -29,9 +29,6 @@ class KingdomController(override val campaignRepository: CampaignRepository): Fr
     @GetMapping
     fun mapView() = "kingdoms/kingdom"
 
-    @GetMapping("/template")
-    fun templateView() = "kingdoms/mapTemplate"
-
 
     @GetMapping("/government")
     fun getGovernment(
@@ -39,7 +36,7 @@ class KingdomController(override val campaignRepository: CampaignRepository): Fr
         model: Model
     ): String {
         model.addAttribute("government", kingdom.government)
-        return "kingdoms/governmentFormTemplate"
+        return "kingdoms/templates/governmentForm"
     }
 
     @PatchMapping("/government")
@@ -111,7 +108,7 @@ class KingdomController(override val campaignRepository: CampaignRepository): Fr
             it.warden.character = warden
             it.warden.performedDuty = wardenPerformedDuty
         })
-        return "kingdoms/governmentFormTemplate"
+        return "kingdoms/templates/governmentForm"
     }
 
     @PutMapping("/government")

@@ -1,0 +1,46 @@
+<!--/*@thymesVar id="character" type="pathfinder.domain.character.PathfinderCharacter"*/-->
+<div id="modal" _="on closeModal or keyup[key is 'Escape'] add .closing then wait for animationend then remove me"
+     xmlns:th="http://www.thymeleaf.org">
+    <div class="modal-underlay" _="on click or contextmenu trigger closeModal" oncontextmenu="return false;"></div>
+    <div class="modal-content">
+        <header class="modal-header">Modify character</header>
+        <form id="districtForm" method="post" th:action="@{'/api/character/{characterId}'(characterId = ${character?.id ?: 0})}">
+            <input type="hidden" name="campaign" th:value="${campaign.id}"/>
+            <label>
+                Player
+                <select name="player">
+                    <option th:value="${null}">NPC</option>
+                    <option th:each="player : ${users}"
+                            th:value="${player.id}"
+                            th:text="${player.name}"
+                            th:selected="${player.id == character?.ownerId}"/>
+                </select>
+            </label>
+            <br>
+            <label>
+                Name
+                <input type="text" name="name" th:value="${character?.name ?: ''}"/>
+            </label>
+            <br>
+            <label>
+                Race
+                <input type="text" name="race" th:value="${character?.race ?: ''}"/>
+            </label>
+            <br>
+            <fieldset>
+                <legend>Ability Scores</legend>
+                <th:block th:each="abilityScore : ${character?.abilityScores?.scores ?: T(pathfinder.domain.character.AbilityScores).proxy.scores}">
+                    <!--/*@thymesVar id="abilityScore" type="pathfinder.domain.character.stats.AbilityScore"*/-->
+                    <label>
+                        <th:block th:text="${abilityScore.ability.displayName}"/>
+                        <input type="number" th:name="@{'base{abilityName}'(abilityName=${abilityScore.ability.displayName})}" th:value="${abilityScore.base}" step="1"/>
+                    </label>
+                    <br>
+                </th:block>
+            </fieldset>
+            <input th:if="character == null" class="inputButton" type="submit" value="Submit character"/>
+            <input th:if="character != null" class="inputButton" type="submit" value="Edit character"/>
+            <input class="stopButton" type="button" value="Close" _="on click trigger closeModal"/>
+        </form>
+    </div>
+</div>

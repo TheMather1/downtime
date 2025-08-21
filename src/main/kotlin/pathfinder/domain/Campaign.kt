@@ -13,7 +13,7 @@ import pathfinder.domain.support.jpa.DiscordUserConverter
 import java.time.LocalDateTime
 
 @Entity
-open class Campaign(
+class Campaign(
     var name: String,
     creator: User
 ): Comparable<Campaign> {
@@ -22,23 +22,23 @@ open class Campaign(
     val id: Long = 0
 
     @Convert(converter = DiscordUserConverter::class)
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     val owners = mutableSetOf<User>(creator)
 
     @Convert(converter = DiscordUserConverter::class)
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     val admins = mutableSetOf<User>()
 
     @Convert(converter = DiscordUserConverter::class)
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     val moderators = mutableSetOf<User>()
 
     @Convert(converter = DiscordUserConverter::class)
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     val users = mutableSetOf<User>()
 
     @Convert(converter = DiscordGuildConverter::class)
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     val servers = mutableSetOf<Guild>()
 
     @OneToMany(mappedBy = "campaign", cascade = [CascadeType.ALL], orphanRemoval = true)
@@ -76,6 +76,8 @@ open class Campaign(
     fun hasRole(user: User, role: Role) = getRole(user)?.let {
         it >= role
     } ?: false
+
+    fun getUser(id: Long) = members.find { it.idLong == id }
 
     fun isUser(user: User) = hasRole(user, Role.USER)
     fun isAdmin(user: User) = hasRole(user, Role.ADMIN)

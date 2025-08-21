@@ -17,43 +17,49 @@ import java.util.*
 
 @Controller
 @RolesAllowed
-@RequestMapping("/campaign/{campaign}")
+@RequestMapping("/campaign/{campaignId}")
 class CampaignController(override val campaignRepository: CampaignRepository): FrontendController {
 
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     @ModelAttribute
-    fun addCampaign(@PathVariable campaign: Campaign) = campaign
+    fun addCampaign(@PathVariable("campaignId") campaign: Campaign) = campaign
 
     @GetMapping
     @PreAuthorize("#campaign.isUser(authentication.principal)")
     fun campaignPortal(
-        @PathVariable campaign: Campaign
+        @PathVariable("campaignId") campaign: Campaign
     ) = "campaign"
 
     @GetMapping("/maps")
     @PreAuthorize("#campaign.isUser(authentication.principal)")
     fun maps(
-        @PathVariable campaign: Campaign,
+        @PathVariable("campaignId") campaign: Campaign,
     ) = "maps/index"
 
     @GetMapping("/kingdoms")
     @PreAuthorize("#campaign.isUser(authentication.principal)")
     fun kingdoms(
-        @PathVariable campaign: Campaign,
+        @PathVariable("campaignId") campaign: Campaign,
     ) = "kingdoms/index"
 
     @GetMapping("/settlements")
     @PreAuthorize("#campaign.isUser(authentication.principal)")
     fun settlements(
-        @PathVariable campaign: Campaign,
+        @PathVariable("campaignId") campaign: Campaign,
     ) = "settlements/index"
+
+    @GetMapping("/characters")
+    @PreAuthorize("#campaign.isUser(authentication.principal)")
+    fun characters(
+        @PathVariable("campaignId") campaign: Campaign,
+    ) = "characters/index"
 
     @Transactional
     @PostMapping("/invite")
     @PreAuthorize("#campaign.isModerator(authentication.principal)")
     fun invite(
-        @PathVariable campaign: Campaign,
+        @PathVariable("campaignId") campaign: Campaign,
         @RequestParam("exp") exp: LocalDateTime
     ) {
         val key = UUID.randomUUID().toString()
@@ -65,7 +71,7 @@ class CampaignController(override val campaignRepository: CampaignRepository): F
     @GetMapping("/invite")
     fun invite(
         @AuthenticationPrincipal user: DiscordUser,
-        @PathVariable campaign: Campaign,
+        @PathVariable("campaignId") campaign: Campaign,
         @RequestParam("key") key: String
     ) = if (key in campaign.inviteLinks) {
         if(user !in campaign.members) campaign.users.add(user)
@@ -77,7 +83,7 @@ class CampaignController(override val campaignRepository: CampaignRepository): F
     @GetMapping("/leave")
     fun leave(
         @AuthenticationPrincipal user: DiscordUser,
-        @PathVariable campaign: Campaign
+        @PathVariable("campaignId") campaign: Campaign
     ) {
         campaign.users.remove(user)
         if(campaign.members.isEmpty()) {

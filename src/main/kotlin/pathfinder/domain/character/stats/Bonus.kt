@@ -2,8 +2,13 @@ package pathfinder.domain.character.stats
 
 import java.io.Serializable
 
-//@Embeddable
-class Bonus(
-    val type: BonusType,
+class Bonus<T: BonusType>(
+    val type: T,
     var value: Int
-): Serializable
+): Serializable {
+    operator fun plus(other: Bonus<T>) = when {
+        type.stacks -> Bonus(type, value + other.value)
+        value < other.value -> other
+        else -> this
+    }
+}

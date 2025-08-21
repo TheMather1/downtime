@@ -1,66 +1,56 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Server Portal - Pathfinder WeatherBot</title>
+    <title>Characters - Pathfinder Downtime bot</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" th:href="@{/styles/portal.css}"/>
-    <link rel="stylesheet" type="text/css" th:href="@{/styles/map.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/modal.css}"/>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="/js/form_handler.js"></script>
+    <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.14"></script>
 </head>
 <body>
+<!--/*@thymesVar id="campaign" type="pathfinder.domain.Campaign"*/-->
 <div class="wrapper">
     <div class="window">
         <div class="container">
-            <div th:replace="~{campaign_sidebar :: sidebar}"></div>
-            <header class="navbarHeader" th:if="${campaign} != null" th:replace="~{campaign_navbar :: navbar(page='kingdoms')}"></header>
-            <div th:if="${campaign} != null" class="contentWrapper">
-                <header class="domainHeader">
-                    <nav class="navbar domainNavbar">
-                        <ul>
-                            <li th:each="k : ${#lists.sort(campaign.kingdoms)}">
-                                <a th:href="@{'/kingdom/{kingdomId}'(kingdomId=${k.id})}" th:text="${k.name}"/>
-                            </li>
-                            <li>
-                                <a id="newKingdomTab" class="formOpen" onclick="$('#newKingdomModal').show()">
-                                    +
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                </header>
+            <div th:replace="~{tags/navigation :: sidebar}"></div>
+            <header class="navbarHeader" th:if="${campaign} != null" th:replace="~{tags/navigation :: navbar(page='maps')}"></header>
+            <div id="characterWrapper" th:if="${campaign} != null" class="contentWrapper">
                 <div class="content pagedContent">
                     <table>
                         <tr>
                             <th>Name</th>
-                            <th>Size</th>
-                            <th>Settlements</th>
+                            <th>Owner</th>
+                            <th>Race</th>
                         </tr>
-                        <tr th:each="k : ${#lists.sort(campaign.kingdoms)}">
+                        <tr th:each="c : ${campaign.characters}">
+                            <!--/*@thymesVar id="c" type="pathfinder.domain.character.PathfinderCharacter"*/-->
                             <td>
-                                <a th:href="@{'/kingdom/{kingdomId}'(kingdomId=${k.id})}" th:text="${k.name}"></a>
+                                <a th:href="@{'/character/{characterId}'(characterId=${c.id})}" th:text="${c.name}"></a>
                             </td>
-                            <td th:text="${k.size}"></td>
-                            <td th:text="${#lists.size(k.settlements)}"></td>
+                            <td th:if="${c.ownerId == null}">NPC</td>
+                            <td th:if="${c.ownerId != null}" th:text="${campaign.getUser(c.ownerId).name}"></td>
+                            <td th:text="${c.race}"/>
                         </tr>
+                        <tfoot>
+                        <tr>
+                            <td colspan="3">
+                                <button type="submit" hx-target="#characterWrapper"
+                                        hx-swap="beforeend"
+                                        th:hx-get="${'/api/character/form/' + campaign.id}"
+                                >
+                                    Add Character
+                                </button>
+                            </td>
+                        </tr>
+                        </tfoot>
                     </table>
+                    <br>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<th:block th:if="${map != null}">
-    <script th:inline="javascript">
-        let offsetX = /*[[${map.offsetX}]]*/ 0;
-        let offsetY = /*[[${map.offsetY}]]*/ 0;
-        let mapData = /*[[${map.mapData}]]*/ null;
-        let campaignId = /*[[${campaign.id}]]*/ 0;
-        let rivers = /*[[${map.rivers}]]*/ null;
-        let roads = /*[[${map.roads}]]*/ null;
-
-        $('#mapView').addMap(campaignId, true, offsetX, offsetY, mapData, rivers, roads);
-    </script>
-</th:block>
-<th:block th:replace="~{tags/forms :: forms}"/>
 </body>
 </html>

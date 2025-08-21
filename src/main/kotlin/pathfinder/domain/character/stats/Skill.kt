@@ -1,10 +1,8 @@
 package pathfinder.domain.character.stats
 
-import jakarta.persistence.Embeddable
-import jakarta.persistence.Inheritance
-import jakarta.persistence.InheritanceType
+import jakarta.persistence.MappedSuperclass
 
-@Embeddable
-@Inheritance(strategy = InheritanceType.JOINED)
-sealed class Skill: Stat(0) {
+@MappedSuperclass
+sealed class Skill: Stat() {
+    override var base = 0
 }

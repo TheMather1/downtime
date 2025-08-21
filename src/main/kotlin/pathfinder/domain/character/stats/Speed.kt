@@ -1,22 +1,29 @@
 package pathfinder.domain.character.stats
 
-import jakarta.persistence.Embeddable
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
-import jakarta.persistence.Inheritance
-import jakarta.persistence.InheritanceType
+import jakarta.persistence.*
+import org.hibernate.annotations.ColumnDefault
+import pathfinder.domain.support.jpa.BonusConverter
 
-@Embeddable
-@Inheritance(strategy = InheritanceType.JOINED)
-sealed class Speed(speed: Int): Stat(base = speed) {
+@MappedSuperclass
+sealed class Speed(): Stat() {
     @Embeddable
-    class LandSpeed(speed: Int = 30): Speed(speed)
+    class LandSpeed(): Speed() {
+        override var base = 30
+        @Column(columnDefinition = "CLOB")
+        @Convert(converter = BonusConverter::class)
+        override val bonuses: BonusSet = BonusSet()
+    }
     @Embeddable
     class FlySpeed(
-        speed: Int = 0,
         @Enumerated(EnumType.STRING)
         val maneuverability: Maneuverability = Maneuverability.AVERAGE
-    ): Speed(speed) {
+    ): Speed() {
+        @ColumnDefault("0")
+        override var base = 0
+        @Column(columnDefinition = "CLOB", nullable = true)
+        @Convert(converter = BonusConverter::class)
+        override val bonuses: BonusSet = BonusSet()
+
         enum class Maneuverability(val modifier: Int) {
             CLUMSY(-8),
             POOR(-4),
@@ -26,9 +33,27 @@ sealed class Speed(speed: Int): Stat(base = speed) {
         }
     }
     @Embeddable
-    class SwimSpeed(speed: Int = 0): Speed(speed)
+    class SwimSpeed(): Speed() {
+        @ColumnDefault("0")
+        override var base = 0
+        @Column(columnDefinition = "CLOB", nullable = true)
+        @Convert(converter = BonusConverter::class)
+        override val bonuses: BonusSet = BonusSet()
+    }
     @Embeddable
-    class ClimbSpeed(speed: Int = 0): Speed(speed)
+    class ClimbSpeed(): Speed() {
+        @ColumnDefault("0")
+        override var base = 0
+        @Column(columnDefinition = "CLOB", nullable = true)
+        @Convert(converter = BonusConverter::class)
+        override val bonuses: BonusSet = BonusSet()
+    }
     @Embeddable
-    class BurrowSpeed(speed: Int = 0): Speed(speed)
+    class BurrowSpeed(): Speed() {
+        @ColumnDefault("0")
+        override var base = 0
+        @Column(columnDefinition = "CLOB", nullable = true)
+        @Convert(converter = BonusConverter::class)
+        override val bonuses: BonusSet = BonusSet()
+    }
 }

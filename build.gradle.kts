@@ -26,6 +26,7 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
+    implementation("com.fasterxml.jackson.module", "jackson-module-kotlin", "2.18.4")
     implementation("com.h2database", "h2", "2.3.232")
 //    implementation("com.github.Hexworks", "mixite", "2020.1.0")
 //    implementation("org.hexworks.cobalt", "cobalt.datatypes-jvm", "2020.0.12-RELEASE")

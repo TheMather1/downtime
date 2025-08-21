@@ -40,8 +40,9 @@ class SecurityConfig(
         }.csrf {
             it.disable()
         }.authorizeHttpRequests {
-            it.requestMatchers("/home/**", "/campaign/**", "/map/**", "/settlement/**", "/kingdom/**", "/api/**").authenticated()
-                .anyRequest().permitAll()
+            it.requestMatchers("/styles/**", "/js/**", "/img/**", "/actuator/**", "/").permitAll()
+//            it.requestMatchers("/home/**", "/campaign/**", "/map/**", "/settlement/**", "/kingdom/**", "/api/**")
+                .anyRequest().authenticated()
         }.oauth2Login {
             it.tokenEndpoint {
             }.userInfoEndpoint {

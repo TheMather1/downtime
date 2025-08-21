@@ -17,7 +17,9 @@ class DiscordUserConverter: AttributeConverter<User, Long> {
 
     override fun convertToDatabaseColumn(attribute: User?) = attribute?.idLong
 
-    override fun convertToEntityAttribute(dbData: Long?): User? = dbData?.let(jda::getUserById)
+    override fun convertToEntityAttribute(dbData: Long?): User? = dbData?.let {
+        jda.getUserById(it) ?: jda.retrieveUserById(it).complete()
+    }
 
     companion object {
         lateinit var jda: JDA

@@ -10,7 +10,7 @@
               th:hx-patch="@{'/kingdom/{kingdomId}/government'(kingdomId = ${kingdom.id})}"
               hx-trigger="change"
               hx-target="#governmentForm"
-              hx-select="#governmentForm > select">
+              hx-select="#governmentForm > *">
             <label for="ruler">Ruler</label>
             <select id="ruler" name="ruler">
                 <option th:value="${null}" th:text="${''}"/>
@@ -228,9 +228,9 @@
             <input class="inputButton"
                    th:hx-put="@{'/kingdom/{kingdomId}/government'(kingdomId = ${kingdom.id})}"
                    hx-target="body"
-                   hx-select="body"
+                   hx-select="body > *"
                    type="submit"
-                   value="Edit hex"/>
+                   value="Edit government"/>
             <input class="stopButton" type="button" value="Close" _="on click trigger closeModal"/>
         </form>
     </div>

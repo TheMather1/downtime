@@ -10,8 +10,8 @@
 <div class="wrapper">
     <div class="window">
         <div class="container">
-            <div th:replace="~{campaign_sidebar :: sidebar}"></div>
-            <header class="navbarHeader" th:if="${campaign} != null" th:replace="~{campaign_navbar :: navbar(page='settlements')}"></header>
+            <div th:replace="~{tags/navigation :: sidebar}"></div>
+            <header class="navbarHeader" th:if="${campaign} != null" th:replace="~{tags/navigation :: navbar(page='settlements')}"></header>
             <div id="settlementWrapper" th:if="${campaign} != null" class="contentWrapper">
                 <header class="domainHeader">
                     <nav class="navbar domainNavbar">
