@@ -4,6 +4,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.stereotype.Controller
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -67,6 +68,15 @@ class CampaignBackendController(
             else KingdomMap(campaign, name)
         )
         return "redirect:/map/${map.id}"
+    }
+
+    @DeleteMapping("/{campaignId}")
+    @Transactional
+    fun deleteCampaign(@PathVariable("campaignId") campaign: Campaign): String {
+        logger.debug("Received request to delete campaign ${campaign.id}")
+        campaignRepository.delete(campaign)
+        return "redirect:/home"
+
     }
 
     fun <E> MutableSet<E>.replaceAll(values: Set<E>) {

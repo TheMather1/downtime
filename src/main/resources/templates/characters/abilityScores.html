@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>Server Portal - Pathfinder WeatherBot</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/portal.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/modal.css}"/>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://unpkg.com/htmx.org@2.0.4"
+            integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+            crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.14"></script>
+</head>
+<body>
+<div class="wrapper">
+    <div class="window">
+        <div class="container">
+            <div th:replace="~{tags/navigation :: sidebar}"></div>
+            <header class="navbarHeader" th:if="${campaign} != null"
+                    th:replace="~{tags/navigation :: navbar(page='characters')}"></header>
+            <div th:if="${campaign} != null" class="contentWrapper">
+                <header class="domainHeader"
+                        th:replace="~{characters/templates/fragments :: navbar(page='ability scores')}">
+                </header>
+                <div class="contentWrapper">
+                    <div class="pagedContent content">
+                        <table th:replace="~{characters/templates/fragments :: abilityScoreTable(score=${character.abilityScores.strength})}"></table>
+                        <br>
+                        <table th:replace="~{characters/templates/fragments :: abilityScoreTable(score=${character.abilityScores.constitution})}"></table>
+                        <br>
+                        <table th:replace="~{characters/templates/fragments :: abilityScoreTable(score=${character.abilityScores.dexterity})}"></table>
+                        <br>
+                        <table th:replace="~{characters/templates/fragments :: abilityScoreTable(score=${character.abilityScores.intelligence})}"></table>
+                        <br>
+                        <table th:replace="~{characters/templates/fragments :: abilityScoreTable(score=${character.abilityScores.wisdom})}"></table>
+                        <br>
+                        <table th:replace="~{characters/templates/fragments :: abilityScoreTable(score=${character.abilityScores.charisma})}"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

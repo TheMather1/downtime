@@ -4,7 +4,6 @@ import pathfinder.domain.character.stats.ACBonus.ArmorClass
 import pathfinder.domain.character.stats.AbilityScore.*
 import java.io.Serializable
 import kotlin.reflect.KClass
-import kotlin.reflect.full.isSubclassOf
 
 enum class BonusType(vararg val applicableStats: KClass<out Stat>): Serializable {
     ALCHEMICAL(AbilityScore::class, Save::class),

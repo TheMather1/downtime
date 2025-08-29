@@ -15,33 +15,8 @@
         <div class="container">
             <div th:replace="~{tags/navigation :: sidebar}"></div>
             <header class="navbarHeader" th:if="${campaign} != null" th:replace="~{tags/navigation :: navbar(page='characters')}"></header>
-            <div id="mapWrapper" th:if="${campaign} != null" class="contentWrapper">
-                <header class="domainHeader">
-                    <nav class="navbar domainNavbar">
-                        <ul>
-                            <li>
-                                <a th:href="@{'/campaign/{campaignId}/characters'(campaignId=${campaign.id})}">All Characters</a>
-                            </li>
-                            <li>
-                                <a th:href="@{'/character/{characterId}'(characterId=${character.id})}" th:text="${character.name}"/>
-                            </li>
-                            <li>
-                                <a th:href="@{'/character/{characterId}/abilityScores'(characterId=${character.id})}">Ability Scores</a>
-                            </li>
-                            <li>
-                                <a th:href="@{'/character/{characterId}/speeds'(characterId=${character.id})}">Speed</a>
-                            </li>
-                            <li>
-                                <a th:href="@{'/character/{characterId}/armorClass'(characterId=${character.id})}">AC</a>
-                            </li>
-                            <li>
-                                <a th:href="@{'/character/{characterId}/saves'(characterId=${character.id})}">Saves</a>
-                            </li>
-                            <li>
-                                <a th:href="@{'/character/{characterId}/skills'(characterId=${character.id})}">Skills</a>
-                            </li>
-                        </ul>
-                    </nav>
+            <div id="characterWrapper" th:if="${campaign} != null" class="contentWrapper">
+                <header class="domainHeader" th:replace="~{characters/templates/fragments :: navbar(page='index')}">
                 </header>
                 <div class="pagedContent content">
                     <h1 th:text="${character.name} + ' - ' + ${character.ownerId != null ? campaign.getUser(character.ownerId).name : 'NPC'}"></h1>
@@ -54,7 +29,7 @@
                             </tr>
                             <tr>
                                 <th>Ability</th>
-                                <th>Bonus</th>
+                                <th>Modifier</th>
                                 <th>Base</th>
                                 <th>Total</th>
                             </tr>
@@ -62,42 +37,51 @@
                         <tbody>
                             <tr>
                                 <th>Strength</th>
-                                <td th:text="${character.abilityScores.strength.bonus}"></td>
+                                <td th:text="${character.abilityScores.strength.modifier}"></td>
                                 <td th:text="${character.abilityScores.strength.base}"></td>
                                 <td th:text="${character.abilityScores.strength.value}"></td>
                             </tr>
                             <tr>
                                 <th>Constitution</th>
-                                <td th:text="${character.abilityScores.constitution.bonus}"></td>
+                                <td th:text="${character.abilityScores.constitution.modifier}"></td>
                                 <td th:text="${character.abilityScores.constitution.base}"></td>
-                                <td th:text="${character.abilityScores.dexterity.value}"></td>
+                                <td th:text="${character.abilityScores.constitution.value}"></td>
                             </tr>
                             <tr>
                                 <th>Dexterity</th>
-                                <td th:text="${character.abilityScores.dexterity.bonus}"></td>
+                                <td th:text="${character.abilityScores.dexterity.modifier}"></td>
                                 <td th:text="${character.abilityScores.dexterity.base}"></td>
                                 <td th:text="${character.abilityScores.dexterity.value}"></td>
                             </tr>
                             <tr>
                                 <th>Intelligence</th>
-                                <td th:text="${character.abilityScores.intelligence.bonus}"></td>
+                                <td th:text="${character.abilityScores.intelligence.modifier}"></td>
                                 <td th:text="${character.abilityScores.intelligence.base}"></td>
                                 <td th:text="${character.abilityScores.intelligence.value}"></td>
                             </tr>
                             <tr>
                                 <th>Wisdom</th>
-                                <td th:text="${character.abilityScores.wisdom.bonus}"></td>
+                                <td th:text="${character.abilityScores.wisdom.modifier}"></td>
                                 <td th:text="${character.abilityScores.wisdom.base}"></td>
                                 <td th:text="${character.abilityScores.wisdom.value}"></td>
                             </tr>
                             <tr>
                                 <th>Charisma</th>
-                                <td th:text="${character.abilityScores.charisma.bonus}"></td>
+                                <td th:text="${character.abilityScores.charisma.modifier}"></td>
                                 <td th:text="${character.abilityScores.charisma.base}"></td>
                                 <td th:text="${character.abilityScores.charisma.value}"></td>
                             </tr>
                         </tbody>
                     </table>
+                    <button type="button" hx-target="#characterWrapper"
+                            hx-swap="beforeend"
+                            th:hx-get="@{'/api/character/{characterId}/form'(characterId=${character.id})}"
+                    >
+                        Edit Character
+                    </button>
+                    <button type="button" class="deleteButton" th:hx-delete="@{'/api/character/{characterId}'(characterId=${character.id})}" hx-confirm="This will permanently this character.\nAre you sure you want to proceed?">
+                        Delete Character
+                    </button>
                 </div>
             </div>
         </div>

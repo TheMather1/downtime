@@ -13,7 +13,7 @@
                     <option th:each="player : ${users}"
                             th:value="${player.id}"
                             th:text="${player.name}"
-                            th:selected="${player.id == character?.ownerId}"/>
+                            th:selected="${player.idLong == character?.ownerId}"/>
                 </select>
             </label>
             <br>
@@ -38,8 +38,8 @@
                     <br>
                 </th:block>
             </fieldset>
-            <input th:if="character == null" class="inputButton" type="submit" value="Submit character"/>
-            <input th:if="character != null" class="inputButton" type="submit" value="Edit character"/>
+            <input th:if="${character == null}" class="inputButton" type="submit" value="Submit character"/>
+            <input th:if="${character != null}" class="inputButton" type="submit" value="Edit character"/>
             <input class="stopButton" type="button" value="Close" _="on click trigger closeModal"/>
         </form>
     </div>

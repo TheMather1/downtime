@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="navbar(page)">
+    <!--/*@thymesVar id="campaign" type="pathfinder.domain.Campaign"*/-->
+    <!--/*@thymesVar id="character" type="pathfinder.domain.character.PathfinderCharacter"*/-->
+    <header class="domainHeader">
+        <nav class="navbar domainNavbar">
+            <ul>
+                <li>
+                    <a th:href="@{'/campaign/{campaignId}/characters'(campaignId=${campaign.id})}">All Characters</a>
+                </li>
+                <li th:classappend="${page == 'index'} ? 'activeContent'">
+                    <a th:href="@{'/character/{characterId}'(characterId=${character.id})}" th:text="${character.name}"/>
+                </li>
+                <li th:classappend="${page == 'ability scores'} ? 'activeContent'">
+                    <a th:href="@{'/character/{characterId}/abilityScores'(characterId=${character.id})}">Ability Scores</a>
+                </li>
+                <li th:classappend="${page == 'speed'} ? 'activeContent'">
+                    <a th:href="@{'/character/{characterId}/speeds'(characterId=${character.id})}">Speed</a>
+                </li>
+                <li th:classappend="${page == 'armor class'} ? 'activeContent'">
+                    <a th:href="@{'/character/{characterId}/armorClass'(characterId=${character.id})}">AC</a>
+                </li>
+                <li th:classappend="${page == 'saves'} ? 'activeContent'">
+                    <a th:href="@{'/character/{characterId}/saves'(characterId=${character.id})}">Saves</a>
+                </li>
+                <li th:classappend="${page == 'skills'} ? 'activeContent'">
+                    <a th:href="@{'/character/{characterId}/skills'(characterId=${character.id})}">Skills</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+</th:block>
+
+<table xmlns:th="http://www.thymeleaf.org" th:fragment="abilityScoreTable">
+    <!--/*@thymesVar id="character" type="pathfinder.domain.character.PathfinderCharacter"*/-->
+    <!--/*@thymesVar id="score" type="pathfinder.domain.character.stats.AbilityScore"*/-->
+    <thead>
+    <tr>
+        <th rowspan="2" colspan="2" th:text="${score.displayName}"/>
+        <th style="width: 10%">Base</th>
+    </tr>
+    <tr>
+        <td th:text="${score.base}"/>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="bonus : ${score.bonuses}">
+        <td th:text="${bonus.type.displayName} + ' bonus'"/>
+        <td th:text="${bonus.value >= 0 ? '+' : ''} + ${bonus.value}"/>
+        <td>
+            <button type="button" class="deleteButton"
+                    th:hx-delete="@{'/api/character/{characterId}/bonus?stat={stat}&type={type}&value={value}'(stat=${score.valueName},characterId=${character.id},type=${bonus.type},value=${bonus.value})}"
+                    hx-confirm="This will permanently this bonus.\nAre you sure you want to proceed?">
+                Delete
+            </button>
+        </td>
+    </tr>
+    </tbody>
+    <tfoot>
+    <tr>
+        <th style="width: 45%">Score</th>
+        <th>Modifier</th>
+        <td rowspan="2">
+            <div th:replace="~{characters/templates/bonusForm :: bonusForm(${score})}"></div>
+            <button type="button" class="addButton" th:popovertarget="${score.valueName} + 'BonusForm'">
+                Add Bonus
+            </button>
+        </td>
+    </tr>
+    <tr>
+        <td th:text="${score.value}"/>
+        <td th:text="${score.modifier >= 0 ? '+' : ''} + ${score.modifier}"/>
+    </tr>
+    </tfoot>
+</table>

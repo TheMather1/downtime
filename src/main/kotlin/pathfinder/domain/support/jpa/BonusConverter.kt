@@ -15,5 +15,7 @@ class BonusConverter : AttributeConverter<BonusSet, String> {
 
     override fun convertToDatabaseColumn(attribute: BonusSet?): String? = attribute?.run { objectMapper.writeValueAsString(bonuses) }
 
-    override fun convertToEntityAttribute(dbData: String?): BonusSet = BonusSet(objectMapper.readValue<MutableList<Bonus<BonusType>>>(dbData ?: "[]"))
+    override fun convertToEntityAttribute(dbData: String?): BonusSet = BonusSet(objectMapper.readValue<MutableList<Bonus<BonusType>>>(
+        dbData?.replace("[[", "[")?.replace("]]", "]") ?: "[]")
+    )
 }

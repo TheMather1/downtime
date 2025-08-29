@@ -13,7 +13,7 @@ import pathfinder.domain.support.jpa.DiscordUserConverter
 import java.time.LocalDateTime
 
 @Entity
-class Campaign(
+open class Campaign(
     var name: String,
     creator: User
 ): Comparable<Campaign> {
@@ -49,6 +49,9 @@ class Campaign(
 
     @OneToMany(mappedBy = "campaign", cascade = [CascadeType.ALL], orphanRemoval = true)
     val characters = mutableSetOf<PathfinderCharacter>()
+
+    @Embedded
+    val optionalRules = OptionalRules()
 
     @ElementCollection
     val inviteLinks = mutableMapOf<String, LocalDateTime>()

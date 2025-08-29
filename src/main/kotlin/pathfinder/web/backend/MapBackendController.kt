@@ -72,6 +72,14 @@ class MapBackendController(
         return "redirect:/settlement/${settlement.id}"
     }
 
+    @DeleteMapping("/{map}")
+    @Transactional
+    fun deleteMap(@PathVariable("map") map: KingdomMap): String {
+        logger.debug("Received request to delete map ${map.id}")
+        kingdomMapRepository.delete(map)
+        return "redirect:/campaign/${map.campaign.id}/maps"
+    }
+
     fun <E> MutableSet<E>.replaceAll(values: Set<E>) {
         removeAll { it !in values }
         addAll(values)

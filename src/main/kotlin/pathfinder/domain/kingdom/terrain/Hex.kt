@@ -29,6 +29,11 @@ data class Hex(
     @Enumerated(EnumType.STRING)
     val improvements: MutableSet<Improvement> = mutableSetOf()
     @ManyToOne
+    @JoinColumn(
+        foreignKey = ForeignKey(
+            foreignKeyDefinition = "FOREIGN KEY (owner_id) REFERENCES kingdom(id) ON DELETE SET NULL"
+        )
+    )
     var owner: Kingdom? = null
     @OneToOne(mappedBy = "hex", cascade = [CascadeType.ALL], orphanRemoval = true)
     var settlement: Settlement? = null

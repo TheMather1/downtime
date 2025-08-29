@@ -52,8 +52,8 @@ sealed class ACBonus(): Stat() {
         )
         val naturalArmorBonus = NaturalArmorBonus()
 
-        fun ac(character: PathfinderCharacter) = value + character.abilityScores.dexterity.bonus + armorBonus.value + shieldBonus.value + naturalArmorBonus.value
+        fun ac(character: PathfinderCharacter) = value + character.abilityScores.dexterity.modifier + armorBonus.value + shieldBonus.value + naturalArmorBonus.value
         fun flatFooted(conditions: List<*>) = value + armorBonus.value + shieldBonus.value + naturalArmorBonus.value
-        fun touch(character: PathfinderCharacter) = value + character.abilityScores.dexterity.bonus
+        fun touch(character: PathfinderCharacter) = value + character.abilityScores.dexterity.modifier
     }
 }

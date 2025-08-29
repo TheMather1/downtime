@@ -7,52 +7,54 @@ import kotlin.math.truncate
 @MappedSuperclass
 sealed class AbilityScore(
     @Transient
-    val ability: Value
+    val ability: Value,
+    @Transient
+    val shorthand: String
 ): Stat() {
     @Embeddable
-    class Strength: AbilityScore(Value.STRENGTH) {
+    class Strength: AbilityScore(Value.STRENGTH, "STR") {
         override var base = 10
         @Column(columnDefinition = "CLOB")
         @Convert(converter = BonusConverter::class)
         override val bonuses: BonusSet = BonusSet()
     }
     @Embeddable
-    class Dexterity: AbilityScore(Value.DEXTERITY) {
+    class Dexterity: AbilityScore(Value.DEXTERITY, "DEX") {
         override var base = 10
         @Column(columnDefinition = "CLOB")
         @Convert(converter = BonusConverter::class)
         override val bonuses: BonusSet = BonusSet()
     }
     @Embeddable
-    class Constitution: AbilityScore(Value.CONSTITUTION) {
+    class Constitution: AbilityScore(Value.CONSTITUTION, "CON") {
         override var base = 10
         @Column(columnDefinition = "CLOB")
         @Convert(converter = BonusConverter::class)
         override val bonuses: BonusSet = BonusSet()
     }
     @Embeddable
-    class Intelligence: AbilityScore(Value.INTELLIGENCE) {
+    class Intelligence: AbilityScore(Value.INTELLIGENCE, "INT") {
         override var base = 10
         @Column(columnDefinition = "CLOB")
         @Convert(converter = BonusConverter::class)
         override val bonuses: BonusSet = BonusSet()
     }
     @Embeddable
-    class Wisdom: AbilityScore(Value.WISDOM) {
+    class Wisdom: AbilityScore(Value.WISDOM, "WIS") {
         override var base = 10
         @Column(columnDefinition = "CLOB")
         @Convert(converter = BonusConverter::class)
         override val bonuses: BonusSet = BonusSet()
     }
     @Embeddable
-    class Charisma: AbilityScore(Value.CHARISMA) {
+    class Charisma: AbilityScore(Value.CHARISMA, "CHA") {
         override var base = 10
         @Column(columnDefinition = "CLOB")
         @Convert(converter = BonusConverter::class)
         override val bonuses: BonusSet = BonusSet()
     }
 
-    val bonus
+    val modifier
         get() = truncate((value-10)/2.0).toInt()
 
     enum class Value {

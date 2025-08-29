@@ -16,7 +16,7 @@ class Speeds {
         AttributeOverride(name = "base", column = Column(name = "speed_base")),
         AttributeOverride(name = "bonuses", column = Column(name = "speed_bonus"))
     )
-    val landBonus = Speed.LandSpeed()
+    val landSpeed = Speed.LandSpeed()
     @Embedded
     @Nullable
     @AttributeOverrides(

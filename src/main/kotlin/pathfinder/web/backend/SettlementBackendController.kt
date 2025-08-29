@@ -182,6 +182,14 @@ class SettlementBackendController(
         return "redirect:/settlement/${district.settlement.id}/map"
     }
 
+    @DeleteMapping("/{settlement}")
+    @Transactional
+    fun deleteSettlement(@PathVariable("settlement") settlement: Settlement): String {
+        logger.debug("Received request to delete settlement ${settlement.id}")
+        kingdomMapRepository.delete(settlement.hex.map)
+        return "redirect:/maps/${settlement.hex.map.id}"
+    }
+
     fun Set<Lot>.assertValidSize() {
         assert(size == 1 || size == 2 || size == 4)
         assert(all { it.district == first().district })

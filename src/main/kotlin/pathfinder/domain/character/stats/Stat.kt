@@ -15,4 +15,12 @@ abstract class Stat() {
     @get:Transient
     val value
         get() = base + bonuses.sum()
+
+    @get:Transient
+    open val displayName
+        get() = this::class.simpleName!!.split("(?=\\p{Upper})".toRegex()).joinToString(" ")
+
+    @get:Transient
+    open val valueName
+        get() = this::class.simpleName!!.replaceFirstChar { it.lowercase() }
 }

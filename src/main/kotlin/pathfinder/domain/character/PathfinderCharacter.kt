@@ -28,7 +28,31 @@ class PathfinderCharacter(
     @Embedded
     val saves = Saves()
     @Embedded
+    var skills = Skills(this)
+    @Embedded
     val speeds = Speeds()
     @Embedded
     val assets = Assets()
+    var leadershipFeat = false
+
+    fun getStat(stat: String) = when (stat) {
+        "strength" -> abilityScores.strength
+        "dexterity" -> abilityScores.dexterity
+        "constitution" -> abilityScores.constitution
+        "intelligence" -> abilityScores.intelligence
+        "wisdom" -> abilityScores.wisdom
+        "charisma" -> abilityScores.charisma
+        "armorClass" -> armorClass
+        "armorBonus" -> armorClass.armorBonus
+        "shieldBonus" -> armorClass.shieldBonus
+        "naturalArmorBonus" -> armorClass.naturalArmorBonus
+        "landSpeed" -> speeds.landSpeed
+        "flySpeed" -> speeds.flySpeed
+        "swimSpeed" -> speeds.swimSpeed
+        "burrowSpeed" -> speeds.burrowSpeed
+        "reflex" -> saves.reflex
+        "willpower" -> saves.willpower
+        "fortitude" -> saves.fortitude
+        else -> skills[stat] ?: throw IllegalArgumentException("Unknown stat: $stat")
+    }
 }

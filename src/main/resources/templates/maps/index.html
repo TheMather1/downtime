@@ -31,6 +31,9 @@
                             <td th:text="${#lists.size(m.settlements)}"></td>
                         </tr>
                     </table>
+                    <button type="button" class="deleteButton" th:hx-delete="@{'/api/maps/{mapId}'(mapId=${m.id})}" hx-confirm="This will permanently this map.\nAre you sure you want to proceed?">
+                        Delete Map
+                    </button>
                 </div>
             </div>
         </div>

@@ -39,5 +39,5 @@ sealed class Save(): Stat() {
         override val bonuses: BonusSet = BonusSet()
     }
 
-    fun bonus(character: PathfinderCharacter) = value + character.abilityScores[abilityScore].bonus
+    fun bonus(character: PathfinderCharacter) = value + character.abilityScores[abilityScore].modifier
 }

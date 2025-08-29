@@ -1,0 +1,25 @@
+<!--/*@thymesVar id="character" type="pathfinder.domain.character.PathfinderCharacter"*/-->
+<!--/*@thymesVar id="stat" type="pathfinder.domain.character.stats.Stat"*/-->
+<div th:fragment="bonusForm(stat)" th:id="${stat.valueName} + 'BonusForm'"
+     xmlns:th="http://www.thymeleaf.org"
+     class="formModal-content" popover>
+    <form method="post" th:action="@{'/api/character/{characterId}/bonus'(characterId = ${character.id})}">
+        <input type="hidden" name="stat" th:value="${stat.valueName}"/>
+        <label>
+            Type
+            <select name="type">
+                <option th:each="type : ${T(pathfinder.domain.character.stats.BonusType).entries}"
+                        th:if="${type.isApplicableTo(stat)}"
+                        th:value="${type}"
+                        th:text="${type.displayName}"/>
+            </select>
+        </label>
+        <br>
+        <label>
+            Value
+            <input type="number" name="value" step="1" value="0" required/>
+        </label>
+        <br>
+        <input class="inputButton" type="submit" value="Submit"/>
+    </form>
+</div>
