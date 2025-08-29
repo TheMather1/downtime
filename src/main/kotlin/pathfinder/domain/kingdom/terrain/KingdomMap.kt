@@ -1,6 +1,7 @@
 package pathfinder.domain.kingdom.terrain
 
 import jakarta.persistence.*
+import org.hibernate.annotations.Formula
 import pathfinder.domain.Campaign
 import pathfinder.domain.support.coordinate.Coordinate
 import pathfinder.domain.support.coordinate.HexCoordinate
@@ -25,9 +26,13 @@ class KingdomMap(
     @Convert(converter = HexCoordinateConverter::class)
     val hexes: MutableMap<HexCoordinate, Hex> = mutableMapOf()
 
-    val kingdoms
-        get() = hexes.values.map { it.owner }.toSet()
+    @Formula("(SELECT COUNT(*) FROM hex WHERE hex.map_id = id)")
+    val size = 0
 
+    @Formula("(SELECT COUNT(*) FROM settlement s JOIN hex h ON s.hex_id = h.id WHERE h.map_id = id)")
+    val settlementCount = 0
+
+    @get:Transient
     val settlements
         get() = hexes.values.mapNotNull { it.settlement }.toSet()
 

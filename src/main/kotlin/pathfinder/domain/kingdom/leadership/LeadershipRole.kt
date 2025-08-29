@@ -341,7 +341,7 @@ sealed class LeadershipRole: Cloneable {
     class Viceroy(
         @ManyToOne
         val government: Government,
-        @OneToOne
+        @OneToOne(fetch = FetchType.LAZY)
         val videroyOf: Kingdom
     ): LeadershipRole() {
         @Transient

@@ -23,17 +23,14 @@
                             <th>Size</th>
                             <th>Settlements</th>
                         </tr>
-                        <tr th:each="k : ${#lists.sort(campaign.kingdoms)}">
+                        <tr th:each="k : ${campaign.kingdoms}">
                             <td>
                                 <a th:href="@{'/kingdom/{kingdomId}'(kingdomId=${k.id})}" th:text="${k.name}"></a>
                             </td>
                             <td th:text="${k.size}"></td>
-                            <td th:text="${#lists.size(k.settlements)}"></td>
+                            <td th:text="${k.settlementCount}"></td>
                         </tr>
                     </table>
-                    <button type="button" class="deleteButton" th:hx-delete="@{'/api/kingdoms/{kingdomId}'(kingdomId=${k.id})}" hx-confirm="This will permanently this kingdom.\nAre you sure you want to proceed?">
-                        Delete Kingdom
-                    </button>
                 </div>
             </div>
         </div>

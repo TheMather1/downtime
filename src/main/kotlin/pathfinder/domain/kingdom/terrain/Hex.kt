@@ -11,11 +11,19 @@ import pathfinder.domain.support.coordinate.HexCoordinate
 import pathfinder.domain.support.coordinate.HexCoordinateConverter
 import pathfinder.web.frontend.dto.HexData
 
+//@NamedEntityGraph(
+//    name = "hex-entity-graph",
+//    attributeNodes = [
+//        NamedAttributeNode("terrainFeatures"),
+//        NamedAttributeNode("improvements"),
+//        NamedAttributeNode("settlement")
+//    ]
+//)
 @Entity
-data class Hex(
+class Hex(
     @Enumerated(EnumType.STRING)
     var rawTerrain: TerrainType,
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     val map: KingdomMap,
     @Convert(converter = HexCoordinateConverter::class)
     val coordinate: HexCoordinate
@@ -28,7 +36,7 @@ data class Hex(
     @ElementCollection
     @Enumerated(EnumType.STRING)
     val improvements: MutableSet<Improvement> = mutableSetOf()
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
         foreignKey = ForeignKey(
             foreignKeyDefinition = "FOREIGN KEY (owner_id) REFERENCES kingdom(id) ON DELETE SET NULL"
@@ -146,7 +154,7 @@ data class Hex(
     val eligibleImprovements
         get() = Improvement.entries.filter { it.eligible(this) }.toSet()
 
-    fun getEligibleImprovements(terrainType: TerrainType) = copy(rawTerrain = terrainType).eligibleImprovements
+    fun getEligibleImprovements(terrainType: TerrainType) = copy(terrainType).eligibleImprovements
 
     val hexData
         get() = HexData(
@@ -178,6 +186,13 @@ data class Hex(
             freetextHidden,
             settlement?.settlementData
         )
+
+    fun copy(terrainType: TerrainType) = Hex(terrainType, map, coordinate).also {
+        it.terrainFeatures.addAll(terrainFeatures)
+        it.improvements.addAll(improvements)
+        it.owner = owner
+        it.settlement = settlement
+    }
 
     val tooltip: String
         get() {

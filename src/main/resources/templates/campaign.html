@@ -17,16 +17,16 @@
                 <div class="content">
                     <section class="settings">
                         <h1>Maps</h1>
-                        <th:block th:each="map : ${#lists.sort(campaign.maps)}">
-                            <b th:text="${map.name}"/><th:block th:text="' - Size: ' + ${map.hexes.size()}"/>
+                        <th:block th:each="map : ${campaign.maps}">
+                            <b th:text="${map.name}"/><th:block th:text="' - Size: ' + ${map.size}"/>
                             <br/>
                         </th:block>
                         <th:block th:if="${campaign.maps.isEmpty()}">
                             No maps registered.
                         </th:block>
                         <h1>Kingdoms</h1>
-                        <th:block th:each="kingdom : ${#lists.sort(campaign.kingdoms)}">
-                            <b th:text="${kingdom.name}"/><th:block th:text="' - Size: ' + ${kingdom.size} + ', Settlements: ' + ${kingdom.settlements.size()}"/>
+                        <th:block th:each="kingdom : ${campaign.kingdoms}">
+                            <b th:text="${kingdom.name}"/><th:block th:text="' - Size: ' + ${kingdom.size} + ', Settlements: ' + ${kingdom.settlementCount}"/>
                             <br/>
                         </th:block>
                         <th:block th:if="${campaign.kingdoms.isEmpty()}">

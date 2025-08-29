@@ -3,7 +3,7 @@ package pathfinder.domain.kingdom.settlement
 import jakarta.persistence.Embeddable
 
 @Embeddable
-data class MiscBonuses(
+class MiscBonuses(
     var corruption: Int = 0,
     var crime: Int = 0,
     var law: Int = 0,

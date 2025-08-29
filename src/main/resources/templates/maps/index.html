@@ -23,17 +23,17 @@
                             <th>Size</th>
                             <th>Settlements</th>
                         </tr>
-                        <tr th:each="m : ${#lists.sort(campaign.maps)}">
+                        <tr th:each="m : ${campaign.maps}">
                             <td>
                                 <a th:href="@{'/map/{mapId}'(mapId=${m.id})}" th:text="${m.name}"></a>
+                                <button type="button" class="deleteButton" th:hx-delete="@{'/api/maps/{mapId}'(mapId=${m.id})}" hx-confirm="This will permanently this map.\nAre you sure you want to proceed?">
+                                    Delete Map
+                                </button>
                             </td>
-                            <td th:text="${#lists.size(m.hexes)}"></td>
-                            <td th:text="${#lists.size(m.settlements)}"></td>
+                            <td th:text="${m.size}"></td>
+                            <td th:text="${m.settlementCount}"></td>
                         </tr>
                     </table>
-                    <button type="button" class="deleteButton" th:hx-delete="@{'/api/maps/{mapId}'(mapId=${m.id})}" hx-confirm="This will permanently this map.\nAre you sure you want to proceed?">
-                        Delete Map
-                    </button>
                 </div>
             </div>
         </div>

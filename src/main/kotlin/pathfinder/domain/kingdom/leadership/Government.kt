@@ -18,7 +18,7 @@ import jakarta.persistence.PostLoad
 import pathfinder.domain.kingdom.Kingdom
 
 @Entity
-data class Government(
+class Government(
     @OneToOne
     val kingdom: Kingdom,
 
@@ -268,8 +268,6 @@ data class Government(
 
     val nonRulers
         get() = nonRulerRoles.mapNotNull { it.character }
-
-    public override fun clone() = super.clone() as Government
 
     @PostLoad
     @Suppress("SENSELESS_COMPARISON")

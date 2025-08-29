@@ -1,6 +1,7 @@
 package pathfinder.domain.kingdom
 
 import jakarta.persistence.*
+import org.hibernate.annotations.Formula
 import pathfinder.domain.Campaign
 import pathfinder.domain.kingdom.leadership.Government
 import pathfinder.domain.kingdom.settlement.Settlement
@@ -31,7 +32,7 @@ class Kingdom(
     val hexes: MutableSet<Hex> = mutableSetOf()
     @get:Transient
     val settlements
-        get() = hexes.mapNotNull { it.settlement }.toSet()
+        get() = hexes.mapNotNull(Hex::settlement).toSet()
     @Enumerated(EnumType.STRING)
     var holidayEdict: HolidayEdict = HolidayEdict.NONE
     @Enumerated(EnumType.STRING)
@@ -44,9 +45,13 @@ class Kingdom(
     @Column(columnDefinition = "BOOLEAN")
     var anarchy: Boolean = false
 
-    val size
-        get() = hexes.size
+    @Formula("(SELECT COUNT(*) FROM hex h WHERE h.owner_id = id)")
+    val size = 0
 
+    @Formula("(SELECT COUNT(*) FROM settlement s JOIN hex h ON s.hex_id = h.id WHERE h.owner_id = id)")
+    val settlementCount = 0
+
+    @get:Transient
     val earningsBonus
         get() = hexEarnings
 
@@ -55,6 +60,7 @@ class Kingdom(
             field = value.coerceAtMost(settlements.sumOf { it.granaryCapacity })
         }
 
+    @get:Transient
     val consumption
         get() = settlements.sumOf(Settlement::consumption) +
                 hexConsumption +
@@ -63,6 +69,7 @@ class Kingdom(
                     if (settlements.any { it.buildings.any { it.type == LotBuildingType.CATHEDRAL } }) it / 2 else it
                 }
 
+    @get:Transient
     val economy
         get() = government.economyBonus +
                 settlements.sumOf(Settlement::economy) +
@@ -72,6 +79,7 @@ class Kingdom(
                 taxationEdict.economyBonus
 
     var loyaltyBase = 0
+    @get:Transient
     val loyalty
         get() = loyaltyBase +
                 government.loyaltyBonus +
@@ -83,6 +91,7 @@ class Kingdom(
                     if (settlements.any { it.buildings.any { it.type == LotBuildingType.WATERFRONT } }) it/2 else it
                 }
 
+    @get:Transient
     val stability
         get() = government.stabilityBonus +
                 settlements.sumOf(Settlement::stability) +
@@ -91,24 +100,29 @@ class Kingdom(
                 alignment.stabilityBonus +
                 promotionEdict.stabilityBonus
 
+    @get:Transient
     private val roadCount
         get() = hexes.count { ROAD in it.improvements }
 
+    @get:Transient
     private val highwayCount
         get() = hexes.count { ROAD in it.improvements }
 
+    @get:Transient
     private val hexEarnings
         get () = hexes.sumOf(Hex::earningsBonus) +
                 networks.sumOf {
                     minOf(it.buildings.count { it.type == FOUNDRY }, it.improvements.count { it == MINE })
                 }
 
+    @get:Transient
     private val hexEconomy
         get () = hexes.sumOf(Hex::economyBonus) +
                 networks.sumOf {
                     minOf(it.buildings.count { it.type == FOUNDRY }, it.improvements.count { it == MINE })
                 }
 
+    @get:Transient
     private val hexConsumption
         get () = hexes.sumOf(Hex::consumptionBonus) -
                 hexes.count {
@@ -117,6 +131,7 @@ class Kingdom(
                     }
                 }
 
+    @get:Transient
     private val networks: List<Set<Hex>>
         get() = settlements.fold(mutableListOf<Set<Hex>>()) { networkList, settlement ->
             if (networkList.none { settlement.hex in it}) {
@@ -133,15 +148,19 @@ class Kingdom(
             networkList
         }
 
+    @get:Transient
     private val Set<Hex>.buildings
         get() = mapNotNull(Hex::settlement).flatMap(Settlement::buildings)
 
+    @get:Transient
     private val Set<Hex>.improvements
         get() = flatMap(Hex::improvements)
 
+    @get:Transient
     val controlDC
         get() = 20 + size + settlements.sumOf { it.districts.size }
 
+    @get:Transient
     val hexColor
         get() = "#" + Integer.toHexString(color.rgb and 0xffffff)
 

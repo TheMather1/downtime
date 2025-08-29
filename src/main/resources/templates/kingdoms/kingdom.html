@@ -233,6 +233,9 @@
                             </tr>
                         </tfoot>
                     </table>
+                    <button type="button" class="deleteButton" th:hx-delete="@{'/api/kingdoms/{kingdomId}'(kingdomId=${kingdom.id})}" hx-confirm="This will permanently this kingdom.\nAre you sure you want to proceed?">
+                        Delete Kingdom
+                    </button>
                 </div>
             </div>
         </div>

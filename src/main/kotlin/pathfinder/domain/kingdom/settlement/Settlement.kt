@@ -10,7 +10,7 @@ import pathfinder.web.frontend.dto.settlement.SettlementData
 
 @Entity
 class Settlement(
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     val hex: Hex,
     var name: String
 ) {

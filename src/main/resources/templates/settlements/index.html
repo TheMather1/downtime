@@ -41,9 +41,6 @@
                             <td th:text="${s.size}"></td>
                         </tr>
                     </table>
-                    <button type="button" class="deleteButton" th:hx-delete="@{'/api/settlement/{settlementId}'(settlementId=${s.id})}" hx-confirm="This will permanently this settlement.\nAre you sure you want to proceed?">
-                        Delete Settlement
-                    </button>
                 </div>
             </div>
         </div>
